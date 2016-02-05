@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="person_name">
+    <h2>{{ person.name }} {{person.surname}}</h2>
+</div>
+{% if person.ava_id %}
+    <div class"avatar">
+       <img src="{{ url_for('main.show_photo',
+       photo_id=person.ava_id)}}">
+    </div>
+{% endif %}
+{% endblock %}

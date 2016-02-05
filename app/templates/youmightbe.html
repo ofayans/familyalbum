@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="personlist">
+
+{% for person in persons %}
+<div class="person">
+    <picture class="avatar">
+       <source src="{{ person.ava_path }}">
+       <p>{{ person.name }} {{ person.surname }} {{ person.b_date.year }}-{{
+       person.b_date.month}}-{{ person.b_date.day }}</p>
+    </picture>
+</div>
+
+<a class="clickable_person" href="{{ url_for('main.thatsme',
+    person_id=person.id) }}">That's me!</a>
+
+{% endfor %}
+
+{% endblock %}

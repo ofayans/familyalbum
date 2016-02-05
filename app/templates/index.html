@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+{% if current_user.is_authenticated %}
+  {% if g.num_of_families > 1 %}
+    <h3>My families</h3>
+  {% else %}
+    <h3>My family</h3>
+  {% endif %}
+
+  {% for family in g.families %}
+    <div class="personlist">
+    {% for person in family.members %}
+        {% if g.person.id != person.id %}
+            <p>-----------------------------</p>
+            <div class="person">
+                {% if person.ava_id %}
+                    <img class="avatar" src="{{ url_for('main.show_photo',
+                    photo_id=person.ava_id)|thumbnail('200x200') }}"/>
+                {% endif %}
+                <a href="{{ url_for('main.mypage', person_id=person.id) }}">{{ person.name }} {{ person.surname }} {{
+                person.years_of_life() }}
+            </div>
+        {% endif %}
+    {% endfor %}
+    </div>
+  {% endfor %}
+
+{% endif %}
+
+{% endblock %}

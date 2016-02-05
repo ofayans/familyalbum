@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<H2>Hi, {{user.name}}! Tell us more about yourself, please!<H2>
+
+{% import "bootstrap/wtf.html" as wtf %}
+{{ wtf.quick_form(form) }} 
+
+{% endblock %}

@@ -1,0 +1,5 @@
+bin/postactivate
+lib*
+bin
+include
+__pycache__

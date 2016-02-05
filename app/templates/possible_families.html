@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% for family in families %}
+
+    <div class="personlist">
+    {% for person in family['family_members'] %}
+        <div class="person">
+            <picture class="avatar">
+               <source src="{{ person.ava_path }}">
+               <p>{{ person.name }} {{ person.surname }} {{ person.b_date.year }}-{{
+               person.b_date.month}}-{{ person.b_date.day }}</p>
+            </picture>
+        </div>
+
+    {% endfor %}
+    </div>
+    <a class="clickable_family" href={{ url_for('main.thatsmyfamily',
+        family_id=family['family_id'])
+        }}>That's my family</a>
+
+{% endfor %}
+
+{% endblock %}
+
