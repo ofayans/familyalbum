@@ -17,6 +17,8 @@
                   person_id=g.person.id) }}">My page</a>
               <a class="navbar-brand" href="{{ url_for('main.edit_person',
                   person_id=g.person.id) }}">Edit my details</a>
+              <a class="navbar-brand" href="{{ url_for('main.newperson',
+                  person_id=g.person.id) }}">New relative</a>
               <a class="navbar-brand" href="{{ url_for('auth.logout') }}">Log out</a>
             {% else %}
               <a class="navbar-brand" href="{{ url_for('auth.login') }}">Log in</a>

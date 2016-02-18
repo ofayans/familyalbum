@@ -11,8 +11,9 @@ from flask import request
 from flask import send_from_directory
 from flask.ext.login import login_required, current_user
 from . import main
-from .forms import PersonForm, AboutMeForm
+from .forms import PersonForm, AboutMeForm, LegendForm
 from .misc import populate_dropdowns, make_person, new_family
+from .misc import populate_relatives
 from .. import db
 from ..models import Legend, Photo, Person, User, Family, Country
 import uuid
@@ -70,7 +71,7 @@ def search_for_relatives(person_id):
     for relative in supposed_relatives:
         relative_families = relative.families
         for family in relative_families:
-            if not family in families:
+            if family not in families:
                 families.append(family)
     result = []
     for family in families:
@@ -86,6 +87,7 @@ def search_for_relatives(person_id):
 @main.route('/')
 def index():
     return render_template('index.html')
+
 
 @main.route('/youmightbe/<user_id>')
 @login_required
@@ -109,6 +111,7 @@ def thatsmyfamily(family_id):
     db.session.add(person)
     db.session.commit()
     return redirect(url_for('main.index'))
+
 
 @main.route('/thatsme/<person_id>')
 @login_required
@@ -137,6 +140,27 @@ def edit_person(person_id):
     return render_template('new_person.html', form=form)
 
 
+@main.route('/legend/new', methods=['GET', 'POST'])
+@login_required
+def add_legend():
+    form = LegendForm()
+    person_choices = [('', 'Please select all people involved')]
+    person_choices.extend(populate_relatives())
+    form.people.choices = person_choices
+    if form.validate_on_submit():
+        legend = Legend(
+            id=uuid.uuid1().hex,
+            text=form.data['text']
+            )
+        for person_id in form.data['people']:
+            person = Person.query.filter_by(id=person_id).first()
+            legend.participants.append(person)
+        db.session.add(legend)
+        db.session.commit()
+        return redirect(url_for('main.index'))
+    else:
+        return render_template('new_legend.html', form=form)
+
 
 @main.route('/person/new', methods=['GET', 'POST'])
 @login_required
@@ -152,11 +176,11 @@ def newperson():
         ava = None
         person = make_person(form, user, ava)
         if new_user:
-           user.person_id = person.id
-#           user.city = form.data['city']
-           user.is_new = False
+            user.person_id = person.id
+#            user.city = form.data['city']
+            user.is_new = False
         # We need to first commit a person and then add a user,
-        # otherwise sqlalchemy will scream that a person with the given id 
+        # otherwise sqlalchemy will scream that a person with the given id
         # does not exist
         db.session.add(user)
         db.session.commit()

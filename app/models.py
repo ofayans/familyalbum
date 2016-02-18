@@ -41,44 +41,45 @@ country_dvellers = db.Table(
 #     db.Column("city_id", db.Unicode, db.ForeignKey('city.id')),
 #     db.Column("person_id", db.Unicode, db.ForeignKey('person.id'))
 #     )
-# 
+
 
 class Country(db.Model):
     __tablename__ = 'country'
-    id = db.Column(db.Unicode, primary_key = True, index = True)
+    id = db.Column(db.Unicode, primary_key=True, index=True)
     name = db.Column(db.Unicode)
 
 # class City(db.Model):
 #     __tablename__ = 'city'
 #     id = db.Column(db.Unicode, primary_key = True, index = True)
 #     name = db.Column(db.Unicode)
-# 
+#
 
 class Person(db.Model):
     __tablename__ = 'person'
-    id = db.Column(db.Unicode, primary_key = True, index = True)
+    id = db.Column(db.Unicode, primary_key=True, index=True)
     name = db.Column(db.Unicode)
     second_name = db.Column(db.Unicode)
     surname = db.Column(db.Unicode)
+    maiden_surname = db.Column(db.Unicode)
     sex = db.Column(db.Unicode)
     description = db.Column(db.Unicode)
     alive = db.Column(db.Boolean)
     b_date = db.Column(db.Date)
-    d_date = db.Column(db.Date, nullable = True)
+    d_date = db.Column(db.Date, nullable=True)
     user = db.relationship('User', backref='user_person')
     ava_id = db.Column(db.Unicode, db.ForeignKey('photo.id'), nullable=True)
     father_id = db.Column(db.Unicode, db.ForeignKey('person.id'), nullable=True)
     mother_id = db.Column(db.Unicode, db.ForeignKey('person.id'), nullable=True)
-    father = db.relationship('Person', remote_side=id, lazy='joined', join_depth=3,
-                             foreign_keys=[father_id],
+    father = db.relationship('Person', remote_side=id, lazy='joined',
+                             join_depth=3, foreign_keys=[father_id],
                              backref='fathers_children')
-    mother = db.relationship('Person', remote_side=id, lazy='joined', join_depth=3,
-                             foreign_keys=[mother_id],
+    mother = db.relationship('Person', remote_side=id, lazy='joined',
+                             join_depth=3, foreign_keys=[mother_id],
                              backref='mothers_children')
     countries = db.relationship(
         "Country",
-        secondary = country_dvellers,
-        backref = "country_inhabitants"
+        secondary=country_dvellers,
+        backref="country_inhabitants"
     )
 #     cities = db.relationship(
 #         "City",
@@ -87,30 +88,41 @@ class Person(db.Model):
 #     )
     legends = db.relationship(
         "Legend",
-        secondary = legend_participants,
-        backref = "legend_participants"
+        secondary=legend_participants,
+        backref="legend_participants"
     )
     photos = db.relationship(
         "Photo",
-        secondary = photo_participants,
-        backref = "photo_participants"
+        secondary=photo_participants,
+        backref="photo_participants"
     )
 
     families = db.relationship(
         "Family",
-        secondary = family_members,
-        backref = "relatives"
+        secondary=family_members,
+        backref="relatives"
     )
     spouses = db.relationship(
         "Person",
-        secondary = spouses,
-        foreign_keys = [
+        secondary=spouses,
+        foreign_keys=[
             spouses.c.leftspouse_id,
             spouses.c.rightspouse_id
             ],
-        primaryjoin = spouses.c.leftspouse_id==id,
-        secondaryjoin = spouses.c.rightspouse_id==id
+        primaryjoin=spouses.c.leftspouse_id == id,
+        secondaryjoin=spouses.c.rightspouse_id == id
     )
+
+    def fullname(self):
+        result = [self.name]
+        if self.second_name:
+            result.append(self.second_name)
+        if self.maiden_surname:
+            lastname = "%s(%s)" % (self.surname, self.maiden_surname)
+        else:
+            lastname = self.surname
+        result.append(lastname)
+        return " ".join(result)
 
     def years_of_life(self):
         if self.alive:
@@ -128,11 +140,12 @@ class Person(db.Model):
 
 class Legend(db.Model):
     __tablename__ = 'legend'
-    id = db.Column(db.Unicode, primary_key = True, index = True)
+    id = db.Column(db.Unicode, primary_key=True, index=True)
     text = db.Column(db.UnicodeText)
     participants = db.relationship("Person",
-                                secondary = legend_participants,
-                                backref = "person_legends")
+                                   secondary=legend_participants,
+                                   backref="person_legends")
+
 
 class Photo(db.Model):
     __tablename__ = 'photo'
@@ -140,11 +153,12 @@ class Photo(db.Model):
     description = db.Column(db.UnicodeText)
     people = db.relationship(
         "Person",
-        secondary = photo_participants,
-        backref = "people_on_photo"
+        secondary=photo_participants,
+        backref="people_on_photo"
         )
     path = db.Column(db.Unicode)
-      
+
+
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Unicode, primary_key=True, index=True)
@@ -259,6 +273,7 @@ class Family(db.Model):
         secondary=family_members,
         backref='clans'
         )
+
 
 @login_manager.user_loader
 def load_user(user_id):

@@ -7,15 +7,20 @@ from .. import country_choices, sex_choices
 
 country_choices.pop(0)
 
+
 class GenericPersonForm(Form):
     avatar = wtforms.FileField('Avatar')
     city = wtforms.StringField('City', validators=[Optional()])
     description = wtforms.TextAreaField('Description')
 
+
 class PersonForm(GenericPersonForm):
     name = wtforms.StringField('Name?', validators=[Required()])
     second_name = wtforms.StringField('Second name?')
     surname = wtforms.StringField('Surname?', validators=[Required()])
+    maiden_surname = wtforms.StringField('Maiden surname (if applicable)',
+                                         validators=[Optional()])
+
     sex = wtforms.SelectField('Sex',
                               choices=sex_choices,
                               validators=[Required()])
@@ -35,8 +40,16 @@ class PersonForm(GenericPersonForm):
     d_date = DateField('Date of death', validators=[Optional()])
     submit = wtforms.SubmitField('Save')
 
+
 class AboutMeForm(GenericPersonForm):
     country = wtforms.SelectMultipleField("Countries you lived in",
                                           choices=country_choices,
                                           validators=[Optional()])
+    submit = wtforms.SubmitField('Save')
+
+
+class LegendForm(Form):
+    text = wtforms.TextAreaField('Legend text', validators=[Required()])
+    people = wtforms.SelectMultipleField('People involved',
+                                         validators=[Required()])
     submit = wtforms.SubmitField('Save')

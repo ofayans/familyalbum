@@ -11,36 +11,35 @@ def make_person(form, user, person=None):
     countries = set()
     if form.data['avatar']:
         ava_id = uuid.uuid1().hex
-        new_filename = ava_id
+        new_filename = ava_id + form.data['avatar'].filename
         ava_path = os.path.join(current_app.config['MEDIA_FOLDER'], 'photos', new_filename)
         form.data['avatar'].save(ava_path)
-        ava = Photo(
-                id = ava_id,
-                path = ava_path
-                )
+        ava = Photo(id=ava_id,
+                    path=ava_path)
         db.session.add(ava)
         db.session.commit()
     if user.is_new:
         person = Person(
-            id = uuid.uuid1().hex,
-            surname = user.surname,
-            name = user.name,
-            second_name = user.second_name,
-            sex = user.sex,
-            b_date = user.b_date,
+            id=uuid.uuid1().hex,
+            surname=user.surname,
+            name=user.name,
+            second_name=user.second_name,
+            sex=user.sex,
+            b_date=user.b_date,
 #            city = form.data['city'],
             )
         countries.add(Country.query.filter_by(id=user.country_id).first())
 
     else:
         person = person or Person(
-            id = uuid.uuid1().hex,
-            surname = form.data['surname'],
-            name = form.data['name'],
-            second_name = form.data['second_name'],
-            sex = dict(form.sex.choices)[form.data['sex']],
-            b_date = form.data['b_date'],
-#            city = form.data['city'],
+            id=uuid.uuid1().hex,
+            surname=form.data['surname'],
+            maiden_surname=form.data['maiden_surname'],
+            name=form.data['name'],
+            second_name=form.data['second_name'],
+            sex=dict(form.sex.choices)[form.data['sex']],
+            b_date=form.data['b_date'],
+#            city=form.data['city'],
             )
         if form.data['mother']:
             person.mother_id = form.data['mother']
@@ -51,7 +50,7 @@ def make_person(form, user, person=None):
         country = Country.query.filter_by(id=country_id).first()
         countries.add(country)
     person.countries = list(countries)
-    if not 'alive' in form.data.keys():
+    if 'alive' not in form.data.keys():
         person.alive = True
     else:
         person.alive = form.data['alive']
@@ -83,17 +82,21 @@ def make_person(form, user, person=None):
     return person
 
 
-def populate_dropdowns(form, person=None):
+def populate_relatives(person=None):
     relatives = []
     for dude in g.families[0].members:
         if person and dude.id == person.id:
             continue
-        
         relatives.append((dude.id, "%s %s" % (dude.name, dude.surname)))
-    mother_choices = [('', 'Please select his/her mother if we already have her')] 
+    return relatives
+
+
+def populate_dropdowns(form, person=None):
+    relatives = populate_relatives(person)
+    mother_choices = [('', 'Please select his/her mother if we already have her')]
     father_choices = [('', 'Please select his/her father if we already have him')]
     spouse_choices = [('', 'Please select his/her spouse if we already have him')]
-    children_choices= [('', 'Please select his/her children')]
+    children_choices = [('', 'Please select his/her children')]
     mother_choices += relatives
     father_choices += relatives
     children_choices += relatives
@@ -103,8 +106,6 @@ def populate_dropdowns(form, person=None):
     form.spouse.choices = spouse_choices
     form.children.choices = children_choices
     if person:
-        # City
-#        form.city.default = person.city
         # Description
         form.description.default = person.description
         # Name
@@ -143,11 +144,13 @@ def populate_dropdowns(form, person=None):
         form.process()
     return form
 
+
 def age_user(user):
     person = Person.query.filter_by(id=user.id)
 
+
 def new_family(person):
-    family = Family(id = uuid.uuid1().hex)
+    family = Family(id=uuid.uuid1().hex)
     family.relatives.append(person)
     family.creator_id = person.user[0].id
     db.session.add(family)

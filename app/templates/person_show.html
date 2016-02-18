@@ -5,8 +5,23 @@
 </div>
 {% if person.ava_id %}
     <div class"avatar">
+        <a href="{{ url_for('main.show_photo',
+       photo_id=person.ava_id)}}" target="_blank">
        <img src="{{ url_for('main.show_photo',
-       photo_id=person.ava_id)}}">
+       photo_id=person.ava_id)|thumbnail('400x400')}}"></a>
     </div>
 {% endif %}
+<div class="yearsoflife">
+    {{ person.years_of_life() }}
+</div>
+{% if person.description %}
+    <div class="person_description">
+        <p>{{  person.description }}</p>
+    </div>
+{% endif %}
+{% for legend in person.legends %}
+<div class="legend_header">
+
+</div>
+{% endfor %}
 {% endblock %}

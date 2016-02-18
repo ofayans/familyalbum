@@ -25,6 +25,7 @@ login_manager.login_view = 'auth.login'
 country_choices = [('', 'Please, select a country')]
 sex_choices = [('', ''), ('1', 'male'), ('2', 'female')]
 
+
 class MyView(MethodView):
 
     def get(self):
@@ -33,11 +34,11 @@ class MyView(MethodView):
     def post(self):
         method = request.form.get('_method', 'POST')
         if 'edit' in request.path:
-            return jsonify({'method':'PATCH'})
+            return jsonify({'method': 'PATCH'})
         elif method == 'POST':
-            return jsonify({'method':method})
+            return jsonify({'method': method})
         else:
-            if hasattr(self, method.lower()):            
+            if hasattr(self, method.lower()):
                 return getattr(self, method.lower())()
             else:
                 return jsonify({'method': 'UNKNOWN'})
@@ -51,7 +52,6 @@ class MyView(MethodView):
     def create(self):
         # NOT A HTTP VERB
         return jsonify({'method': 'CREATE'})
-
 
 
 def create_app(config_name):
@@ -88,4 +88,3 @@ def create_app(config_name):
 #     app.register_blueprint(api_1_0_blueprint, url_prefix='/api/v1.0')
 #     from .models import Country
     return app
-

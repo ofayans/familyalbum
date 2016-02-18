@@ -17,8 +17,7 @@
                     <img class="avatar" src="{{ url_for('main.show_photo',
                     photo_id=person.ava_id)|thumbnail('200x200') }}"/>
                 {% endif %}
-                <a href="{{ url_for('main.mypage', person_id=person.id) }}">{{ person.name }} {{ person.surname }} {{
-                person.years_of_life() }}
+                <a href="{{ url_for('main.mypage', person_id=person.id) }}">{{ person.fullname() }} {{ person.years_of_life() }}
             </div>
         {% endif %}
     {% endfor %}

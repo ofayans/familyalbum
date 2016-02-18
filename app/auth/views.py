@@ -11,10 +11,12 @@ import uuid
 from sqlalchemy import and_
 from flask import g, _request_ctx_stack
 
+
 def next_is_valid(url):
     # A placeholder for a function that will validate "next" parameter of the
     # request. see https://flask-login.readthedocs.org/en/latest/#login-example
     return True
+
 
 @auth.before_app_request
 def before_request():
@@ -23,7 +25,7 @@ def before_request():
         g.user = current_user
         g.person = Person.query.filter_by(id=g.user.person_id).first()
         if g.person:
-            g.families = g.person.families 
+            g.families = g.person.families
             g.num_of_families = len(g.families)
         if not current_user.confirmed \
                 and request.endpoint[:5] != 'auth.' \
@@ -76,15 +78,15 @@ def logout():
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():
-        user = User(id = uuid.uuid1().hex,
-                    email = form.email.data,
-                    password = form.password.data,
-                    name = form.name.data,
-                    second_name = form.second_name.data,
-                    surname = form.surname.data,
-                    sex = dict(form.sex.choices)[form.data['sex']],
-                    b_date = form.b_date.data,
-                    country_id = form.country.data
+        user = User(id=uuid.uuid1().hex,
+                    email=form.email.data,
+                    password=form.password.data,
+                    name=form.name.data,
+                    second_name=form.second_name.data,
+                    surname=form.surname.data,
+                    sex=dict(form.sex.choices)[form.data['sex']],
+                    b_date=form.b_date.data,
+                    country_id=form.country.data
                     )
         db.session.add(user)
         db.session.commit()

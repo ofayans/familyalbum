@@ -18,7 +18,7 @@ class LoginForm(Form):
 
 class RegistrationForm(Form):
     email = StringField('Email', validators=[Required(), Length(1, 64),
-                                           Email()])
+                        Email()])
     name = StringField('Name?', validators=[Required()])
     second_name = StringField('Second name?')
     surname = StringField('Surname?', validators=[Required()])
