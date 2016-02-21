@@ -4,6 +4,7 @@ import os
 import uuid
 from ..models import Legend, Photo, Person, User, Family, Country
 from .. import db
+from flask import url_for
 
 
 def make_person(form, user, person=None):
@@ -28,7 +29,6 @@ def make_person(form, user, person=None):
             b_date=user.b_date,
 #            city = form.data['city'],
             )
-        countries.add(Country.query.filter_by(id=user.country_id).first())
 
     else:
         person = person or Person(
@@ -62,7 +62,7 @@ def make_person(form, user, person=None):
     # Now let's save spouse
     db.session.add(person)
     db.session.commit()
-    if form.data['children']:
+    if 'children' in form.data.keys() and form.data['children']:
         for child_id in form.data['children']:
             child = Person.query.filter_by(id=child_id).first()
             if person.sex == 'male':
@@ -71,7 +71,7 @@ def make_person(form, user, person=None):
                 child.mother_id = person.id
             db.session.add(child)
         db.session.commit()
-    if form.data['spouse']:
+    if 'spouse' in form.data.keys() and form.data['spouse']:
         spouse = Person.query.filter_by(id=form.data['spouse']).first()
         person.spouses.append(spouse)
         spouse.spouses.append(person)
@@ -155,3 +155,36 @@ def new_family(person):
     family.creator_id = person.user[0].id
     db.session.add(family)
     db.session.commit()
+
+
+def descendats_tree(person_id):
+    result = {}
+    person = Person.query.filter_by(id=person_id).first()
+    result['fullname'] = person.fullname()
+    result['years_of_life'] = person.years_of_life()
+    if person.ava_id:
+        thumbnail_url = url_for('main.show_thumbnail', photo_id=person.ava_id)
+        result['avatar'] = "<img src=\"%s\">" % thumbnail_url
+    if person.sex == 'female':
+        children = person.mothers_children
+    else:
+        children = person.fathers_children
+    result['children'] = []
+    for child in children:
+        result['children'].append(descendats_tree(child.id))
+    return result
+
+
+def ancestor_tree(person_id):
+    result = {}
+    person = Person.query.filter_by(id=person_id).first()
+    result['fullname'] = person.fullname()
+    result['years_of_life'] = person.years_of_life()
+    if person.ava_id:
+        thumbnail_url = url_for('main.show_thumbnail', photo_id=person.ava_id)
+        result['avatar'] = "<img src=%s>" % thumbnail_url
+    if person.mother_id:
+        result['mother'] = ancestor_tree(person.mother_id)
+    if person.father_id:
+        result['father'] = ancestor_tree(person.father_id)
+    return result

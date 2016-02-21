@@ -21,7 +21,10 @@
 {% endif %}
 {% for legend in person.legends %}
 <div class="legend_header">
-
 </div>
 {% endfor %}
+<a href="{{ url_for('main.ancestortree', person_id=person.id) }}">show
+    ancestors</a>
+<a href="{{ url_for('main.descendanttree', person_id=person.id) }}">show
+    descendants</a>
 {% endblock %}

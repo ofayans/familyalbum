@@ -13,12 +13,13 @@ from flask.ext.login import login_required, current_user
 from . import main
 from .forms import PersonForm, AboutMeForm, LegendForm
 from .misc import populate_dropdowns, make_person, new_family
-from .misc import populate_relatives
+from .misc import populate_relatives, ancestor_tree, descendats_tree
 from .. import db
 from ..models import Legend, Photo, Person, User, Family, Country
 import uuid
 from sqlalchemy import and_
 import os
+import json
 
 
 @main.context_processor
@@ -51,9 +52,10 @@ def show_photo(photo_id):
 @login_required
 def show_thumbnail(photo_id):
     folder = os.path.join(current_app.config['MEDIA_THUMBNAIL_FOLDER'], 'photos')
-    path = os.path.join(folder, photo_id)
+    filename = photo_id + "_200x200_85"
+    path = os.path.join(folder, filename)
     if os.path.exists(path):
-        return send_from_directory(folder, photo_id)
+        return send_from_directory(folder, filename)
     else:
         return abort(404)
 
@@ -87,6 +89,20 @@ def search_for_relatives(person_id):
 @main.route('/')
 def index():
     return render_template('index.html')
+
+
+@main.route('/ancestortree/<person_id>')
+@login_required
+def ancestortree(person_id):
+    person = Person.query.filter_by(id=person_id).first()
+    return json.dumps(ancestor_tree(person_id), ensure_ascii=False)
+
+
+@main.route('/descendanttree/<person_id>')
+@login_required
+def descendanttree(person_id):
+    person = Person.query.filter_by(id=person_id).first()
+    return json.dumps(descendats_tree(person_id), ensure_ascii=False)
 
 
 @main.route('/youmightbe/<user_id>')
