@@ -13,7 +13,7 @@ from flask.ext.login import login_required, current_user
 from . import main
 from .forms import PersonForm, AboutMeForm, LegendForm
 from .misc import populate_dropdowns, make_person, new_family
-from .misc import populate_relatives, ancestor_tree, descendats_tree
+from .misc import populate_relatives, ancestor_tree, descendants_tree
 from .. import db
 from ..models import Legend, Photo, Person, User, Family, Country
 import uuid
@@ -91,18 +91,31 @@ def index():
     return render_template('index.html')
 
 
+@main.route('/ancestors/display/<person_id>')
+@login_required
+def ancestordisplay(person_id):
+    person = Person.query.filter_by(id=person_id)
+    result = json.dumps(ancestor_tree(person_id), ensure_ascii=False)
+    return render_template('ancestor_show.html', person=person, output=result)
+
+
+@main.route('/descendants/display/<person_id>')
+@login_required
+def descendantdisplay(person_id):
+    result = json.dumps(descendants_tree(person_id), ensure_ascii=False)
+    return render_template('ancestor_show.html', output=result)
+
+
 @main.route('/ancestortree/<person_id>')
 @login_required
 def ancestortree(person_id):
-    person = Person.query.filter_by(id=person_id).first()
     return json.dumps(ancestor_tree(person_id), ensure_ascii=False)
 
 
 @main.route('/descendanttree/<person_id>')
 @login_required
 def descendanttree(person_id):
-    person = Person.query.filter_by(id=person_id).first()
-    return json.dumps(descendats_tree(person_id), ensure_ascii=False)
+    return json.dumps(descendants_tree(person_id), ensure_ascii=False)
 
 
 @main.route('/youmightbe/<user_id>')

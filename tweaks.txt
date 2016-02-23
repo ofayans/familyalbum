@@ -1,2 +1,3 @@
-1. If thumbnailing library throws permission denied error, do the following: In lib/python3.4/site-packages import re and insert the following in line 45:
+1. If thumbnailing library throws permission denied error, do the following: In
+lib/python3.4/site-packages/flask_thumbnails/__init__.py import re and insert the following in line 45:
 img_url = re.sub('^/', '', img_url)
