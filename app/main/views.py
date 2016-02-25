@@ -20,6 +20,7 @@ import uuid
 from sqlalchemy import and_
 import os
 import json
+import re
 
 
 @main.context_processor
@@ -94,28 +95,30 @@ def index():
 @main.route('/ancestors/display/<person_id>')
 @login_required
 def ancestordisplay(person_id):
-    person = Person.query.filter_by(id=person_id)
-    result = json.dumps(ancestor_tree(person_id), ensure_ascii=False)
-    return render_template('ancestor_show.html', person=person, output=result)
+    return render_template('ancestor_show.html', person_id=person_id)
 
 
 @main.route('/descendants/display/<person_id>')
 @login_required
 def descendantdisplay(person_id):
-    result = json.dumps(descendants_tree(person_id), ensure_ascii=False)
-    return render_template('ancestor_show.html', output=result)
+    return render_template('descendant_show.html', person_id=person_id)
 
 
-@main.route('/ancestortree/<person_id>')
+@main.route('/ancestortree/<person_id>.js')
 @login_required
 def ancestortree(person_id):
-    return json.dumps(ancestor_tree(person_id), ensure_ascii=False)
+    result = json.dumps(ancestor_tree(person_id), ensure_ascii=False)
+    fixed_result = re.sub(r'"(?P<key>.*?)":', r'\g<key>:', result)
+    return "var chart_config = %s" % fixed_result
 
 
-@main.route('/descendanttree/<person_id>')
+@main.route('/descendanttree/<person_id>.js')
 @login_required
 def descendanttree(person_id):
-    return json.dumps(descendants_tree(person_id), ensure_ascii=False)
+    result = json.dumps(descendants_tree(person_id), ensure_ascii=False,
+                        indent=4)
+    fixed_result = re.sub(r'"(?P<key>.*?)":', r'\g<key>:', result)
+    return "var chart_config = %s ;" % fixed_result
 
 
 @main.route('/youmightbe/<user_id>')

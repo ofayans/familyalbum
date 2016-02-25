@@ -23,7 +23,7 @@
 <div class="legend_header">
 </div>
 {% endfor %}
-<a href="{{ url_for('main.ancestortree', person_id=person.id) }}">show
+<a href="{{ url_for('main.ancestordisplay', person_id=person.id) }}">show
     ancestors</a>
 <a href="{{ url_for('main.descendantdisplay', person_id=person.id) }}">show
     descendants</a>
