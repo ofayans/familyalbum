@@ -1,2 +1,0 @@
-CREATE ROLE JAmesB0nd LOGIN PASSWORD 'Y0unevergueS$';
-CREATE DATABASE familyalbum_dev OWNER JAmesB0nd ;

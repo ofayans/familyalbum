@@ -11,9 +11,10 @@ RUN initdb /var/lib/pgsql/data
 # Configure postgres
 RUN echo "host all all 0.0.0.0/0 md5" >> /var/lib/pgsql/data/pg_hba.conf
 RUN echo "listen_addresses = '*'" >> /var/lib/pgsql/data/postgresql.conf
-ADD create_db.sql /var/lib/pgsql/create_db.sql
+ADD create_role.sql /var/lib/pgsql/create_role.sql
 ADD db_backup.sql /var/lib/pgsql/db_backup.sql
 WORKDIR /var/lib/pgsql
 USER root
+ENV PGPASSWORD='Y0unevergueS$'
 EXPOSE 22 5432
 CMD /root/step2.sh
