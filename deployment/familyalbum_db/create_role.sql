@@ -1,0 +1,3 @@
+CREATE ROLE JAmesB0nd LOGIN CREATEDB PASSWORD 'Y0unevergueS$';
+CREATE DATABASE familyalbum_dev OWNER JAmesB0nd ;
+GRANT ALL ON DATABASE familyalbum_dev TO JAmesB0nd ;
