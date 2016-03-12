@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="person_name">
-    <h2>{{ person.name }} {{person.surname}}</h2>
+    <h2>{{ person.fullname() }}</h2>
 </div>
 {% if person.ava_id %}
     <div class"avatar">

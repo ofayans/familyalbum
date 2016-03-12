@@ -5,7 +5,27 @@
 <H2>Hi, {{current_user.name}}! A new relative? Or an old one, but suddenly raised
   from oblivion? Save all you know about this person, so that not to forget!<H2>
 
-{% import "bootstrap/wtf.html" as wtf %}
-{{ wtf.quick_form(form) }} 
+<form action="#" method="POST">
+{{ form.hidden_tag() }}
+{{ form.csrf_token }}
 
+<div class="formfield">{{ form.avatar.label }}{{ form.avatar }}</div>
+<div class="formfield">{{ form.name.label }} {{ form.name }}</div>
+<div class="formfield">{{ form.second_name.label }}{{ form.second_name }}</div>
+<div class="formfield">{{ form.surname.label }}{{ form.surname }}</div>
+<div class="formfield">{{ form.maiden_surname.label }}{{ form.maiden_surname }}</div>
+<div class="formfield">{{ form.sex.label }}{{ form.sex }}</div>
+<div class="formfield">{{ form.description.label }}{{ form.description }}</div>
+<div class="formfield">{{ form.country.label }}{{ form.country }}</div>
+<div class="formfield">{{ form.mother.label }}{{ form.mother }}</div>
+<div class="formfield">{{ form.father.label }}{{ form.father }}</div>
+<div class="formfield">{{ form.spouse.label }}{{ form.spouse }}</div>
+<div class="formfield">{{ form.children.label }}{{ form.children }}</div>
+<div class="formfield">{{ form.b_date.label }}{{ form.b_date }}</div>
+<div class="formfield">{{ form.alive.label }}{{ form.alive }}</div>
+<div class="formfield">{{ form.d_date.label }}{{ form.d_date }}</div>
+<div class="formfield">{{ form.submit.label }}{{ form.submit }}</div>
+
+
+</form>
 {% endblock %}

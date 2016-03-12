@@ -10,6 +10,9 @@ class Config(object):
     MEDIA_THUMBNAIL_FOLDER = os.environ['MEDIA_THUMBNAIL_FOLDER']
     MEDIA_URL = ''
     MEDIA_THUMBNAIL_URL = '/cache/'
+    SESSION_PROTECTION = 'basic'
+    UPLOADED_FILES_DEST = os.environ['MEDIA_FOLDER']
+    UPLOADS_DEFAULT_DEST = os.environ['MEDIA_FOLDER']
 
 class ProductionConfig(Config):
     DEBUG = False

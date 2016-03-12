@@ -7,7 +7,6 @@ from .. import country_choices, sex_choices
 
 country_choices.pop(0)
 
-
 class GenericPersonForm(Form):
     avatar = wtforms.FileField('Avatar')
     city = wtforms.StringField('City', validators=[Optional()])

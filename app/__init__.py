@@ -10,7 +10,8 @@ from config import StagingConfig, TestingConfig
 from flask.ext.thumbnails import Thumbnail
 from .middleware import HTTPMethodOverrideMiddleware
 from flask.views import MethodView
-
+from flask_wtf.csrf import CsrfProtect
+from flask_uploads import UploadSet, configure_uploads
 
 bootstrap = Bootstrap()
 mail = Mail()
@@ -58,14 +59,23 @@ def create_app(config_name):
     global country_choices
     app = Flask(__name__)
     app.config.from_object(eval(config_name))
+    csrf = CsrfProtect()
+    csrf.init_app(app)
 #    app.wsgi_app = HTTPMethodOverrideMiddleware(app.wsgi_app)
     bootstrap.init_app(app)
     mail.init_app(app)
     moment.init_app(app)
     db.init_app(app)
     login_manager.init_app(app)
+    login_manager.session_protection = 'basic'
     pagedown.init_app(app)
     thumb = Thumbnail(app)
+    photos = UploadSet('photos', IMAGES)
+    media = UploadSet('media', default_dest=lambda app: app.instance_root)
+    configure_uploads(app, (photos, media))
+    # Limit the upload size. To change this refer to 
+    # https://pythonhosted.org/Flask-Uploads/
+    patch_request_class(app)
 
     if not app.debug and not app.testing and not app.config['SSL_DISABLE']:
         from flask.ext.sslify import SSLify

@@ -12,7 +12,7 @@ def make_person(form, user, person=None):
     countries = set()
     if form.data['avatar']:
         ava_id = uuid.uuid1().hex
-        new_filename = ava_id + form.data['avatar'].filename
+        new_filename = ava_id + form.data['avatar']
         ava_path = os.path.join(current_app.config['MEDIA_FOLDER'], 'photos', new_filename)
         form.data['avatar'].save(ava_path)
         ava = Photo(id=ava_id,
@@ -32,15 +32,16 @@ def make_person(form, user, person=None):
 
     else:
         person = person or Person(
-            id=uuid.uuid1().hex,
-            surname=form.data['surname'],
-            maiden_surname=form.data['maiden_surname'],
-            name=form.data['name'],
-            second_name=form.data['second_name'],
-            sex=dict(form.sex.choices)[form.data['sex']],
-            b_date=form.data['b_date'],
-#            city=form.data['city'],
-            )
+            id=uuid.uuid1().hex)
+        if form.data['surname']:
+            person.surname = form.data['surname']
+        surname=form.data['surname'],
+        maiden_surname=form.data['maiden_surname'],
+        name=form.data['name'],
+        second_name=form.data['second_name'],
+        sex=dict(form.sex.choices)[form.data['sex']],
+        b_date=form.data['b_date'],
+#            city=form.data['city']
         if form.data['mother']:
             person.mother_id = form.data['mother']
         if form.data['father']:
@@ -71,7 +72,7 @@ def make_person(form, user, person=None):
                 child.mother_id = person.id
             db.session.add(child)
         db.session.commit()
-    if 'spouse' in form.data.keys() and form.data['spouse']:
+    if 'spouse' in form.data.keys() and eval(form.data['spouse']):
         spouse = Person.query.filter_by(id=form.data['spouse']).first()
         person.spouses.append(spouse)
         spouse.spouses.append(person)
@@ -105,43 +106,43 @@ def populate_dropdowns(form, person=None):
     form.father.choices = father_choices
     form.spouse.choices = spouse_choices
     form.children.choices = children_choices
-    if person:
-        # Description
-        form.description.default = person.description
-        # Name
-        form.name.default = person.name
-        # Second_name
-        form.second_name.default = person.second_name
-        # Surname
-        form.surname.default = person.surname
-        # sex
-        for key, value in form.sex.choices:
-            if value == person.sex:
-                form.sex.default = key
-        # Country
-        country_ids = []
-        for country in person.countries:
-            country_ids.append(country.id)
-        form.country.default = country_ids
-        # Mother
-        form.mother.default = person.mother_id
-        # Father
-        form.father.default = person.father_id
-        # Spouse
-        if person.spouses:
-            form.spouse.default = person.spouses[-1].id
-        # Children
-        children_ids = []
-        if person.sex == 'male':
-            children = person.fathers_children
-        else:
-            children = person.mothers_children
-        for child in children:
-            children_ids.append(child.id)
-        form.children.default = children_ids
-        # Birthday
-        form.b_date.default = person.b_date
-        form.process()
+#     if person:
+#          # Description
+#          form.description.data = person.description
+#          # Name
+#          form.name.data = person.name
+#          # Second_name
+#          form.second_name.data = person.second_name
+#          # Surname
+#          form.surname.data = person.surname
+#          # sex
+#          for key, value in form.sex.choices:
+#              if value == person.sex:
+#                  form.sex.data = key
+#          # Country
+#          country_ids = []
+#          for country in person.countries:
+#              country_ids.append(country.id)
+#          form.country.data = country_ids
+#          # Mother
+#          form.mother.data = person.mother_id
+#          # Father
+#          form.father.data = person.father_id
+#          # Spouse
+#          if person.spouses:
+#              form.spouse.data = person.spouses[-1].id
+#          # Children
+#          children_ids = []
+#          if person.sex == 'male':
+#              children = person.fathers_children
+#          else:
+#              children = person.mothers_children
+#          for child in children:
+#              children_ids.append(child.id)
+#          form.children.data = children_ids
+#          # Birthday
+#          form.b_date.data = person.b_date
+#          form.process()
     return form
 
 
@@ -167,10 +168,11 @@ def _descendants_tree(person_id):
     result = {}
     result["text"] = {"fullname" : person.fullname(),
                       "years_of_life": person.years_of_life()}
+    result["link"] = url_for('main.mypage', person_id=person_id)
     result["stackChildren"] = True
     if person.ava_id:
         thumbnail_url = url_for("main.show_thumbnail", photo_id=person.ava_id)
-        result["image"] = "<img src=\"%s\">" % thumbnail_url
+        result["image"] = thumbnail_url
     if person.sex == "female":
         children = person.mothers_children
     else:
@@ -181,8 +183,8 @@ def _descendants_tree(person_id):
     return result
 
 def descendants_tree(person_id):
-    default_chart["nodeStructure"] = _descendants_tree(person_id)
-    return {"chart": default_chart}
+    return {"chart": default_chart, "nodeStructure":
+            _descendants_tree(person_id)}
 
 
 def ancestor_tree(person_id):

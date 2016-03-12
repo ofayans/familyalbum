@@ -21,7 +21,7 @@ from sqlalchemy import and_
 import os
 import json
 import re
-
+from app import photos
 
 @main.context_processor
 def familize():
@@ -104,19 +104,27 @@ def descendantdisplay(person_id):
     return render_template('descendant_show.html', person_id=person_id)
 
 
+@main.route('/treantexample')
+def treantexample():
+    return render_template('treant_example.html')
+
+
 @main.route('/ancestortree/<person_id>.js')
 @login_required
 def ancestortree(person_id):
-    result = json.dumps(ancestor_tree(person_id), ensure_ascii=False)
+    result = json.dumps(ancestor_tree(person_id), ensure_ascii=False,
+                        sort_keys=True)
     fixed_result = re.sub(r'"(?P<key>.*?)":', r'\g<key>:', result)
     return "var chart_config = %s" % fixed_result
+
+
 
 
 @main.route('/descendanttree/<person_id>.js')
 @login_required
 def descendanttree(person_id):
     result = json.dumps(descendants_tree(person_id), ensure_ascii=False,
-                        indent=4)
+                        indent=4, sort_keys=True)
     fixed_result = re.sub(r'"(?P<key>.*?)":', r'\g<key>:', result)
     return "var chart_config = %s ;" % fixed_result
 
@@ -169,6 +177,7 @@ def edit_person(person_id):
     form = populate_dropdowns(form, person)
     if form.validate_on_submit():
         make_person(form, current_user, person)
+        return redirect('main.index')
     return render_template('new_person.html', form=form)
 
 
@@ -205,8 +214,7 @@ def newperson():
         form = PersonForm()
         form = populate_dropdowns(form)
     if form.validate_on_submit():
-        ava = None
-        person = make_person(form, user, ava)
+        person = make_person(form, user)
         if new_user:
             user.person_id = person.id
 #            user.city = form.data['city']
@@ -224,4 +232,5 @@ def newperson():
     if new_user:
         return render_template('about_me.html', form=form, user=user)
     else:
-        return render_template('new_person.html', form=form, user=user)
+        return render_template('new_person.html', form=form, user=user,
+                               action=url_for('main.newperson'))
