@@ -12,6 +12,13 @@ RUN git config --global user.email "ofajans@gmail.com"
 RUN git config --global user.name "Oleg Fayans"
 RUN git clone git@github.com:ofayans/familyalbum.git
 WORKDIR /root/familyalbum
+ENV PGPASSWORD='Y0unevergueS$'
+ENV APP_SETTINGS='config.DevelopmentConfig'
+ENV DATABASE_URL="postgresql://JAmesB0nd:$PGPASSWORD@localhost/familyalbum_dev"
+ENV MEDIA_FOLDER="/data"
+ENV MEDIA_THUMBNAIL_FOLDER="/data/thumbnails"
+ENV FAMILYALBUM_SECRET_KEY='U neveR gues$'
+VOLUME /data
 RUN pip3 install -r requirements.txt
-ENTRYPOINT ["/root/step2.sh"]
-EXPOSE 22
+EXPOSE 22 5000
+CMD root/step2.sh

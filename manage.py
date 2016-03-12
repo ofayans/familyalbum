@@ -1,4 +1,4 @@
-#!/home/ofayans/familyalbum/bin/python
+#!/usr/bin/env python3
 from flask.ext.script import Manager
 from flask.ext.migrate import Migrate, MigrateCommand
 import os
