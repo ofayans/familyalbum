@@ -1,6 +1,6 @@
 FROM fedora:latest
 RUN dnf install -y python3 python3-devel postgresql-devel git openssh-server \ 
-tar vim python3-pip gcc python3-pillow redhat-rpm-config
+tar vim python3-pip gcc python3-pillow redhat-rpm-config iproute telnet
 RUN ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key
 RUN sed -ir 's/.*ssh_host_ecdsa_key//' /etc/ssh/sshd_config
 ADD .ssh /root/.ssh
@@ -12,13 +12,7 @@ RUN git config --global user.email "ofajans@gmail.com"
 RUN git config --global user.name "Oleg Fayans"
 RUN git clone git@github.com:ofayans/familyalbum.git
 WORKDIR /root/familyalbum
-ENV PGPASSWORD='Y0unevergueS$'
-ENV APP_SETTINGS='config.DevelopmentConfig'
-ENV DATABASE_URL="postgresql://JAmesB0nd:$PGPASSWORD@localhost/familyalbum_dev"
-ENV MEDIA_FOLDER="/data"
-ENV MEDIA_THUMBNAIL_FOLDER="/data/thumbnails"
-ENV FAMILYALBUM_SECRET_KEY='U neveR gues$'
 VOLUME /data
 RUN pip3 install -r requirements.txt
 EXPOSE 22 5000
-CMD root/step2.sh
+CMD /root/step2.sh
