@@ -1,0 +1,5 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhist_cnt =3
+let g:netrw_dirhist_1='/home/ofayans/work/trololo/cucushift/features'
+let g:netrw_dirhist_2='/home/ofayans/work/trololo/cucushift/features/client'
+let g:netrw_dirhist_3='/home/ofayans/work/trololo/cucushift/features/step_definitions'

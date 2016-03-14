@@ -1,0 +1,15 @@
+:skeletonVIM_FILE_NAME:
+  :pages:
+    - "skeletonVIM_FILE_NAME_page"
+:skeletonVIM_FILE_NAME_page:
+  :url:
+  :expected_forms:
+    - "skeletonVIM_FILE_NAME_form"
+  :commit:
+    :type:
+    :selector:
+      :class:
+
+:skeletonVIM_FILE_NAME_form:
+  :expected_fields:
+

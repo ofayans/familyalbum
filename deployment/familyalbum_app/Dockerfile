@@ -7,6 +7,8 @@ ADD .ssh /root/.ssh
 ADD step2.sh /root/step2.sh
 RUN chmod 755 /root/step2.sh
 RUN chmod 600 /root/.ssh/ -R
+ADD .vim /root/.vim
+ADD .vimrc /root/.vimrc
 WORKDIR /root
 RUN git config --global user.email "ofajans@gmail.com"
 RUN git config --global user.name "Oleg Fayans"

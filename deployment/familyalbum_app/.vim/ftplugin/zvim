@@ -1,0 +1,13 @@
+#!/bin/sh
+
+VIM=gvim
+
+if [ -z "$DISPLAY" ]; then
+    VIM=vim
+fi
+
+if [ -n "$1" ]; then
+    $VIM --servername MAIN --remote-tab "$@"
+else
+    $VIM --serverlist | grep MAIN || gvim --servername MAIN 
+fi

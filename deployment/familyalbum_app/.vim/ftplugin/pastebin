@@ -1,0 +1,20 @@
+#!/bin/bash
+
+function read_from_pipe() {
+    read "$@" <&0;
+}
+#Username
+USER="mzimen"
+#Data retainment (d=1 day, m=1 month, f=forever)
+RETAIN="d"
+#Default Text type (too many to list)
+TEXT="None"
+#Default pastbin URL
+URL="http://pastebin.test.redhat.com/"
+
+while read input; do
+    CODE="$CODE
+    $input"
+done
+
+curl -v -i -d "code2=$CODE&paste=Send&expiry=$RETAIN&poster=$USER&format=$TEXT" $URL -s 2>&1 | grep -i Location:

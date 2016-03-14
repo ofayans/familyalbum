@@ -1,0 +1,438 @@
+source $HOME/.TCMS.creds
+source $HOME/.OPENSHIFT.creds
+
+export OPENSHIFT_rundir=$HOME/tmp/openshift 
+mkdir -p $OPENSHIFT_rundir
+export OSTEST_HOME=$HOME/src/ostest
+export OSTEST_BROKER=$(cat $HOME/.OPENSHIFT_INSTANCE)
+export OPENSHIFT__BROKER=$(cat $HOME/.OPENSHIFT_INSTANCE)
+
+function _rhc_credentials(){
+    echo " -l $OPENSHIFT_LOGIN -p $OPENSHIFT_PASSWORD "
+}
+
+#to disable logging into TCMS and DB (applied only for launcher.py)
+export RHTEST_ARGS=" -R  -G "
+export RHTEST_DEBUG=1
+
+alias _rhc_automation='cd $HOME/src/openshift_automation/'
+alias _rhc_domain_show='rhc domain show -k -l $OPENSHIFT_LOGIN -p $OPENSHIFT_PASSWORD'
+alias _rhc_app_create='rhc app create -k -l $OPENSHIFT_LOGIN -p $OPENSHIFT_PASSWORD'
+alias _rhc_app_create_php='rhc app create -k -t php-5.3 -a php -l $OPENSHIFT_LOGIN -p $OPENSHIFT_PASSWORD'
+alias _rhc_app_create_ruby19='rhc app create -k -t ruby-1.9 -a ruby19 -l $OPENSHIFT_LOGIN -p $OPENSHIFT_PASSWORD'
+alias _rhc_app_create_jenkins='rhc app create -t jenkins-1.4 -a jenkins -l $OPENSHIFT_LOGIN -p $OPENSHIFT_PASSWORD'
+alias _rhc_app_cartridge_add='rhc app cartridge add -l $OPENSHIFT_LOGIN -p $OPENSHIFT_PASSWORD'
+alias _rhc_app_cartridge_add_mongo='rhc app cartridge add -c mongodb-2.0 -l $OPENSHIFT_LOGIN -p $OPENSHIFT_PASSWORD'
+alias _rhc_app_cartridge_add_mysql='rhc app cartridge add -c mysql-5.1 -l $OPENSHIFT_LOGIN -p $OPENSHIFT_PASSWORD'
+alias _rhc_app_cartridge_add_psql='rhc app cartridge add -c postgresql-8.3 -l $OPENSHIFT_LOGIN -p $OPENSHIFT_PASSWORD'
+alias _rhc_app_cartridge_add_jenkins='rhc app cartridge add -c jenkins-client-1.4 -l $OPENSHIFT_LOGIN -p $OPENSHIFT_PASSWORD'
+alias _rhc_app_cartridge_remove='rhc app cartridge remove -l $OPENSHIFT_LOGIN -p $OPENSHIFT_PASSWORD'
+alias ssh='ssh -o StrictHostKeyChecking=no'
+
+
+function _rhc_get_app_gear(){
+    app=$1
+    ssh root@$(libra_server) <<EOF
+mongo << EOF2
+use openshift_broker_dev
+db.user.find({'name': "'$app'"})
+EOF2
+
+EOF
+}
+
+function _rhc_setup_domain(){
+    if [ -n "$1" ]; then
+        CONFIG_FILE=" --config $1 "
+    fi
+    export OPENSHIFT_domain_name="mz$(cat /dev/urandom | tr -cd 'a-f0-9' | head -c 10)"
+    old_namespace=$(_rhc_get_domain_name)
+    rhc domain create $CONFIG_FILE --insecure -n $OPENSHIFT_domain_name -p $OPENSHIFT_PASSWORD -l $OPENSHIFT_LOGIN 
+    if [ "$?" != "0" ]; then
+        echo "Trying to alter existing domain..."
+        rhc domain update old_namespace OPENSHIFT_domain_name $CONFIG_FILE  --insecure -p $OPENSHIFT_PASSWORD -l $OPENSHIFT_LOGIN
+    fi
+    rhc sshkey add default ~/.ssh/id_rsa.pub --insecure -l $OPENSHIFT_LOGIN -p $OPENSHIFT_PASSWORD
+    if [ $? -ne 0 ]; then
+      rhc sshkey delete default --insecure -l $OPENSHIFT_LOGIN -p $OPENSHIFT_PASSWORD
+      rhc sshkey add default ~/.ssh/id_rsa.pub --insecure -l $OPENSHIFT_LOGIN -p $OPENSHIFT_PASSWORD
+    fi
+}
+
+function get_random_str(){
+    LEN=10
+    [ -n "$1" ] && LEN=$1
+    echo "$(cat /dev/urandom | tr -cd 'a-f0-9' | head -c $LEN)"
+}
+
+function _rhc_random_email(){
+    echo "${OSTEST_USER_PREFIX}+$(cat /dev/urandom | tr -cd 'a-f0-9' | head -c 10)@redhat.com"
+}
+
+function _rhc_sync_my_dev_machine(){
+    pushd ~/src/li
+    build/devenv sync verifier --verbose
+    popd
+}
+
+function _rhc_run_multipli(){
+#1st arg is number of threads
+#the rest are arguments for ./launcher
+
+    num_threads=$1
+    args=($@)
+    unset args[0]
+    declare -a T
+    for i in `seq 0 $num_threads`;do
+        echo "[$i]"
+        mkdir -p $i
+        #(python $RHTEST_HOME/bin/launcher.py  $@ ) &
+        (cd $i; sleep 10; echo $i "$@") &
+        T+=($x)
+        sleep 30
+    done
+    wait "$T[*]"
+}
+
+function _rhc_setup_onpremise_instance(){
+    export OSTEST_BROKER=$OSTEST_BROKER_ONPREMISE
+    export OPENSHIFT_BROKER=$OSTEST_BROKER_ONPREMISE
+    _rhc_setup_openshift_broker $OSTEST_BROKER
+    echo $OSTEST_BROKER > ~/.OPENSHIFT_INSTANCE
+    _rhc_setup_onpremise_account
+    export OSTEST_ONPREMISE=1
+    unset OSTEST_ORIGIN
+    export OPENSHIFT_BROKER_TYPE="onpremise"
+    export OPENSHIFT_ACCOUNTS="$OPENSHIFT_LOGIN:$OPENSHIFT_PASSWORD:small"
+}
+
+function _rhc_setup_origin_instance_local(){
+    export OSTEST_BROKER=$OSTEST_BROKER_ORIGIN_LOCAL
+    export OPENSHIFT_BROKER=$OSTEST_BROKER_ORIGIN_LOCAL
+    _rhc_setup_openshift_broker $OSTEST_BROKER
+    echo $OSTEST_BROKER > ~/.OPENSHIFT_INSTANCE
+    _rhc_setup_origin_account_local
+    export OSTEST_ORIGIN=1
+    unset OSTEST_ONPREMISE
+    export OPENSHIFT_BROKER_TYPE="origin"
+    export OPENSHIFT_ACCOUNTS="$OPENSHIFT_LOGIN:$OPENSHIFT_PASSWORD:small"
+}
+
+function _rhc_setup_origin_instance(){
+    export OSTEST_BROKER=$OSTEST_BROKER_ORIGIN
+    export OPENSHIFT_BROKER=$OSTEST_BROKER_ORIGIN
+    _rhc_setup_openshift_broker $OSTEST_BROKER
+    echo $OSTEST_BROKER > ~/.OPENSHIFT_INSTANCE
+    _rhc_setup_origin_account
+    export OSTEST_ORIGIN=1
+    unset OSTEST_ONPREMISE
+    export OPENSHIFT_BROKER_TYPE="origin"
+    export OPENSHIFT_ACCOUNTS="$OPENSHIFT_LOGIN:$OPENSHIFT_PASSWORD:small"
+}
+
+function _rhc_setup_int_instance(){
+    export OSTEST_BROKER='int.openshift.redhat.com'
+    export OPENSHIFT_BROKER='int.openshift.redhat.com'
+    _rhc_setup_openshift_broker $OSTEST_BROKER
+    echo $OSTEST_BROKER > ~/.OPENSHIFT_INSTANCE
+    _rhc_setup_int_account
+    unset OSTEST_ORIGIN
+    unset OSTEST_ONPREMISE
+    export OPENSHIFT_BROKER_TYPE="int"
+    export OPENSHIFT_ACCOUNTS="$OPENSHIFT_LOGIN:$OPENSHIFT_PASSWORD:small"
+}
+
+function _rhc_setup_stg_instance(){
+    export OSTEST_BROKER='stg.openshift.redhat.com' 
+    export OPENSHIFT_BROKER='stg.openshift.redhat.com' 
+    _rhc_setup_openshift_broker $OSTEST_BROKER
+    echo $OSTEST_BROKER > ~/.OPENSHIFT_INSTANCE
+    _rhc_setup_stg_account
+    unset OSTEST_ORIGIN
+    unset OSTEST_ONPREMISE
+    export OPENSHIFT_BROKER_TYPE=stg
+    export OPENSHIFT_ACCOUNTS="$OPENSHIFT_LOGIN:$OPENSHIFT_PASSWORD:small"
+}
+
+function _rhc_setup_devenv_instance(){
+    pushd $OSTEST_HOME
+    export OPENSHIFT_BROKER_TYPE=devenv
+    OSTEST_HOME=$(pwd) ./bin/launch_instance.rb --tag QE_${OSTEST_USER_PREFIX}-dev  --client-setup
+    popd
+    ssh verifier facter |grep ec2_ami_id | awk '{print $3}' >$HOME/.DEVENV_BUILD_NUMBER
+    echo -e "\n**Now you should reload your environment and run 'setup_email'->'setup_domain'...\n"
+    #let's create a domain
+    _rhc_init_devenv_libra_server
+    unset OSTEST_ORIGIN
+    unset OSTEST_ONPREMISE
+    export OPENSHIFT_ACCOUNTS="$OPENSHIFT_LOGIN:$OPENSHIFT_PASSWORD:small"
+}
+
+function ssh2app(){
+    if [ -z "$1" ]; then
+        echo "Usage: ssh2app <app_name>"
+        return 2
+    fi
+
+    ssh_url=$(rhc domain show -l $OPENSHIFT_LOGIN -p $OPENSHIFT_PASSWORD | awk "BEGIN{start=0} /^$1 @ http/{start=1} /Git URL:/{if (start==1) {split(\$3, a,\"/\");url=a[3]; start=0}} END{print url}")
+
+    if [ -z "$ssh_url" ]; then
+        echo "ERROR: The application $1 doesn't exist"
+        return 2
+    fi
+
+    shift
+    ssh -t $ssh_url $@
+}
+
+
+function ssh2broker(){
+    ssh verifier
+}
+
+
+function rhtest_local(){
+    SCRIPT=${1//\//\.}
+    echo $SCRIPT
+    #libra_server > /tmp/libra_server
+    echo "rhtest $RHTEST_ARGS -R $SCRIPT --instance_ip=$(libra_server)"
+    rhtest $RHTEST_ARGS -R $SCRIPT --instance_ip=$(libra_server)
+}
+
+function rsync_oshift() {
+	HOST=$1  #clx1727068641.prod.rhcloud.com
+	APP="/home/admin/$2/shared/bundle/"
+    if [ "$1" == "" ]; then
+        echo "Missing 1st argument for HOST."
+        return 2
+    fi
+    if [ "$2" == "" ]; then
+        echo "Missing 2nd argument for application name."
+        return 2
+    fi
+	rsync -va --delete --exclude .gitignore --exclude .git ./  admin@$HOST:$APP
+}
+
+COMMON_REST_ARGS='-k -s -H "Accept: application/json" -d nolinks=true --user "$OPENSHIFT_LOGIN:$OPENSHIFT_PASSWORD"'
+
+function _rhc_get_user_info(){
+    curl -X GET $COMMON_REST_ARGS https://$OSTEST_BROKER/broker/rest/user
+}
+
+function _rhc_get_resources(){
+    curl -X GET $COMMON_REST_ARGS https://$OSTEST_BROKER/broker/rest/domains/$(_rhc_get_domain_name)/applications/$1/gear_groups
+}
+
+function _rhc_get_domain_name(){
+    curl -X GET $COMMON_REST_ARGS https://$OSTEST_BROKER/broker/rest/domains 2>&1 | sed -n 's/.*"id":"\([^"]\+\)".*/\1/p'
+}
+
+function _rhc_add_sshkey(){
+    echo "TODO"
+    return
+    OPENSHIFT_domain_name=$(_rhc_get_domain_name)
+    curl -X PUT $COMMON_REST_ARGS https://$OSTEST_BROKER/broker/rest/domains/$OPENSHIFT_domain_name/
+}
+
+function _rhc_gear_groups(){
+    app_name=$1
+    if [ -z "$app_name" ]; then
+        echo "Usage: $0 <APP_NAME>"
+        return 2
+    fi
+    OPENSHIFT_domain_name=$(_rhc_get_domain_name)
+    curl $COMMON_REST_ARGS https://$OSTEST_BROKER/broker/rest/domains/$OPENSHIFT_domain_name/applications/${app_name}/gear_groups/ -X GET
+
+}
+
+function _rhc_scale_down_app(){
+    app_name=$1
+    if [ -z "$app_name" ]; then
+        echo "Usage: $0 <APP_NAME>"
+        return 2
+    fi
+    OPENSHIFT_domain_name=$(_rhc_get_domain_name)
+    curl -v -k -H "Accept: application/json" --user "$OPENSHIFT_LOGIN:$OPENSHIFT_PASSWORD"  https://$OSTEST_BROKER/broker/rest/domains/$OPENSHIFT_domain_name/applications/${app_name}/events -X POST -d event=scale-down
+
+}
+
+function _rhc_app_gears(){
+    app_name=$1
+    if [ -z "$app_name" ]; then
+        echo "Usage: $0 <APP_NAME>"
+        return 2
+    fi
+    OPENSHIFT_domain_name=$(_rhc_get_domain_name)
+    curl -v -k -H "Accept: application/json" --user "$OPENSHIFT_LOGIN:$OPENSHIFT_PASSWORD"  https://$OSTEST_BROKER/broker/rest/domains/$OPENSHIFT_domain_name/applications/${app_name}/gears -X GET
+
+}
+
+function _rhc_scale_up_app(){
+    app_name=$1
+    if [ -z "$app_name" ]; then
+        echo "Usage: $0 <APP_NAME>"
+        return 2
+    fi
+    OPENSHIFT_domain_name=$(_rhc_get_domain_name)
+    curl -v -k -H "Accept: application/json" --user "$OPENSHIFT_LOGIN:$OPENSHIFT_PASSWORD"  https://$OSTEST_BROKER/broker/rest/domains/$OPENSHIFT_domain_name/applications/${app_name}/events -X POST -d event=scale-up
+
+}
+
+function _rhc_setup_onpremise_account(){
+    export OPENSHIFT_LOGIN=$OPENSHIFT_LOGIN_ONPREMISE
+    export OPENSHIFT_PASSWORD=$OPENSHIFT_PASSWORD_ONPREMISE
+    #for backward compatibility
+    export OPENSHIFT_user_email=$OPENSHIFT_LOGIN
+    export OPENSHIFT_user_passwd=$OPENSHIFT_PASSWORD
+    export OPENSHIFT_ACCOUNTS="$OPENSHIFT_LOGIN:$OPENSHIFT_PASSWORD:small"
+}
+
+function _rhc_setup_origin_account_local(){
+    export OPENSHIFT_LOGIN=$OPENSHIFT_LOGIN_ORIGIN_LOCAL
+    export OPENSHIFT_PASSWORD=$OPENSHIFT_PASSWORD_ORIGIN_LOCAL
+    #for backward compatibility
+    export OPENSHIFT_user_email="$OPENSHIFT_LOGIN"
+    export OPENSHIFT_user_passwd="$OPENSHIFT_PASSWORD"
+    export OPENSHIFT_ACCOUNTS="${OPENSHIFT_LOGIN}:${OPENSHIFT_PASSWORD}:small"
+}
+
+function _rhc_setup_origin_account(){
+    export OPENSHIFT_LOGIN=$OPENSHIFT_LOGIN_ORIGIN
+    export OPENSHIFT_PASSWORD=$OPENSHIFT_PASSWORD_ORIGIN
+    #for backward compatibility
+    export OPENSHIFT_user_email=$OPENSHIFT_LOGIN
+    export OPENSHIFT_user_passwd=$OPENSHIFT_PASSWORD
+    export OPENSHIFT_ACCOUNTS="${OPENSHIFT_LOGIN}:${OPENSHIFT_PASSWORD}:small"
+}
+
+function _rhc_setup_int_account(){
+    export OPENSHIFT_LOGIN=$OPENSHIFT_LOGIN_INT
+    export OPENSHIFT_PASSWORD=$OPENSHIFT_PASSWORD_INT
+    #for backward compatibility
+    export OPENSHIFT_user_email=$OPENSHIFT_LOGIN
+    export OPENSHIFT_user_passwd=$OPENSHIFT_PASSWORD
+    export OPENSHIFT_ACCOUNTS="${OPENSHIFT_LOGIN}:${OPENSHIFT_PASSWORD}:small"
+}
+
+function _rhc_setup_stg_account(){
+    export OPENSHIFT_LOGIN=$OPENSHIFT_LOGIN_STG
+    export OPENSHIFT_PASSWORD=$OPENSHIFT_PASSWORD_STG
+    #for backward compatibility
+    export OPENSHIFT_user_email=$OPENSHIFT_LOGIN
+    export OPENSHIFT_user_passwd=$OPENSHIFT_PASSWORD
+    export OPENSHIFT_ACCOUNTS="$OPENSHIFT_LOGIN:$OPENSHIFT_PASSWORD:small"
+}
+
+function _rhc_setup_email(){
+    if [ -n "$1" ]; then
+        export OPENSHIFT_LOGIN=$1
+    else
+        export OPENSHIFT_LOGIN=$(_rhc_random_email)
+    fi
+    #for backward compatibility
+    export OPENSHIFT_user_email=$OPENSHIFT_LOGIN
+    export OPENSHIFT_ACCOUNTS="$OPENSHIFT_LOGIN:$OPENSHIFT_PASSWORD:small"
+}
+
+function _rhc_refresh_devenv_libra_server(){
+    export OSTEST_BROKER=$(cat ~/.DEVENV_INSTANCE)
+    export OPENSHIFT_BROKER=$(cat ~/.DEVENV_INSTANCE)
+    echo $OSTEST_BROKER > ~/.OPENSHIFT_INSTANCE
+}
+
+function _rhc_init_devenv_libra_server(){
+    #read IP from express.conf and make setup variables for later processing
+    DEVENV_INSTANCE_FILE="$HOME/.DEVENV_INSTANCE"
+
+    #get the IP address directly from express.conf
+    DEVENV_INSTANCE=$(grep "^libra_server" $HOME/.openshift/express.conf | awk -F '=' "{A=\$2; gsub(/'/,xx,A);gsub(/[[:space:]]/,xx,A);print A}")
+    echo ".......................$DEVENV_INSTANCE"
+    DEVENV_BUILD_NUMBER=$(cat $HOME/.DEVENV_BUILD_NUMBER)
+
+    echo "INSTANCE DNS = $DEVENV_INSTANCE #$DEVENV_BUILD_NUMBER"
+
+    host $DEVENV_INSTANCE || echo "\nWARNING: Instance might not exist (can't resolve hostname)\n" 
+    echo $DEVENV_INSTANCE >$DEVENV_INSTANCE_FILE
+    echo $DEVENV_INSTANCE >~/.OPENSHIFT_INSTANCE
+
+    echo "<META HTTP-EQUIV='Refresh'
+          CONTENT='1; URL=https://$DEVENV_INSTANCE'>" > $DEVENV_INSTANCE_FILE.html
+
+    export OSTEST_BROKER=$DEVENV_INSTANCE
+    export OPENSHIFT_BROKER=$DEVENV_INSTANCE
+}
+
+
+function _rhc_setup_openshift_broker(){
+#
+# This will update ~/.openshift/express.conf file with particular IP of broker
+#
+    if [ -n "$1" ]; then
+        export OSTEST_BROKER=$1
+        export OPENSHIFT_BROKER=$1
+    else
+        echo "Using default int.openshift.redhat.com"
+        export OSTEST_BROKER=int.openshift.redhat.com
+        export OPENSHIFT_BROKER=int.openshift.redhat.com
+    fi
+    sed -i "s/^libra_server=.*/libra_server=$OSTEST_BROKER/" $HOME/.openshift/express.conf
+    echo $OSTEST_BROKER > ~/.OPENSHIFT_INSTANCE
+}
+
+function _rhc_run_incubator_devenv(){
+    T_DIR=$(mktemp --directory)
+    X=$PWD
+    cd $T_DIR
+    TESTRUN_ID=39373
+    python $RHTEST_HOME/bin/refresh_testrun_by_tag.py $TESTRUN_ID devenv stage acceptance
+    python $RHTEST_HOME/bin/reset_testrun.py $TESTRUN_ID ERROR FAILED 
+    OPENSHIFT_LOGIN=$(random_email) python $RHTEST_HOME/bin/launcher.py -a $(libra_server) -i $TESTRUN_ID
+    cd $X
+    rm -rf $T_DIR
+}
+
+function _rhc_destroy_all_apps(){
+    if [ -z "$1" ]; then
+        APPS=$(rhc domain show `_rhc_credentials` | grep " @ http" | awk '{ print $1 } ' )
+    else
+        APPS=$1
+    fi
+    echo $APPS
+
+    for app in "${APPS}"
+    do
+        echo "Destroying $app..."
+        rhc app delete "$app" --confirm  `_rhc_credentials`
+    done
+}   
+
+function check_broker()
+{
+  echo "login = $OPENSHIFT_LOGIN:$OPENSHIFT_PASSWORD:siege_basic_auth" > ~/.siegerc
+  siege -c7 "https://$OSTEST_BROKER/broker/rest/user" -b -t10
+}
+
+function _rhc_show_env_status(){
+  E=(OSTEST_ONPREMISE OSTEST_ORIGIN OSTEST_DEBUG OSTEST_CLIENT_DEBUG OSTEST_REST_DEBUG OSTEST_REST_PROFILER)
+  for e in $E; do
+    if [ -n "$(eval "$e")" ]; then
+      echo -e "$e\n"
+    fi
+  done
+}
+
+function _rhc_callgrind(){
+  valgrind --tool=callgrind $@
+}
+
+function _rhtest_profiler(){
+  valgrind --tool=calgrind ./bin/rhtest -G -R -i $OSTEST_BROKER $@ 2>&1 | tee rhtest.profiler-$(date +%s).out
+}
+
+function _cucu_profiler(){
+  OSTEST_PROFILER=1 cucumber -p debug  $@ 2>&1 | tee cucu.profiler-$(date +%s).out
+}
+
+#
+# vim: set tabstop=4:shiftwidth=4:expandtab:filetype=sh
+#
