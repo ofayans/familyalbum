@@ -21,7 +21,6 @@ from sqlalchemy import and_
 import os
 import json
 import re
-from app import photos
 
 @main.context_processor
 def familize():

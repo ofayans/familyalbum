@@ -11,7 +11,7 @@ from flask.ext.thumbnails import Thumbnail
 from .middleware import HTTPMethodOverrideMiddleware
 from flask.views import MethodView
 from flask_wtf.csrf import CsrfProtect
-from flask_uploads import UploadSet, configure_uploads
+from flask_uploads import UploadSet, configure_uploads, patch_request_class
 
 bootstrap = Bootstrap()
 mail = Mail()
@@ -54,7 +54,6 @@ class MyView(MethodView):
         # NOT A HTTP VERB
         return jsonify({'method': 'CREATE'})
 
-
 def create_app(config_name):
     global country_choices
     app = Flask(__name__)
@@ -70,8 +69,9 @@ def create_app(config_name):
     login_manager.session_protection = 'basic'
     pagedown.init_app(app)
     thumb = Thumbnail(app)
-    photos = UploadSet('photos', IMAGES)
-    media = UploadSet('media', default_dest=lambda app: app.instance_root)
+    photos = UploadSet()
+    media = UploadSet('media', default_dest=lambda app:
+                      app.config['MEDIA_FOLDER'])
     configure_uploads(app, (photos, media))
     # Limit the upload size. To change this refer to 
     # https://pythonhosted.org/Flask-Uploads/
