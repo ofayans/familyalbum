@@ -40,10 +40,11 @@ def mypage(person_id):
 @main.route('/photos/<photo_id>')
 @login_required
 def show_photo(photo_id):
-    folder = os.path.join(current_app.config['MEDIA_FOLDER'], 'photos')
-    path = os.path.join(folder, photo_id)
-    if os.path.exists(path):
-        return send_from_directory(folder, photo_id)
+    photo = Photo.query.filter_by(id=photo_id).first()
+    if os.path.exists(photo.path):
+        folder = '/'.join(photo.path.split('/')[0: -1])
+        filename = photo.path.split('/')[-1]
+        return send_from_directory(folder, filename)
     else:
         return abort(404)
 

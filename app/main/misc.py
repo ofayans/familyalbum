@@ -12,7 +12,7 @@ def make_person(form, user, request, person=None):
     countries = set()
     if form.data['avatar']:
         ava_id = uuid.uuid1().hex
-        new_filename = ava_id + form.data['avatar'].filename
+        new_filename = ava_id + form.data['avatar'].filename.split('.')[-1]
         ava_path = os.path.join(current_app.config['MEDIA_FOLDER'], 'photos', new_filename)
         form.data['avatar'].save(ava_path)
         ava = Photo(id=ava_id,
