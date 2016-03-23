@@ -175,7 +175,7 @@ def edit_person(person_id):
     form = PersonForm(obj=person)
     form = populate_dropdowns(form, person)
     if form.validate_on_submit():
-        make_person(form, current_user, person)
+        make_person(form, current_user, request, person)
         return redirect('main.index')
     return render_template('new_person.html', form=form)
 
@@ -213,7 +213,7 @@ def newperson():
         form = PersonForm()
         form = populate_dropdowns(form)
     if form.validate_on_submit():
-        person = make_person(form, user)
+        person = make_person(form, user, request)
         if new_user:
             user.person_id = person.id
 #            user.city = form.data['city']
