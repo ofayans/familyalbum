@@ -12,11 +12,20 @@ def make_person(form, user, request, person=None):
     countries = set()
     if form.data['avatar']:
         ava_id = uuid.uuid1().hex
-        new_filename = ava_id + "." + form.data['avatar'].filename.split('.')[-1]
-        ava_path = os.path.join(current_app.config['MEDIA_FOLDER'], 'photos', new_filename)
+        extention = "." + form.data['avatar'].filename.split('.')[-1]
+        new_filename = ava_id + extention
+        base_path = os.path.join(current_app.config['MEDIA_FOLDER'], 'photos')
+        ava_path = os.path.join(base_path, new_filename)
+        large_thumbnail_path = os.path.join(base_path, "%s_400x400_85%s" % (ava_id,
+                                                                            extention))
+        small_thumbnail_path = os.path.join(base_path, "%s_200x200_85%s" % (ava_id,
+                                                                            extention))
+
         form.data['avatar'].save(ava_path)
-        ava = Photo(id=ava_id,
-                    path=ava_path)
+        ava = Photo(id=new_filename,
+                    path=ava_path,
+                    large_thumbnail_path=large_thumbnail_path,
+                    small_thumbnail_path=small_thumbnail_path)
         db.session.add(ava)
         db.session.commit()
     if user.is_new:
@@ -170,7 +179,9 @@ def _descendants_tree(person_id):
     result["link"] = url_for('main.mypage', person_id=person_id)
     result["stackChildren"] = True
     if person.ava_id:
-        thumbnail_url = url_for("main.show_thumbnail", photo_id=person.ava_id)
+        photo = Photo.query.filter_by(id=person.ava_id).first()
+        thumbnail_url = url_for("main.show_thumbnail",
+                                 photo_id=photo.small_thumbnail_path)
         result["image"] = thumbnail_url
     if person.sex == "female":
         children = person.mothers_children

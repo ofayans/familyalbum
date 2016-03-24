@@ -157,6 +157,8 @@ class Photo(db.Model):
         backref="people_on_photo"
         )
     path = db.Column(db.Unicode)
+    large_thumbnail_path = db.Column(db.Unicode)
+    small_thumbnail_path = db.Column(db.Unicode)
 
 
 class User(UserMixin, db.Model):

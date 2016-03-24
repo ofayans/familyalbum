@@ -53,10 +53,11 @@ def show_photo(photo_id):
 @login_required
 def show_thumbnail(photo_id):
     folder = os.path.join(current_app.config['MEDIA_THUMBNAIL_FOLDER'], 'photos')
-    filename = photo_id + "_200x200_85"
-    path = os.path.join(folder, filename)
+    import pdb
+    pdb.set_trace()
+    path = os.path.join(folder, photo_id)
     if os.path.exists(path):
-        return send_from_directory(folder, filename)
+        return send_from_directory(folder, photo_id)
     else:
         return abort(404)
 
@@ -177,7 +178,7 @@ def edit_person(person_id):
     form = populate_dropdowns(form, person)
     if form.validate_on_submit():
         make_person(form, current_user, request, person)
-        return redirect('main.index')
+        return redirect(url_for('main.index'))
     return render_template('new_person.html', form=form)
 
 
