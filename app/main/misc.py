@@ -7,16 +7,25 @@ from .. import db
 from flask import url_for
 
 
-def make_person(form, user, person=None):
+def make_person(form, user, request, person=None):
     ava = None
     countries = set()
     if form.data['avatar']:
         ava_id = uuid.uuid1().hex
-        new_filename = ava_id + form.data['avatar']
-        ava_path = os.path.join(current_app.config['MEDIA_FOLDER'], 'photos', new_filename)
+        extention = "." + form.data['avatar'].filename.split('.')[-1]
+        new_filename = ava_id + extention
+        base_path = os.path.join(current_app.config['MEDIA_FOLDER'], 'photos')
+        ava_path = os.path.join(base_path, new_filename)
+        large_thumbnail_path = os.path.join(base_path, "%s_400x400_85%s" % (ava_id,
+                                                                            extention))
+        small_thumbnail_path = os.path.join(base_path, "%s_200x200_85%s" % (ava_id,
+                                                                            extention))
+
         form.data['avatar'].save(ava_path)
-        ava = Photo(id=ava_id,
-                    path=ava_path)
+        ava = Photo(id=new_filename,
+                    path=ava_path,
+                    large_thumbnail_path=large_thumbnail_path,
+                    small_thumbnail_path=small_thumbnail_path)
         db.session.add(ava)
         db.session.commit()
     if user.is_new:
@@ -33,14 +42,13 @@ def make_person(form, user, person=None):
     else:
         person = person or Person(
             id=uuid.uuid1().hex)
-        if form.data['surname']:
-            person.surname = form.data['surname']
-        surname=form.data['surname'],
-        maiden_surname=form.data['maiden_surname'],
-        name=form.data['name'],
-        second_name=form.data['second_name'],
-        sex=dict(form.sex.choices)[form.data['sex']],
-        b_date=form.data['b_date'],
+        person.surname = form.data['surname']
+        if form.data['maiden_surname']:
+            person.maiden_surname=form.data['maiden_surname'],
+        person.name=form.data['name'],
+        person.second_name=form.data['second_name'],
+        person.sex=dict(form.sex.choices)[form.data['sex']],
+        person.b_date=form.data['b_date'],
 #            city=form.data['city']
         if form.data['mother']:
             person.mother_id = form.data['mother']
@@ -60,7 +68,7 @@ def make_person(form, user, person=None):
         person.ava_id = ava.id
         ava.people.append(person)
         db.session.add(ava)
-    # Now let's save spouse
+    # Now let's save person
     db.session.add(person)
     db.session.commit()
     if 'children' in form.data.keys() and form.data['children']:
@@ -72,7 +80,7 @@ def make_person(form, user, person=None):
                 child.mother_id = person.id
             db.session.add(child)
         db.session.commit()
-    if 'spouse' in form.data.keys() and eval(form.data['spouse']):
+    if 'spouse' in form.data.keys() and form.data['spouse']:
         spouse = Person.query.filter_by(id=form.data['spouse']).first()
         person.spouses.append(spouse)
         spouse.spouses.append(person)
@@ -171,7 +179,9 @@ def _descendants_tree(person_id):
     result["link"] = url_for('main.mypage', person_id=person_id)
     result["stackChildren"] = True
     if person.ava_id:
-        thumbnail_url = url_for("main.show_thumbnail", photo_id=person.ava_id)
+        photo = Photo.query.filter_by(id=person.ava_id).first()
+        thumbnail_url = url_for("main.show_thumbnail",
+                                 photo_id=photo.small_thumbnail_path)
         result["image"] = thumbnail_url
     if person.sex == "female":
         children = person.mothers_children

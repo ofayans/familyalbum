@@ -5,6 +5,9 @@
 <H2>Hi, {{current_user.name}}! A new relative? Or an old one, but suddenly raised
   from oblivion? Save all you know about this person, so that not to forget!<H2>
 
+{% import "bootstrap/wtf.html" as wtf %}
+{{ wtf.quick_form(form) }} 
+<!--
 <form action="#" method="POST">
 {{ form.hidden_tag() }}
 {{ form.csrf_token }}
@@ -27,5 +30,5 @@
 <div class="formfield">{{ form.submit.label }}{{ form.submit }}</div>
 
 
-</form>
+</form> -->
 {% endblock %}

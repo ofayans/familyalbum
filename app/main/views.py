@@ -40,10 +40,11 @@ def mypage(person_id):
 @main.route('/photos/<photo_id>')
 @login_required
 def show_photo(photo_id):
-    folder = os.path.join(current_app.config['MEDIA_FOLDER'], 'photos')
-    path = os.path.join(folder, photo_id)
-    if os.path.exists(path):
-        return send_from_directory(folder, photo_id)
+    photo = Photo.query.filter_by(id=photo_id).first()
+    if os.path.exists(photo.path):
+        folder = '/'.join(photo.path.split('/')[0: -1])
+        filename = photo.path.split('/')[-1]
+        return send_from_directory(folder, filename)
     else:
         return abort(404)
 
@@ -52,10 +53,11 @@ def show_photo(photo_id):
 @login_required
 def show_thumbnail(photo_id):
     folder = os.path.join(current_app.config['MEDIA_THUMBNAIL_FOLDER'], 'photos')
-    filename = photo_id + "_200x200_85"
-    path = os.path.join(folder, filename)
+    import pdb
+    pdb.set_trace()
+    path = os.path.join(folder, photo_id)
     if os.path.exists(path):
-        return send_from_directory(folder, filename)
+        return send_from_directory(folder, photo_id)
     else:
         return abort(404)
 
@@ -175,8 +177,8 @@ def edit_person(person_id):
     form = PersonForm(obj=person)
     form = populate_dropdowns(form, person)
     if form.validate_on_submit():
-        make_person(form, current_user, person)
-        return redirect('main.index')
+        make_person(form, current_user, request, person)
+        return redirect(url_for('main.index'))
     return render_template('new_person.html', form=form)
 
 
@@ -213,7 +215,7 @@ def newperson():
         form = PersonForm()
         form = populate_dropdowns(form)
     if form.validate_on_submit():
-        person = make_person(form, user)
+        person = make_person(form, user, request)
         if new_user:
             user.person_id = person.id
 #            user.city = form.data['city']

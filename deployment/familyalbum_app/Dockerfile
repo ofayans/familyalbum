@@ -19,5 +19,8 @@ WORKDIR /root/familyalbum
 VOLUME /data
 RUN pip3 install --upgrade pip
 RUN pip3 install -r requirements.txt
+ADD sourceme /root/sourceme
+ADD dbconnect.sh /root/dbconnect.sh
+RUN chmod 755 /root/dbconnect.sh
 EXPOSE 22 80
 CMD /root/step2.sh
