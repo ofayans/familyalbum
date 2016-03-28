@@ -30,6 +30,14 @@ def familize():
     return dict(userfamilies=userfamilies)
 
 
+@main.route('/person/delete/<person_id>')
+@login_required
+def person_delete(person_id):
+    Person.query.filter_by(id=person_id).delete()
+    return redirect(url_for('main.index'))
+
+
+
 @main.route('/person/display/<person_id>')
 @login_required
 def mypage(person_id):
@@ -52,9 +60,8 @@ def show_photo(photo_id):
 @main.route('/cache/photos/<photo_id>')
 @login_required
 def show_thumbnail(photo_id):
+
     folder = os.path.join(current_app.config['MEDIA_THUMBNAIL_FOLDER'], 'photos')
-    import pdb
-    pdb.set_trace()
     path = os.path.join(folder, photo_id)
     if os.path.exists(path):
         return send_from_directory(folder, photo_id)

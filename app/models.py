@@ -6,34 +6,46 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from datetime import datetime
 import app
 
+
+class Country(db.Model):
+    __tablename__ = 'country'
+    id = db.Column(db.Unicode, primary_key=True, index=True)
+    name = db.Column(db.Unicode)
+
+
 legend_participants = db.Table(
     'legendparticipant', db.metadata,
-    db.Column('person_id', db.Unicode, db.ForeignKey('person.id')),
-    db.Column('legend_id', db.Unicode, db.ForeignKey('legend.id'))
+    db.Column('person_id', db.Unicode, db.ForeignKey('person.id', ondelete='CASCADE')),
+    db.Column('legend_id', db.Unicode, db.ForeignKey('legend.id', ondelete='CASCADE'))
     )
 
 photo_participants = db.Table(
     'photoparticipant', db.metadata,
-    db.Column('person_id', db.Unicode, db.ForeignKey('person.id')),
-    db.Column('photo_id', db.Unicode, db.ForeignKey('photo.id'))
+    db.Column('person_id', db.Unicode, db.ForeignKey('person.id', ondelete='CASCADE')),
+    db.Column('photo_id', db.Unicode, db.ForeignKey('photo.id', ondelete='CASCADE'))
     )
 
 spouses = db.Table(
     "spouses", db.metadata,
-    db.Column("leftspouse_id", db.Unicode, db.ForeignKey('person.id')),
-    db.Column("rightspouse_id", db.Unicode, db.ForeignKey('person.id'))
+    db.Column("leftspouse_id", db.Unicode, db.ForeignKey('person.id',
+                                                         ondelete='CASCADE')),
+    db.Column("rightspouse_id", db.Unicode, db.ForeignKey('person.id',
+                                                          ondelete='CASCADE'))
     )
 
 family_members = db.Table(
     "family_members", db.metadata,
     db.Column("family_id", db.Unicode, db.ForeignKey('family.id')),
-    db.Column("person_id", db.Unicode, db.ForeignKey('person.id'))
+    db.Column("person_id", db.Unicode, db.ForeignKey('person.id',
+                                                     ondelete='CASCADE'))
     )
 
 country_dvellers = db.Table(
     "country_dvellers", db.metadata,
-    db.Column("country_id", db.Unicode, db.ForeignKey('country.id')),
-    db.Column("person_id", db.Unicode, db.ForeignKey('person.id'))
+    db.Column("country_id", db.Unicode,
+              db.ForeignKey('country.id', ondelete='CASCADE')),
+    db.Column("person_id", db.Unicode, db.ForeignKey('person.id',
+                                                     ondelete='CASCADE'))
     )
 
 # city_dvellers = db.Table(
@@ -42,11 +54,6 @@ country_dvellers = db.Table(
 #     db.Column("person_id", db.Unicode, db.ForeignKey('person.id'))
 #     )
 
-
-class Country(db.Model):
-    __tablename__ = 'country'
-    id = db.Column(db.Unicode, primary_key=True, index=True)
-    name = db.Column(db.Unicode)
 
 # class City(db.Model):
 #     __tablename__ = 'city'
@@ -67,7 +74,8 @@ class Person(db.Model):
     b_date = db.Column(db.Date)
     d_date = db.Column(db.Date, nullable=True)
     user = db.relationship('User', backref='user_person')
-    ava_id = db.Column(db.Unicode, db.ForeignKey('photo.id'), nullable=True)
+    ava_id = db.Column(db.Unicode, db.ForeignKey('photo.id', ondelete='CASCADE'),
+                       nullable=True,)
     father_id = db.Column(db.Unicode, db.ForeignKey('person.id'), nullable=True)
     mother_id = db.Column(db.Unicode, db.ForeignKey('person.id'), nullable=True)
     father = db.relationship('Person', remote_side=id, lazy='joined',
@@ -79,7 +87,8 @@ class Person(db.Model):
     countries = db.relationship(
         "Country",
         secondary=country_dvellers,
-        backref="country_inhabitants"
+        backref="country_inhabitants",
+        cascade="all"
     )
 #     cities = db.relationship(
 #         "City",
@@ -89,18 +98,21 @@ class Person(db.Model):
     legends = db.relationship(
         "Legend",
         secondary=legend_participants,
-        backref="legend_participants"
+        backref="legend_participants",
+        cascade="all"
     )
     photos = db.relationship(
         "Photo",
         secondary=photo_participants,
-        backref="photo_participants"
+        backref="photo_participants",
+        cascade="all"
     )
 
     families = db.relationship(
         "Family",
         secondary=family_members,
-        backref="relatives"
+        backref="relatives",
+        cascade="all"
     )
     spouses = db.relationship(
         "Person",
@@ -144,7 +156,8 @@ class Legend(db.Model):
     text = db.Column(db.UnicodeText)
     participants = db.relationship("Person",
                                    secondary=legend_participants,
-                                   backref="person_legends")
+                                   backref="person_legends",
+                                   cascade="all")
 
 
 class Photo(db.Model):
@@ -154,7 +167,8 @@ class Photo(db.Model):
     people = db.relationship(
         "Person",
         secondary=photo_participants,
-        backref="people_on_photo"
+        backref="people_on_photo",
+        cascade="all"
         )
     path = db.Column(db.Unicode)
     large_thumbnail_path = db.Column(db.Unicode)

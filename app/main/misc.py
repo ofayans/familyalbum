@@ -15,10 +15,12 @@ def make_person(form, user, request, person=None):
         extention = "." + form.data['avatar'].filename.split('.')[-1]
         new_filename = ava_id + extention
         base_path = os.path.join(current_app.config['MEDIA_FOLDER'], 'photos')
+        thumbnail_path = os.path.join(current_app.config['MEDIA_THUMBNAIL_FOLDER'],
+                                                         'photos')
         ava_path = os.path.join(base_path, new_filename)
-        large_thumbnail_path = os.path.join(base_path, "%s_400x400_85%s" % (ava_id,
+        large_thumbnail_path = os.path.join(thumbnail_path, "%s_400x400_85%s" % (ava_id,
                                                                             extention))
-        small_thumbnail_path = os.path.join(base_path, "%s_200x200_85%s" % (ava_id,
+        small_thumbnail_path = os.path.join(thumbnail_path, "%s_200x200_85%s" % (ava_id,
                                                                             extention))
 
         form.data['avatar'].save(ava_path)

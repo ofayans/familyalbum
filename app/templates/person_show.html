@@ -27,4 +27,8 @@
     ancestors</a>
 <a href="{{ url_for('main.descendantdisplay', person_id=person.id) }}">show
     descendants</a>
+<div class="danger">
+    <a href="{{ url_for('main.person_delete', person_id=person.id) }}">Delete
+    this sonofabitch</a>
+</div>
 {% endblock %}

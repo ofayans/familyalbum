@@ -18,11 +18,10 @@ manager.add_command('db', MigrateCommand)
 
 @manager.command
 def seed():
-    import uuid
-    country_names = [j for i, j in flask_countries.COUNTRIES_PLUS]
-    for i in sorted(country_names):
+    country_names = sorted([j for i, j in flask_countries.COUNTRIES_PLUS])
+    for i in country_names:
         country = Country(
-            id = uuid.uuid1().hex,
+            id = country_names.index(i),
             name = i
         )
         db.session.add(country)
