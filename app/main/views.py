@@ -33,7 +33,13 @@ def familize():
 @main.route('/person/delete/<person_id>')
 @login_required
 def person_delete(person_id):
-    Person.query.filter_by(id=person_id).delete()
+    person = Person.query.filter_by(id=person_id).first()
+    person.countries.clear()
+    person.families.clear()
+    person.legends.clear()
+    person.photos.clear()
+    db.session.delete(person)
+    db.session.commit()
     return redirect(url_for('main.index'))
 
 
@@ -223,10 +229,13 @@ def newperson():
         form = populate_dropdowns(form)
     if form.validate_on_submit():
         person = make_person(form, user, request)
+
         if new_user:
             user.person_id = person.id
 #            user.city = form.data['city']
             user.is_new = False
+            user_country = Country.query.filter_by(id=user.country_id).first()
+            person.countries = [user_country]
         # We need to first commit a person and then add a user,
         # otherwise sqlalchemy will scream that a person with the given id
         # does not exist

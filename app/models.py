@@ -15,14 +15,14 @@ class Country(db.Model):
 
 legend_participants = db.Table(
     'legendparticipant', db.metadata,
-    db.Column('person_id', db.Unicode, db.ForeignKey('person.id', ondelete='CASCADE')),
-    db.Column('legend_id', db.Unicode, db.ForeignKey('legend.id', ondelete='CASCADE'))
+    db.Column('person_id', db.Unicode, db.ForeignKey('person.id')),
+    db.Column('legend_id', db.Unicode, db.ForeignKey('legend.id'))
     )
 
 photo_participants = db.Table(
     'photoparticipant', db.metadata,
-    db.Column('person_id', db.Unicode, db.ForeignKey('person.id', ondelete='CASCADE')),
-    db.Column('photo_id', db.Unicode, db.ForeignKey('photo.id', ondelete='CASCADE'))
+    db.Column('person_id', db.Unicode, db.ForeignKey('person.id')),
+    db.Column('photo_id', db.Unicode, db.ForeignKey('photo.id'))
     )
 
 spouses = db.Table(
@@ -36,16 +36,14 @@ spouses = db.Table(
 family_members = db.Table(
     "family_members", db.metadata,
     db.Column("family_id", db.Unicode, db.ForeignKey('family.id')),
-    db.Column("person_id", db.Unicode, db.ForeignKey('person.id',
-                                                     ondelete='CASCADE'))
+    db.Column("person_id", db.Unicode, db.ForeignKey('person.id'))
     )
 
 country_dvellers = db.Table(
     "country_dvellers", db.metadata,
     db.Column("country_id", db.Unicode,
-              db.ForeignKey('country.id', ondelete='CASCADE')),
-    db.Column("person_id", db.Unicode, db.ForeignKey('person.id',
-                                                     ondelete='CASCADE'))
+              db.ForeignKey('country.id')),
+    db.Column("person_id", db.Unicode, db.ForeignKey('person.id'))
     )
 
 # city_dvellers = db.Table(
@@ -74,7 +72,7 @@ class Person(db.Model):
     b_date = db.Column(db.Date)
     d_date = db.Column(db.Date, nullable=True)
     user = db.relationship('User', backref='user_person')
-    ava_id = db.Column(db.Unicode, db.ForeignKey('photo.id', ondelete='CASCADE'),
+    ava_id = db.Column(db.Unicode, db.ForeignKey('photo.id'),
                        nullable=True,)
     father_id = db.Column(db.Unicode, db.ForeignKey('person.id'), nullable=True)
     mother_id = db.Column(db.Unicode, db.ForeignKey('person.id'), nullable=True)
