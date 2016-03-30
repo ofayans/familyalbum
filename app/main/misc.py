@@ -28,8 +28,6 @@ def make_person(form, user, request, person=None):
                     path=ava_path,
                     large_thumbnail_path=large_thumbnail_path,
                     small_thumbnail_path=small_thumbnail_path)
-        db.session.add(ava)
-        db.session.commit()
     if user.is_new:
         person = Person(
             id=uuid.uuid1().hex,
@@ -70,9 +68,6 @@ def make_person(form, user, request, person=None):
         person.ava_id = ava.id
         ava.people.append(person)
         db.session.add(ava)
-    # Now let's save person
-    db.session.add(person)
-    db.session.commit()
     if 'children' in form.data.keys() and form.data['children']:
         for child_id in form.data['children']:
             child = Person.query.filter_by(id=child_id).first()
@@ -81,14 +76,14 @@ def make_person(form, user, request, person=None):
             else:
                 child.mother_id = person.id
             db.session.add(child)
-        db.session.commit()
     if 'spouse' in form.data.keys() and form.data['spouse']:
         spouse = Person.query.filter_by(id=form.data['spouse']).first()
         person.spouses.append(spouse)
         spouse.spouses.append(person)
         db.session.add(spouse)
-        db.session.add(person)
-        db.session.commit()
+    # Now let's save person
+    db.session.add(person)
+    db.session.commit()
 
     return person
 
