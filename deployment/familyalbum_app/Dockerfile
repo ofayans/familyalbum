@@ -19,9 +19,10 @@ WORKDIR /root/familyalbum
 VOLUME /data
 RUN pip3 install --upgrade pip
 RUN pip3 install -r requirements.txt
+ENV INIFILE /usr/lib/python3.4/site-packages/flask_thumbnails/__init__.py
 # Now fix a bug in flask_thumbnails
-RUN sed -ri "s/width, height =/img_url = re.sub('^\/', '', img_url)\n        width, height =/" __init__.py
-RUN sed -ri "s/import errno/import errno\nimport re/" __init__.py
+RUN sed -ri "s/width, height =/img_url = re.sub('^\/', '', img_url)\n        width, height =/" $INIFILE
+RUN sed -ri "s/import errno/import errno\nimport re/" $INIFILE
 ADD sourceme /root/sourceme
 ADD dbconnect.sh /root/dbconnect.sh
 RUN chmod 755 /root/dbconnect.sh
