@@ -27,6 +27,7 @@
     ancestors</a>
 <a href="{{ url_for('main.descendantdisplay', person_id=person.id) }}">show
     descendants</a>
+<a href="{{ url_for('main.edit_person', person_id=person.id) }}">Edit</a>
 <div class="danger">
     <a href="{{ url_for('main.person_delete', person_id=person.id) }}">Delete
     this sonofabitch</a>

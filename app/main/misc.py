@@ -28,6 +28,7 @@ def make_person(form, user, request, person=None):
                     path=ava_path,
                     large_thumbnail_path=large_thumbnail_path,
                     small_thumbnail_path=small_thumbnail_path)
+        db.session.add(ava)
     if user.is_new:
         person = Person(
             id=uuid.uuid1().hex,
@@ -44,11 +45,11 @@ def make_person(form, user, request, person=None):
             id=uuid.uuid1().hex)
         person.surname = form.data['surname']
         if form.data['maiden_surname']:
-            person.maiden_surname=form.data['maiden_surname'],
-        person.name=form.data['name'],
-        person.second_name=form.data['second_name'],
-        person.sex=dict(form.sex.choices)[form.data['sex']],
-        person.b_date=form.data['b_date'],
+            person.maiden_surname=form.data['maiden_surname']
+        person.name=form.data['name']
+        person.second_name=form.data['second_name']
+        person.sex=dict(form.sex.choices)[form.data['sex']]
+        person.b_date=form.data['b_date']
 #            city=form.data['city']
         if form.data['mother']:
             person.mother_id = form.data['mother']
@@ -93,7 +94,7 @@ def populate_relatives(person=None):
     for dude in g.families[0].members:
         if person and dude.id == person.id:
             continue
-        relatives.append((dude.id, "%s %s" % (dude.name, dude.surname)))
+        relatives.append((dude.id, dude.fullname()))
     return relatives
 
 
@@ -177,8 +178,9 @@ def _descendants_tree(person_id):
     result["stackChildren"] = True
     if person.ava_id:
         photo = Photo.query.filter_by(id=person.ava_id).first()
+        filename = photo.small_thumbnail_path.split('/')[-1]
         thumbnail_url = url_for("main.show_thumbnail",
-                                 photo_id=photo.small_thumbnail_path)
+                                 photo_id=filename)
         result["image"] = thumbnail_url
     if person.sex == "female":
         children = person.mothers_children
