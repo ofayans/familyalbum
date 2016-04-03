@@ -1,13 +1,21 @@
 {% extends "base.html" %}
-{% block content %}
-    <div class="chart" id="basic-example"></div>
+{% block styles%}
+    <link href="{{bootstrap_find_resource('css/bootstrap.css', cdn='bootstrap')}}" rel="stylesheet">
+    <link rel="stylesheet" href="/static/Treant.css">
+    <link rel="stylesheet" href="/static/basic-example.css">
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{bootstrap_find_resource('js/bootstrap.js', cdn='bootstrap')}}"></script>
     <script src="/static/raphael.js"></script>
     <script src="/static/Treant.js"></script>
     <script src="/static/jquery.min.js"></script>
-
     <script src="{{ url_for('main.ancestortree', person_id=person_id) }}">
     </script>
     <script>
         new Treant( chart_config );
     </script>
+{% endblock %}
+{% block content %}
+    <div class="chart" id="basic-example"></div>
 {% endblock %}

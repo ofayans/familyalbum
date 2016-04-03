@@ -163,15 +163,25 @@ def new_family(person):
     db.session.add(family)
     db.session.commit()
 
-default_chart = {
+descendants_chart = {
         'container': "#basic-example",
         'connectors': {'type': 'step'},
         'node': {'HTMLclass': 'nodeExample1'}
         }
 
-def _descendants_tree(person_id):
+ancestors_chart = {
+        'container': "#basic-example",
+        'rootOrientation': "SOUTH",
+        'connectors': {'type': 'step'},
+        'node': {'HTMLclass': 'nodeExample1'}
+        }
+
+
+def _descendants_tree(person_id, ancestor=False):
     person = Person.query.filter_by(id=person_id).first()
     result = {}
+    result["children"] = []
+#    result["text"] = person.fullname()
     result["text"] = {"fullname" : person.fullname(),
                       "years_of_life": person.years_of_life()}
     result["link"] = url_for('main.mypage', person_id=person_id)
@@ -182,30 +192,27 @@ def _descendants_tree(person_id):
         thumbnail_url = url_for("main.show_thumbnail",
                                  photo_id=filename)
         result["image"] = thumbnail_url
-    if person.sex == "female":
-        children = person.mothers_children
+    if ancestor:
+        if person.father_id:
+            result["children"].append(_descendants_tree(person.father_id,
+                                                        ancestor=True))
+        if person.mother_id:
+            result["children"].append(_descendants_tree(person.mother_id,
+                                                        ancestor=True))
     else:
-        children = person.fathers_children
-    result["children"] = []
-    for child in children:
-        result["children"].append(_descendants_tree(child.id))
+        if person.sex == "female":
+            children = person.mothers_children
+        else:
+            children = person.fathers_children
+        for child in children:
+            result["children"].append(_descendants_tree(child.id))
     return result
 
 def descendants_tree(person_id):
-    return {"chart": default_chart, "nodeStructure":
+    return {"chart": descendants_chart, "nodeStructure":
             _descendants_tree(person_id)}
 
-
 def ancestor_tree(person_id):
-    result = {}
-    person = Person.query.filter_by(id=person_id).first()
-    result['fullname'] = person.fullname()
-    result['years_of_life'] = person.years_of_life()
-    if person.ava_id:
-        thumbnail_url = url_for('main.show_thumbnail', photo_id=person.ava_id)
-        result['avatar'] = "<img src=%s>" % thumbnail_url
-    if person.mother_id:
-        result['mother'] = ancestor_tree(person.mother_id)
-    if person.father_id:
-        result['father'] = ancestor_tree(person.father_id)
-    return result
+    return {"chart": ancestors_chart, "nodeStructure":
+            _descendants_tree(person_id, ancestor=True)}
+

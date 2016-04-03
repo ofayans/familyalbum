@@ -38,6 +38,7 @@ def person_delete(person_id):
     person.families.clear()
     person.legends.clear()
     person.photos.clear()
+    db.session.commit()
     db.session.delete(person)
     db.session.commit()
     return redirect(url_for('main.index'))
@@ -128,8 +129,7 @@ def treantexample():
 def ancestortree(person_id):
     result = json.dumps(ancestor_tree(person_id), ensure_ascii=False,
                         sort_keys=True)
-    fixed_result = re.sub(r'"(?P<key>.*?)":', r'\g<key>:', result)
-    return "var chart_config = %s" % fixed_result
+    return "var chart_config = %s" % result
 
 
 
@@ -139,8 +139,7 @@ def ancestortree(person_id):
 def descendanttree(person_id):
     result = json.dumps(descendants_tree(person_id), ensure_ascii=False,
                         indent=4, sort_keys=True)
-    fixed_result = re.sub(r'"(?P<key>.*?)":', r'\g<key>:', result)
-    return "var chart_config = %s ;" % fixed_result
+    return "var chart_config = %s ;" % result
 
 
 @main.route('/youmightbe/<user_id>')
