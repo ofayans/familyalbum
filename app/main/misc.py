@@ -216,3 +216,7 @@ def ancestor_tree(person_id):
     return {"chart": ancestors_chart, "nodeStructure":
             _descendants_tree(person_id, ancestor=True)}
 
+
+def allowed_file(filename):
+    return '.' in filename and \
+        filename.rsplit('.', 1)[1] in app.config['ALLOWED_EXTENSIONS']

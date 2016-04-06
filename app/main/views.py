@@ -14,6 +14,7 @@ from . import main
 from .forms import PersonForm, AboutMeForm, LegendForm
 from .misc import populate_dropdowns, make_person, new_family
 from .misc import populate_relatives, ancestor_tree, descendants_tree
+from .misc import allowed_file
 from .. import db
 from ..models import Legend, Photo, Person, User, Family, Country
 import uuid
@@ -21,6 +22,8 @@ from sqlalchemy import and_
 import os
 import json
 import re
+from werkzeug import secure_filename
+
 
 @main.context_processor
 def familize():
@@ -37,6 +40,13 @@ def person_delete(person_id):
     person.countries.clear()
     person.families.clear()
     person.legends.clear()
+    for photo in person.photos:
+        try:
+            os.remove(photo.path)
+            os.remove(photo.large_thumbnail_path)
+            os.remove(photo.small_thumbnail_path)
+        except OSError:
+            pass
     person.photos.clear()
     db.session.commit()
     db.session.delete(person)
@@ -62,6 +72,8 @@ def show_photo(photo_id):
         return send_from_directory(folder, filename)
     else:
         return abort(404)
+
+
 
 
 @main.route('/cache/photos/<photo_id>')
@@ -250,3 +262,24 @@ def newperson():
     else:
         return render_template('new_person.html', form=form, user=user,
                                action=url_for('main.newperson'))
+
+@main.route('/photos/upload/<person_id>', methods=['POST', 'GET'])
+def photo_upload(person_id):
+#     # Get the name of the uploaded files
+#     uploaded_files = request.files.getlist("file[]")
+#     filenames = []
+#     for file in uploaded_files:
+#         # Check if the file is one of the allowed types/extensions
+#         if file and allowed_file(file.filename):
+#             # Make the filename safe, remove unsupported chars
+#             filename = secure_filename(file.filename)
+#             # Move the file form the temporal folder to the upload
+#             # folder we setup
+#             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+#             # Save the filename into a list, we'll use it later
+#             filenames.append(filename)
+#             # Redirect the user to the uploaded_file route, which
+#             # will basicaly show on the browser the uploaded file
+#     # Load an html page with a link to each uploaded file
+#     return render_template('upload.html', filenames=filenames)
+# 

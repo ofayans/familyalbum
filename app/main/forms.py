@@ -52,3 +52,11 @@ class LegendForm(Form):
     people = wtforms.SelectMultipleField('People involved',
                                          validators=[Required()])
     submit = wtforms.SubmitField('Save')
+
+class PhotoForm(Form):
+    photo = wtforms.FileField('Photo')
+    description = wtforms.TextAreaField('Photo description',
+                                        validators=[Optional()])
+    people = wtforms.SelectMultipleField('Select people who present on this photo')
+    submit = wtforms.SubmitField('Save')
+
