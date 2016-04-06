@@ -26,5 +26,7 @@ RUN sed -ri "s/import errno/import errno\nimport re/" $INIFILE
 ADD sourceme /root/sourceme
 ADD dbconnect.sh /root/dbconnect.sh
 RUN chmod 755 /root/dbconnect.sh
+ADD dbdump.sh /root/dbdump.sh
+RUN chmod 755 /root/dbdump.sh
 EXPOSE 22 80
 CMD /root/step2.sh
