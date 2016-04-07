@@ -1,3 +1,4 @@
+import os
 from flask import Flask, render_template, current_app, jsonify, request
 from flask.ext.bootstrap import Bootstrap
 from flask.ext.mail import Mail
@@ -69,11 +70,14 @@ def create_app(config_name):
     login_manager.session_protection = 'basic'
     pagedown.init_app(app)
     thumb = Thumbnail(app)
+    app.base_path = os.path.join(app.config['MEDIA_FOLDER'], 'photos')
+    app.thumbnail_path = os.path.join(app.config['MEDIA_THUMBNAIL_FOLDER'], 'photos')
+
 #     photos = UploadSet()
 #     media = UploadSet('media', default_dest=lambda app:
 #                       app.config['MEDIA_FOLDER'])
 #     configure_uploads(app, (photos, media))
-#     # Limit the upload size. To change this refer to 
+#     # Limit the upload size. To change this refer to
 #     # https://pythonhosted.org/Flask-Uploads/
 #     patch_request_class(app)
 
