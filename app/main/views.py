@@ -11,10 +11,10 @@ from flask import request
 from flask import send_from_directory
 from flask.ext.login import login_required, current_user
 from . import main
-from .forms import PersonForm, AboutMeForm, LegendForm
+from .forms import PersonForm, AboutMeForm, LegendForm, PhotoForm
 from .misc import populate_dropdowns, make_person, new_family
 from .misc import populate_relatives, ancestor_tree, descendants_tree
-from .misc import allowed_file
+from .misc import allowed_file, base_path, thumbnail_path
 from .. import db
 from ..models import Legend, Photo, Person, User, Family, Country
 import uuid
@@ -265,6 +265,23 @@ def newperson():
 
 @main.route('/photos/upload/<person_id>', methods=['POST', 'GET'])
 def photo_upload(person_id):
+    person = Person.query.filter_by(id=person_id).first()
+    form = PhotoForm
+    photo_id = uuid.uuid1().hex
+    extention = "." + form.data['photo'].filename.split('.')[-1]
+    new_filename = photo_id + extention
+    photo_path = os.path.join(base_path, new_filename)
+    large_thumbnail_path = os.path.join(thumbnail_path, "%s_400x400_85%s" % (ava_id,
+                                                                        extention))
+    small_thumbnail_path = os.path.join(thumbnail_path, "%s_200x200_85%s" % (ava_id,
+                                                                        extention))
+
+
+    if form.validate_on_submit():
+        return redirect(url_for('main.mypage', person_id=person.id))
+
+    return render_template('photo_upload.html', form=form, person=person)
+
 #     # Get the name of the uploaded files
 #     uploaded_files = request.files.getlist("file[]")
 #     filenames = []
@@ -282,4 +299,3 @@ def photo_upload(person_id):
 #             # will basicaly show on the browser the uploaded file
 #     # Load an html page with a link to each uploaded file
 #     return render_template('upload.html', filenames=filenames)
-# 

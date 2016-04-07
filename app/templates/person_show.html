@@ -19,10 +19,30 @@
         <p>{{  person.description }}</p>
     </div>
 {% endif %}
+
+<div class="photos" >
+{% for photo in person.photos %}
+  {% if photo.id != person.ava_id %}
+       <a href="{{ url_for('main.show_photo',
+       photo_id=photo.id)}}" target="_blank">
+       <img src="{{ url_for('main.show_photo',
+       photo_id=photo.id)|thumbnail('400x400')}}"></a>
+  {% endif %}
+
+{% endfor %}
+</div>
+<div class "addphoto">
+    <a href="{{ url_for('main.photo_upload', person_id=person.id)}}">
+        Add a photo
+    </a>
+</div>
+
+
 {% for legend in person.legends %}
 <div class="legend_header">
 </div>
 {% endfor %}
+
 <a href="{{ url_for('main.ancestordisplay', person_id=person.id) }}">show
     ancestors</a>
 <a href="{{ url_for('main.descendantdisplay', person_id=person.id) }}">show

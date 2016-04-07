@@ -7,6 +7,11 @@ from .. import db
 from flask import url_for
 
 
+base_path = os.path.join(current_app.config['MEDIA_FOLDER'], 'photos')
+thumbnail_path = os.path.join(current_app.config['MEDIA_THUMBNAIL_FOLDER'],
+                                                         'photos')
+
+
 def make_person(form, user, request, person=None):
     ava = None
     countries = set()
@@ -14,9 +19,6 @@ def make_person(form, user, request, person=None):
         ava_id = uuid.uuid1().hex
         extention = "." + form.data['avatar'].filename.split('.')[-1]
         new_filename = ava_id + extention
-        base_path = os.path.join(current_app.config['MEDIA_FOLDER'], 'photos')
-        thumbnail_path = os.path.join(current_app.config['MEDIA_THUMBNAIL_FOLDER'],
-                                                         'photos')
         ava_path = os.path.join(base_path, new_filename)
         large_thumbnail_path = os.path.join(thumbnail_path, "%s_400x400_85%s" % (ava_id,
                                                                             extention))
