@@ -86,23 +86,29 @@ def make_person(form, user, request, person=None):
     return person
 
 
-def populate_relatives(person=None):
+def populate_relatives(person=None, sex=None):
     relatives = []
     for dude in g.families[0].members:
         if person and dude.id == person.id:
             continue
-        relatives.append((dude.id, dude.fullname()))
+        if not sex:
+            relatives.append((dude.id, dude.fullname()))
+        else:
+            if dude.sex == sex:
+                relatives.append((dude.id, dude.fullname()))
     return relatives
 
 
 def populate_dropdowns(form, person=None):
     relatives = populate_relatives(person)
+    girls = populate_relatives(person, sex='female')
+    boys = populate_relatives(person, sex='male')
     mother_choices = [('', 'Please select his/her mother if we already have her')]
     father_choices = [('', 'Please select his/her father if we already have him')]
     spouse_choices = [('', 'Please select his/her spouse if we already have him')]
     children_choices = [('', 'Please select his/her children')]
-    mother_choices += relatives
-    father_choices += relatives
+    mother_choices += girls
+    father_choices += boys
     children_choices += relatives
     spouse_choices += relatives
     form.mother.choices = mother_choices

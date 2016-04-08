@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<H2>Hi, {{current_user.name}}! Found an old photo? Save it and
+    select all the people that were on it!<H2>
+
+{% import "bootstrap/wtf.html" as wtf %}
+{{ wtf.quick_form(form) }} 
+
+{% endblock %}

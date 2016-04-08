@@ -76,8 +76,6 @@ def show_photo(photo_id):
         return abort(404)
 
 
-
-
 @main.route('/cache/photos/<photo_id>')
 @login_required
 def show_thumbnail(photo_id):
@@ -268,45 +266,32 @@ def newperson():
 @main.route('/photos/upload/<person_id>', methods=['POST', 'GET'])
 def photo_upload(person_id):
     person = Person.query.filter_by(id=person_id).first()
-    form = PhotoForm
-
+    form = PhotoForm()
+    relative_choices = [('', 'Select all who present on this photo')]
+    relative_choices.extend(populate_relatives())
+    form.people.choices = relative_choices
     if form.validate_on_submit():
         photo_id = uuid.uuid1().hex
         extention = "." + form.data['photo'].filename.split('.')[-1]
         new_filename = photo_id + extention
         photo_path = os.path.join(current_app.base_path, new_filename)
         large_thumbnail_path = os.path.join(current_app.thumbnail_path,
-                                            "%s_400x400_85%s" % (ava_id, extention))
+                                            "%s_400x400_85%s" % (photo_id, extention))
         small_thumbnail_path = os.path.join(current_app.thumbnail_path,
-                                            "%s_200x200_85%s" % (ava_id, extention))
-        form.data['photo'].save(photo_path)
+                                            "%s_200x200_85%s" % (photo_id, extention))
         photo = Photo(id=new_filename,
                       path=photo_path,
                       large_thumbnail_path=large_thumbnail_path,
                       small_thumbnail_path=small_thumbnail_path,
                       description=form.data['description']
                       )
+        photo.people = []
+        for person_id in form.data['people']:
+            relative = Person.query.filter_by(id=person_id).first()
+            photo.people.append(relative)
         db.session.add(photo)
         db.session.commit()
-
+        form.data['photo'].save(photo_path)
         return redirect(url_for('main.mypage', person_id=person.id))
 
     return render_template('photo_upload.html', form=form, person=person)
-
-#     # Get the name of the uploaded files
-#     uploaded_files = request.files.getlist("file[]")
-#     filenames = []
-#     for file in uploaded_files:
-#         # Check if the file is one of the allowed types/extensions
-#         if file and allowed_file(file.filename):
-#             # Make the filename safe, remove unsupported chars
-#             filename = secure_filename(file.filename)
-#             # Move the file form the temporal folder to the upload
-#             # folder we setup
-#             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-#             # Save the filename into a list, we'll use it later
-#             filenames.append(filename)
-#             # Redirect the user to the uploaded_file route, which
-#             # will basicaly show on the browser the uploaded file
-#     # Load an html page with a link to each uploaded file
-#     return render_template('upload.html', filenames=filenames)
