@@ -76,6 +76,13 @@ def show_photo(photo_id):
         return abort(404)
 
 
+@main.route('/photos/display/<photo_id>')
+@login_required
+def show_photo_details(photo_id):
+    photo = Photo.query.filter_by(id=photo_id).first()
+    return render_template('photo_display.html', photo=photo)
+
+
 @main.route('/cache/photos/<photo_id>')
 @login_required
 def show_thumbnail(photo_id):
@@ -149,8 +156,7 @@ def ancestortree(person_id):
 @main.route('/descendanttree/<person_id>.js')
 @login_required
 def descendanttree(person_id):
-    result = json.dumps(descendants_tree(person_id), ensure_ascii=False,
-                        indent=4, sort_keys=True)
+    result = json.dumps(descendants_tree(person_id), ensure_ascii=False)
     return "var chart_config = %s ;" % result
 
 

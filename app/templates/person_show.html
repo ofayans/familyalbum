@@ -23,10 +23,10 @@
 <div class="photos" >
 {% for photo in person.photos %}
   {% if photo.id != person.ava_id %}
-       <a href="{{ url_for('main.show_photo',
-       photo_id=photo.id)}}" target="_blank">
+       <a href="{{ url_for('main.show_photo_details',
+       photo_id=photo.id)}}">
        <img src="{{ url_for('main.show_photo',
-       photo_id=photo.id)|thumbnail('400x400')}}"></a>
+       photo_id=photo.id)|thumbnail('200x200')}}"></a>
   {% endif %}
 
 {% endfor %}
