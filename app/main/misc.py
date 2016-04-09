@@ -177,10 +177,9 @@ def _descendants_tree(person_id, ancestor=False):
     person = Person.query.filter_by(id=person_id).first()
     result = {}
     result["children"] = []
-#    result["text"] = person.fullname()
-    result["text"] = {"fullname" : person.fullname(),
-                      "years_of_life": person.years_of_life()}
-    result["link"] = url_for('main.mypage', person_id=person_id)
+    result["text"] = {"name" : person.fullname(),
+                      "contact": person.years_of_life()}
+    result["link"] = {'href': url_for('main.mypage', person_id=person_id)}
     result["stackChildren"] = True
     if person.ava_id:
         photo = Photo.query.filter_by(id=person.ava_id).first()

@@ -138,11 +138,6 @@ def descendantdisplay(person_id):
     return render_template('descendant_show.html', person_id=person_id)
 
 
-@main.route('/treantexample')
-def treantexample():
-    return render_template('treant_example.html')
-
-
 @main.route('/ancestortree/<person_id>.js')
 @login_required
 def ancestortree(person_id):
@@ -150,15 +145,11 @@ def ancestortree(person_id):
                         sort_keys=True)
     return "var chart_config = %s" % result
 
-
-
-
 @main.route('/descendanttree/<person_id>.js')
 @login_required
 def descendanttree(person_id):
     result = json.dumps(descendants_tree(person_id), ensure_ascii=False)
     return "var chart_config = %s ;" % result
-
 
 @main.route('/youmightbe/<user_id>')
 @login_required
@@ -169,7 +160,6 @@ def youmightbe(user_id):
              Person.surname == user.surname,
              Person.b_date == user.b_date)).all()
     return render_template('youmightbe.html', persons=supposed_persons)
-
 
 @main.route('/thatsmyfamily/<family_id>')
 @login_required
@@ -182,7 +172,6 @@ def thatsmyfamily(family_id):
     db.session.add(person)
     db.session.commit()
     return redirect(url_for('main.index'))
-
 
 @main.route('/thatsme/<person_id>')
 @login_required
