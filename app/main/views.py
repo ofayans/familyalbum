@@ -12,6 +12,7 @@ from flask import send_from_directory
 from flask.ext.login import login_required, current_user
 from . import main
 from .forms import PersonForm, AboutMeForm, LegendForm, PhotoForm
+from .forms import PersonSearchForm
 from .misc import populate_dropdowns, make_person, new_family
 from .misc import populate_relatives, ancestor_tree, descendants_tree
 from .misc import allowed_file
@@ -141,8 +142,7 @@ def descendantdisplay(person_id):
 @main.route('/ancestortree/<person_id>.js')
 @login_required
 def ancestortree(person_id):
-    result = json.dumps(ancestor_tree(person_id), ensure_ascii=False,
-                        sort_keys=True)
+    result = json.dumps(ancestor_tree(person_id), ensure_ascii=False)
     return "var chart_config = %s" % result
 
 @main.route('/descendanttree/<person_id>.js')
@@ -220,7 +220,10 @@ def add_legend():
         db.session.commit()
         return redirect(url_for('main.index'))
     else:
-        return render_template('new_legend.html', form=form)
+        header = "Remembered a family legend? Write it down and \
+    select all people that were a part of it!"
+        return render_template('generic_template.html', form=form,
+                               header=header)
 
 
 @main.route('/person/new', methods=['GET', 'POST'])
@@ -253,12 +256,40 @@ def newperson():
         else:
             return redirect(url_for('main.index'))
     if new_user:
-        return render_template('about_me.html', form=form, user=user)
+        header = "Tell us more about yourself, please!"
+        return render_template('generic_template.html', form=form,
+                               header=header)
     else:
         return render_template('new_person.html', form=form, user=user,
                                action=url_for('main.newperson'))
 
+
+@main.route('/person/find', methods=['GET', 'POST'])
+@login_required
+def find_person():
+    form = PersonSearchForm()
+    header = "Search for your relative in our database"
+    if form.validate_on_submit():
+        runme = "Person.query.filter(and_("
+        if form.data['name']:
+            runme += "Person.name == '%s', " % form.data['name']
+        if form.data['surname']:
+            runme += "Person.surname == '%s', " % form.data['surname']
+        if form.data['second_name']:
+            runme += "Person.second_name == '%s', " % form.data['second_name']
+        if form.data['b_date']:
+            runme += "Person.b_date == form.data['b_date']"
+        runme += ")).all()"
+        supposed_relatives = eval(runme)
+        return render_template("possible_relatives.html", people=supposed_relatives)
+    return render_template("generic_template.html",
+                           form=form,
+                           header=header)
+
+
+
 @main.route('/photos/upload/<person_id>', methods=['POST', 'GET'])
+@login_required
 def photo_upload(person_id):
     person = Person.query.filter_by(id=person_id).first()
     form = PhotoForm()

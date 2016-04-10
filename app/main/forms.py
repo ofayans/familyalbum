@@ -60,3 +60,13 @@ class PhotoForm(Form):
     people = wtforms.SelectMultipleField('Select people who present on this photo')
     submit = wtforms.SubmitField('Save')
 
+class PersonSearchForm(Form):
+    name = wtforms.StringField('First name', validators=[Optional()])
+    second_name = wtforms.StringField('Second name',
+                                      validators=[Optional()])
+    surname = wtforms.StringField('Surname',
+                                  validators=[Optional()])
+    maiden_surname = wtforms.StringField('Maiden surname',
+                                         validators=[Optional()])
+    b_date = DateField('Date of birth', validators=[Optional()])
+    submit = wtforms.SubmitField('Find')

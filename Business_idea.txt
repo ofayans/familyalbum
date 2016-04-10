@@ -24,3 +24,17 @@ Social
 зарегистрированного в семье одного подтверждённого родственника могут
 быть импортированы на страницу этого человека в семье другого подтверждённого
 родственника.
+
+
+Find relatives
+
+aftre regidstration you are offered to find a relative. In the search results
+page each person is clickable. After clicking on person, e page similar to
+person page is displayed with a dropdown of 4 values: parent, child, spouse, relative
+
+Once you select one variant, a popup window would appear saying: "A
+notification will be sent to members of his family that you have joined. your
+email, that you used during registration will be provided to them in case they
+want to contact you. Do you want to continue - yes, no."
+
+
