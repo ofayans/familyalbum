@@ -98,6 +98,21 @@ def populate_relatives(person=None, sex=None):
                 relatives.append((dude.id, dude.fullname()))
     return relatives
 
+def populate_relations(person=None):
+    if person is None:
+        raise TypeError("Person object was not provided")
+    result = [("", "He/She to you is a..."),
+              ("2", "spouse"),
+              ("5", "other relative")
+             ]
+    if person.sex == 'male':
+        result[1] = ("0", "father")
+        result[3] = ("3", "son")
+    else:
+        result[1] = ("1", "mother")
+        result[3] = ("4", "daughter")
+    return result
+
 
 def populate_dropdowns(form, person=None):
     relatives = populate_relatives(person)

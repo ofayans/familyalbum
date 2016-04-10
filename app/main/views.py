@@ -321,3 +321,9 @@ def photo_upload(person_id):
         return redirect(url_for('main.mypage', person_id=person.id))
 
     return render_template('photo_upload.html', form=form, person=person)
+
+
+@main.route('/myrelative/<person_id>', methods=['POST', 'GET'])
+@login_required
+def possible_relative(person_id):
+    pass

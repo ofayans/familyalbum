@@ -7,6 +7,7 @@ from .. import country_choices, sex_choices
 
 country_choices.pop(0)
 
+
 class GenericPersonForm(Form):
     avatar = wtforms.FileField('Avatar')
     city = wtforms.StringField('City', validators=[Optional()])
@@ -70,3 +71,8 @@ class PersonSearchForm(Form):
                                          validators=[Optional()])
     b_date = DateField('Date of birth', validators=[Optional()])
     submit = wtforms.SubmitField('Find')
+
+
+class MyrelativeForm(Form):
+    relation = wtforms.SelectField("Relation", validators=[Required()])
+    submit = wtforms.SubmitField('Confirm')

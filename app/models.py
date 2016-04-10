@@ -13,6 +13,13 @@ class Country(db.Model):
     name = db.Column(db.Unicode)
 
 
+user_messages = db.Table(
+    'usermessages', db.metadata,
+    db.Column('user_id', db.Unicode, db.ForeignKey('users.id')),
+    db.Column('message_id', db.Unicode, db.ForeignKey('message.id')),
+
+    )
+
 legend_participants = db.Table(
     'legendparticipant', db.metadata,
     db.Column('person_id', db.Unicode, db.ForeignKey('person.id')),
@@ -146,6 +153,18 @@ class Person(db.Model):
                                             str(self.d_date.year),
                                             str(self.d_date.month),
                                             str(self.d_date.day))
+
+
+class Message(db.Model):
+    __tablename__ = 'message'
+    id = db.Column(db.Unicode, primary_key=True, index=True)
+    subject = db.Column(db.Unicode, nullable=True)
+    text = db.Column(db.UnicodeText)
+    acknowledged = db.Column(db.Boolean, default=False)
+    sender = db.ForeignKey('users.id')
+    recipients = db.relationship("User",
+                                 secondary=user_messages,
+                                 backref="message_recievers")
 
 
 class Legend(db.Model):
