@@ -4,7 +4,25 @@
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
-SET client_encoding = 'UTF8';
+SET client_encoding = 'SQL_ASCII';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+
+--
+-- Name: familyalbum_dev; Type: DATABASE; Schema: -; Owner: jamesb0nd
+--
+
+CREATE DATABASE familyalbum_dev WITH TEMPLATE = template0 ENCODING = 'SQL_ASCII' LC_COLLATE = 'C' LC_CTYPE = 'C';
+
+
+ALTER DATABASE familyalbum_dev OWNER TO jamesb0nd;
+
+\connect familyalbum_dev
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET client_encoding = 'SQL_ASCII';
 SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
@@ -30,7 +48,7 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: alembic_version; Type: TABLE; Schema: public; Owner: JAmesB0nd; Tablespace: 
+-- Name: alembic_version; Type: TABLE; Schema: public; Owner: jamesb0nd; Tablespace: 
 --
 
 CREATE TABLE alembic_version (
@@ -38,10 +56,10 @@ CREATE TABLE alembic_version (
 );
 
 
-ALTER TABLE alembic_version OWNER TO "JAmesB0nd";
+ALTER TABLE alembic_version OWNER TO jamesb0nd;
 
 --
--- Name: country; Type: TABLE; Schema: public; Owner: JAmesB0nd; Tablespace: 
+-- Name: country; Type: TABLE; Schema: public; Owner: jamesb0nd; Tablespace: 
 --
 
 CREATE TABLE country (
@@ -50,10 +68,10 @@ CREATE TABLE country (
 );
 
 
-ALTER TABLE country OWNER TO "JAmesB0nd";
+ALTER TABLE country OWNER TO jamesb0nd;
 
 --
--- Name: country_dvellers; Type: TABLE; Schema: public; Owner: JAmesB0nd; Tablespace: 
+-- Name: country_dvellers; Type: TABLE; Schema: public; Owner: jamesb0nd; Tablespace: 
 --
 
 CREATE TABLE country_dvellers (
@@ -62,10 +80,10 @@ CREATE TABLE country_dvellers (
 );
 
 
-ALTER TABLE country_dvellers OWNER TO "JAmesB0nd";
+ALTER TABLE country_dvellers OWNER TO jamesb0nd;
 
 --
--- Name: family; Type: TABLE; Schema: public; Owner: JAmesB0nd; Tablespace: 
+-- Name: family; Type: TABLE; Schema: public; Owner: jamesb0nd; Tablespace: 
 --
 
 CREATE TABLE family (
@@ -74,10 +92,10 @@ CREATE TABLE family (
 );
 
 
-ALTER TABLE family OWNER TO "JAmesB0nd";
+ALTER TABLE family OWNER TO jamesb0nd;
 
 --
--- Name: family_members; Type: TABLE; Schema: public; Owner: JAmesB0nd; Tablespace: 
+-- Name: family_members; Type: TABLE; Schema: public; Owner: jamesb0nd; Tablespace: 
 --
 
 CREATE TABLE family_members (
@@ -86,10 +104,22 @@ CREATE TABLE family_members (
 );
 
 
-ALTER TABLE family_members OWNER TO "JAmesB0nd";
+ALTER TABLE family_members OWNER TO jamesb0nd;
 
 --
--- Name: legend; Type: TABLE; Schema: public; Owner: JAmesB0nd; Tablespace: 
+-- Name: family_possible_members; Type: TABLE; Schema: public; Owner: jamesb0nd; Tablespace: 
+--
+
+CREATE TABLE family_possible_members (
+    family_id character varying,
+    possible_member_id character varying
+);
+
+
+ALTER TABLE family_possible_members OWNER TO jamesb0nd;
+
+--
+-- Name: legend; Type: TABLE; Schema: public; Owner: jamesb0nd; Tablespace: 
 --
 
 CREATE TABLE legend (
@@ -98,10 +128,10 @@ CREATE TABLE legend (
 );
 
 
-ALTER TABLE legend OWNER TO "JAmesB0nd";
+ALTER TABLE legend OWNER TO jamesb0nd;
 
 --
--- Name: legendparticipant; Type: TABLE; Schema: public; Owner: JAmesB0nd; Tablespace: 
+-- Name: legendparticipant; Type: TABLE; Schema: public; Owner: jamesb0nd; Tablespace: 
 --
 
 CREATE TABLE legendparticipant (
@@ -110,10 +140,24 @@ CREATE TABLE legendparticipant (
 );
 
 
-ALTER TABLE legendparticipant OWNER TO "JAmesB0nd";
+ALTER TABLE legendparticipant OWNER TO jamesb0nd;
 
 --
--- Name: person; Type: TABLE; Schema: public; Owner: JAmesB0nd; Tablespace: 
+-- Name: message; Type: TABLE; Schema: public; Owner: jamesb0nd; Tablespace: 
+--
+
+CREATE TABLE message (
+    id character varying NOT NULL,
+    subject character varying,
+    text text,
+    acknowledged boolean
+);
+
+
+ALTER TABLE message OWNER TO jamesb0nd;
+
+--
+-- Name: person; Type: TABLE; Schema: public; Owner: jamesb0nd; Tablespace: 
 --
 
 CREATE TABLE person (
@@ -133,23 +177,25 @@ CREATE TABLE person (
 );
 
 
-ALTER TABLE person OWNER TO "JAmesB0nd";
+ALTER TABLE person OWNER TO jamesb0nd;
 
 --
--- Name: photo; Type: TABLE; Schema: public; Owner: JAmesB0nd; Tablespace: 
+-- Name: photo; Type: TABLE; Schema: public; Owner: jamesb0nd; Tablespace: 
 --
 
 CREATE TABLE photo (
     id character varying NOT NULL,
     description text,
-    path character varying
+    path character varying,
+    large_thumbnail_path character varying,
+    small_thumbnail_path character varying
 );
 
 
-ALTER TABLE photo OWNER TO "JAmesB0nd";
+ALTER TABLE photo OWNER TO jamesb0nd;
 
 --
--- Name: photoparticipant; Type: TABLE; Schema: public; Owner: JAmesB0nd; Tablespace: 
+-- Name: photoparticipant; Type: TABLE; Schema: public; Owner: jamesb0nd; Tablespace: 
 --
 
 CREATE TABLE photoparticipant (
@@ -158,10 +204,10 @@ CREATE TABLE photoparticipant (
 );
 
 
-ALTER TABLE photoparticipant OWNER TO "JAmesB0nd";
+ALTER TABLE photoparticipant OWNER TO jamesb0nd;
 
 --
--- Name: spouses; Type: TABLE; Schema: public; Owner: JAmesB0nd; Tablespace: 
+-- Name: spouses; Type: TABLE; Schema: public; Owner: jamesb0nd; Tablespace: 
 --
 
 CREATE TABLE spouses (
@@ -170,10 +216,22 @@ CREATE TABLE spouses (
 );
 
 
-ALTER TABLE spouses OWNER TO "JAmesB0nd";
+ALTER TABLE spouses OWNER TO jamesb0nd;
 
 --
--- Name: users; Type: TABLE; Schema: public; Owner: JAmesB0nd; Tablespace: 
+-- Name: usermessages; Type: TABLE; Schema: public; Owner: jamesb0nd; Tablespace: 
+--
+
+CREATE TABLE usermessages (
+    user_id character varying,
+    message_id character varying
+);
+
+
+ALTER TABLE usermessages OWNER TO jamesb0nd;
+
+--
+-- Name: users; Type: TABLE; Schema: public; Owner: jamesb0nd; Tablespace: 
 --
 
 CREATE TABLE users (
@@ -192,420 +250,524 @@ CREATE TABLE users (
 );
 
 
-ALTER TABLE users OWNER TO "JAmesB0nd";
+ALTER TABLE users OWNER TO jamesb0nd;
 
 --
--- Data for Name: alembic_version; Type: TABLE DATA; Schema: public; Owner: JAmesB0nd
+-- Data for Name: alembic_version; Type: TABLE DATA; Schema: public; Owner: jamesb0nd
 --
 
 COPY alembic_version (version_num) FROM stdin;
-5b7bd7bc2404
+ef86598b14db
 \.
 
 
 --
--- Data for Name: country; Type: TABLE DATA; Schema: public; Owner: JAmesB0nd
+-- Data for Name: country; Type: TABLE DATA; Schema: public; Owner: jamesb0nd
 --
 
 COPY country (id, name) FROM stdin;
-8281544eca4d11e5b03a3c970e1933ad	Afghanistan
-8287aec0ca4d11e5b03a3c970e1933ad	Albania
-8287b42eca4d11e5b03a3c970e1933ad	Algeria
-8287b7d0ca4d11e5b03a3c970e1933ad	American Samoa
-8287bb22ca4d11e5b03a3c970e1933ad	Andorra
-8287be92ca4d11e5b03a3c970e1933ad	Angola
-8287c1b2ca4d11e5b03a3c970e1933ad	Anguilla
-8287c4beca4d11e5b03a3c970e1933ad	Antarctica
-8287c892ca4d11e5b03a3c970e1933ad	Antigua and Barbuda
-8287cc20ca4d11e5b03a3c970e1933ad	Argentina
-8287cf0eca4d11e5b03a3c970e1933ad	Armenia
-8287d210ca4d11e5b03a3c970e1933ad	Aruba
-8287d4f4ca4d11e5b03a3c970e1933ad	Ascension and Tristan Da Cunha Saint Helena
-8287d7ceca4d11e5b03a3c970e1933ad	Australia
-8287dab2ca4d11e5b03a3c970e1933ad	Austria
-8287dda0ca4d11e5b03a3c970e1933ad	Azerbaijan
-8287e07aca4d11e5b03a3c970e1933ad	Bahamas
-8287e340ca4d11e5b03a3c970e1933ad	Bahrain
-8287e610ca4d11e5b03a3c970e1933ad	Bangladesh
-8287e8c2ca4d11e5b03a3c970e1933ad	Barbados
-8287eb88ca4d11e5b03a3c970e1933ad	Belarus
-8287ee4eca4d11e5b03a3c970e1933ad	Belgium
-8287f150ca4d11e5b03a3c970e1933ad	Belize
-8287f43eca4d11e5b03a3c970e1933ad	Benin
-8287f718ca4d11e5b03a3c970e1933ad	Bermuda
-8287f9d4ca4d11e5b03a3c970e1933ad	Bhutan
-8287fc9aca4d11e5b03a3c970e1933ad	Bolivarian Republic of Venezuela
-8287ff60ca4d11e5b03a3c970e1933ad	Bolivia, Plurinational State of
-8288021cca4d11e5b03a3c970e1933ad	Bonaire, Sint Eustatius and Saba
-828804e2ca4d11e5b03a3c970e1933ad	Bosnia and Herzegovina
-8288079eca4d11e5b03a3c970e1933ad	Botswana
-82880a64ca4d11e5b03a3c970e1933ad	Bouvet Island
-82880d20ca4d11e5b03a3c970e1933ad	Brazil
-82880ffaca4d11e5b03a3c970e1933ad	British Indian Ocean Territory
-828812f2ca4d11e5b03a3c970e1933ad	British Virgin Islands
-828815f4ca4d11e5b03a3c970e1933ad	Brunei Darussalam
-828818baca4d11e5b03a3c970e1933ad	Bulgaria
-82881b9eca4d11e5b03a3c970e1933ad	Burkina Faso
-82881e78ca4d11e5b03a3c970e1933ad	Burundi
-82882148ca4d11e5b03a3c970e1933ad	Cambodia
-8288240eca4d11e5b03a3c970e1933ad	Cameroon
-828826caca4d11e5b03a3c970e1933ad	Canada
-8288297cca4d11e5b03a3c970e1933ad	Cape Verde
-82882c38ca4d11e5b03a3c970e1933ad	Cayman Islands
-82882f1cca4d11e5b03a3c970e1933ad	Central African Republic
-828831e2ca4d11e5b03a3c970e1933ad	Chad
-82883494ca4d11e5b03a3c970e1933ad	Chile
-82883750ca4d11e5b03a3c970e1933ad	China
-82883a0cca4d11e5b03a3c970e1933ad	Christmas Island
-82883d68ca4d11e5b03a3c970e1933ad	Cocos (Keeling) Islands
-828840e2ca4d11e5b03a3c970e1933ad	Colombia
-8288439eca4d11e5b03a3c970e1933ad	Comoros
-8288468cca4d11e5b03a3c970e1933ad	Congo
-82884948ca4d11e5b03a3c970e1933ad	Congo, The Democratic Republic of the
-82884c18ca4d11e5b03a3c970e1933ad	Cook Islands
-82884ed4ca4d11e5b03a3c970e1933ad	Costa Rica
-8288519aca4d11e5b03a3c970e1933ad	Croatia
-82885456ca4d11e5b03a3c970e1933ad	Cuba
-82885afaca4d11e5b03a3c970e1933ad	Curaçao
-82885de8ca4d11e5b03a3c970e1933ad	Cyprus
-828860a4ca4d11e5b03a3c970e1933ad	Czech Republic
-8288637eca4d11e5b03a3c970e1933ad	Côte D'ivoire
-82886680ca4d11e5b03a3c970e1933ad	Democratic People's Republic of Korea
-82886932ca4d11e5b03a3c970e1933ad	Denmark
-82886beeca4d11e5b03a3c970e1933ad	Djibouti
-82886eaaca4d11e5b03a3c970e1933ad	Dominica
-8288715cca4d11e5b03a3c970e1933ad	Dominican Republic
-82887436ca4d11e5b03a3c970e1933ad	Ecuador
-828876e8ca4d11e5b03a3c970e1933ad	Egypt
-828879a4ca4d11e5b03a3c970e1933ad	El Salvador
-82887c92ca4d11e5b03a3c970e1933ad	Equatorial Guinea
-82887f44ca4d11e5b03a3c970e1933ad	Eritrea
-828881f6ca4d11e5b03a3c970e1933ad	Estonia
-828884e4ca4d11e5b03a3c970e1933ad	Ethiopia
-828887b4ca4d11e5b03a3c970e1933ad	Falkland Islands (Malvinas)
-82888a70ca4d11e5b03a3c970e1933ad	Faroe Islands
-82888d5eca4d11e5b03a3c970e1933ad	Federated States of Micronesia
-8288901aca4d11e5b03a3c970e1933ad	Fiji
-828892d6ca4d11e5b03a3c970e1933ad	Finland
-828895b0ca4d11e5b03a3c970e1933ad	France
-8288986cca4d11e5b03a3c970e1933ad	French Guiana
-82889b32ca4d11e5b03a3c970e1933ad	French Polynesia
-82889deeca4d11e5b03a3c970e1933ad	French Southern Territories
-8288a0aaca4d11e5b03a3c970e1933ad	Gabon
-8288a37aca4d11e5b03a3c970e1933ad	Gambia
-8288a62cca4d11e5b03a3c970e1933ad	Georgia
-8288a924ca4d11e5b03a3c970e1933ad	Germany
-8288abfeca4d11e5b03a3c970e1933ad	Ghana
-8288aececa4d11e5b03a3c970e1933ad	Gibraltar
-8288b216ca4d11e5b03a3c970e1933ad	Greece
-8288b59aca4d11e5b03a3c970e1933ad	Greenland
-8288b856ca4d11e5b03a3c970e1933ad	Grenada
-8288bb08ca4d11e5b03a3c970e1933ad	Guadeloupe
-8288bdd8ca4d11e5b03a3c970e1933ad	Guam
-8288c08aca4d11e5b03a3c970e1933ad	Guatemala
-8288c33cca4d11e5b03a3c970e1933ad	Guernsey
-8288c5f8ca4d11e5b03a3c970e1933ad	Guinea
-8288c8c8ca4d11e5b03a3c970e1933ad	Guinea-bissau
-8288cb84ca4d11e5b03a3c970e1933ad	Guyana
-8288ce40ca4d11e5b03a3c970e1933ad	Haiti
-8288d0fcca4d11e5b03a3c970e1933ad	Heard Island and McDonald Islands
-8288d3ccca4d11e5b03a3c970e1933ad	Holy See (Vatican City State)
-8288d688ca4d11e5b03a3c970e1933ad	Honduras
-8288d962ca4d11e5b03a3c970e1933ad	Hong Kong
-8288dc28ca4d11e5b03a3c970e1933ad	Hungary
-8288dedaca4d11e5b03a3c970e1933ad	Iceland
-8288e1aaca4d11e5b03a3c970e1933ad	India
-8288e47aca4d11e5b03a3c970e1933ad	Indonesia
-8288e736ca4d11e5b03a3c970e1933ad	Iran, Islamic Republic of
-8288e9e8ca4d11e5b03a3c970e1933ad	Iraq
-8288ecc2ca4d11e5b03a3c970e1933ad	Ireland
-8288ef88ca4d11e5b03a3c970e1933ad	Islamic Republic of Iran
-8288f23aca4d11e5b03a3c970e1933ad	Isle of Man
-8288f4ecca4d11e5b03a3c970e1933ad	Israel
-8288f79eca4d11e5b03a3c970e1933ad	Italy
-8288fa5aca4d11e5b03a3c970e1933ad	Jamaica
-8288fd0cca4d11e5b03a3c970e1933ad	Japan
-8288fffaca4d11e5b03a3c970e1933ad	Jersey
-828902d4ca4d11e5b03a3c970e1933ad	Jordan
-82890586ca4d11e5b03a3c970e1933ad	Kazakhstan
-82890842ca4d11e5b03a3c970e1933ad	Kenya
-82890afeca4d11e5b03a3c970e1933ad	Kiribati
-82890db0ca4d11e5b03a3c970e1933ad	Korea, Democratic People's Republic of
-82891062ca4d11e5b03a3c970e1933ad	Korea, Republic of
-828913b4ca4d11e5b03a3c970e1933ad	Kuwait
-828916caca4d11e5b03a3c970e1933ad	Kyrgyzstan
-828919aeca4d11e5b03a3c970e1933ad	Lao People's Democratic Republic
-82891c88ca4d11e5b03a3c970e1933ad	Latvia
-82891f6cca4d11e5b03a3c970e1933ad	Lebanon
-8289226eca4d11e5b03a3c970e1933ad	Lesotho
-82892552ca4d11e5b03a3c970e1933ad	Liberia
-8289285eca4d11e5b03a3c970e1933ad	Libya
-82892b42ca4d11e5b03a3c970e1933ad	Liechtenstein
-82892e3aca4d11e5b03a3c970e1933ad	Lithuania
-82893114ca4d11e5b03a3c970e1933ad	Luxembourg
-828933eeca4d11e5b03a3c970e1933ad	Macao
-828936dcca4d11e5b03a3c970e1933ad	Macedonia, The Former Yugoslav Republic of
-82893a2eca4d11e5b03a3c970e1933ad	Madagascar
-82893cfeca4d11e5b03a3c970e1933ad	Malawi
-82893fceca4d11e5b03a3c970e1933ad	Malaysia
-8289428aca4d11e5b03a3c970e1933ad	Maldives
-8289453cca4d11e5b03a3c970e1933ad	Mali
-8289480cca4d11e5b03a3c970e1933ad	Malta
-82894ac8ca4d11e5b03a3c970e1933ad	Marshall Islands
-8289502cca4d11e5b03a3c970e1933ad	Martinique
-82895324ca4d11e5b03a3c970e1933ad	Mauritania
-828955feca4d11e5b03a3c970e1933ad	Mauritius
-828958baca4d11e5b03a3c970e1933ad	Mayotte
-82895b6cca4d11e5b03a3c970e1933ad	Mexico
-82895e5aca4d11e5b03a3c970e1933ad	Micronesia, Federated States of
-8289612aca4d11e5b03a3c970e1933ad	Moldova, Republic of
-828963e6ca4d11e5b03a3c970e1933ad	Monaco
-82896698ca4d11e5b03a3c970e1933ad	Mongolia
-82896954ca4d11e5b03a3c970e1933ad	Montenegro
-82896c10ca4d11e5b03a3c970e1933ad	Montserrat
-82896eccca4d11e5b03a3c970e1933ad	Morocco
-82897188ca4d11e5b03a3c970e1933ad	Mozambique
-8289744eca4d11e5b03a3c970e1933ad	Myanmar
-82897728ca4d11e5b03a3c970e1933ad	Namibia
-828979e4ca4d11e5b03a3c970e1933ad	Nauru
-82897cb4ca4d11e5b03a3c970e1933ad	Nepal
-82897f84ca4d11e5b03a3c970e1933ad	Netherlands
-82898240ca4d11e5b03a3c970e1933ad	New Caledonia
-828984f2ca4d11e5b03a3c970e1933ad	New Zealand
-828987b8ca4d11e5b03a3c970e1933ad	Nicaragua
-82898a74ca4d11e5b03a3c970e1933ad	Niger
-82898d26ca4d11e5b03a3c970e1933ad	Nigeria
-82898fe2ca4d11e5b03a3c970e1933ad	Niue
-82899294ca4d11e5b03a3c970e1933ad	Norfolk Island
-82899550ca4d11e5b03a3c970e1933ad	Northern Mariana Islands
-82899802ca4d11e5b03a3c970e1933ad	Norway
-82899ae6ca4d11e5b03a3c970e1933ad	Occupied Palestinian Territory
-82899f8cca4d11e5b03a3c970e1933ad	Oman
-8289a252ca4d11e5b03a3c970e1933ad	Pakistan
-8289a50eca4d11e5b03a3c970e1933ad	Palau
-8289a7c0ca4d11e5b03a3c970e1933ad	Palestinian Territory, Occupied
-8289aa7cca4d11e5b03a3c970e1933ad	Panama
-8289ad2eca4d11e5b03a3c970e1933ad	Papua New Guinea
-8289b008ca4d11e5b03a3c970e1933ad	Paraguay
-8289b2baca4d11e5b03a3c970e1933ad	Peru
-8289b58aca4d11e5b03a3c970e1933ad	Philippines
-8289b846ca4d11e5b03a3c970e1933ad	Pitcairn
-8289bb34ca4d11e5b03a3c970e1933ad	Plurinational State of Bolivia
-8289bdf0ca4d11e5b03a3c970e1933ad	Poland
-8289c0a2ca4d11e5b03a3c970e1933ad	Portugal
-8289c37cca4d11e5b03a3c970e1933ad	Province of China Taiwan
-8289c642ca4d11e5b03a3c970e1933ad	Puerto Rico
-8289c91cca4d11e5b03a3c970e1933ad	Qatar
-8289cbe2ca4d11e5b03a3c970e1933ad	Republic of Korea
-8289ce9eca4d11e5b03a3c970e1933ad	Republic of Moldova
-8289d146ca4d11e5b03a3c970e1933ad	Romania
-8289d3f8ca4d11e5b03a3c970e1933ad	Russian Federation
-8289d6aaca4d11e5b03a3c970e1933ad	Rwanda
-8289d95cca4d11e5b03a3c970e1933ad	Réunion
-8289dc0eca4d11e5b03a3c970e1933ad	Saint Barthélemy
-8289dec0ca4d11e5b03a3c970e1933ad	Saint Helena, Ascension and Tristan Da Cunha
-8289e1a4ca4d11e5b03a3c970e1933ad	Saint Kitts and Nevis
-8289e456ca4d11e5b03a3c970e1933ad	Saint Lucia
-8289e726ca4d11e5b03a3c970e1933ad	Saint Martin (French Part)
-8289e9d8ca4d11e5b03a3c970e1933ad	Saint Pierre and Miquelon
-8289ecb2ca4d11e5b03a3c970e1933ad	Saint Vincent and the Grenadines
-8289ef64ca4d11e5b03a3c970e1933ad	Samoa
-8289f220ca4d11e5b03a3c970e1933ad	San Marino
-8289f4d2ca4d11e5b03a3c970e1933ad	Sao Tome and Principe
-8289f784ca4d11e5b03a3c970e1933ad	Saudi Arabia
-8289fa40ca4d11e5b03a3c970e1933ad	Senegal
-8289fcfcca4d11e5b03a3c970e1933ad	Serbia
-8289ffaeca4d11e5b03a3c970e1933ad	Seychelles
-828a027eca4d11e5b03a3c970e1933ad	Sierra Leone
-828a0530ca4d11e5b03a3c970e1933ad	Singapore
-828a07e2ca4d11e5b03a3c970e1933ad	Sint Eustatius and Saba Bonaire
-828a0a94ca4d11e5b03a3c970e1933ad	Sint Maarten (Dutch Part)
-828a0d64ca4d11e5b03a3c970e1933ad	Slovakia
-828a1016ca4d11e5b03a3c970e1933ad	Slovenia
-828a1476ca4d11e5b03a3c970e1933ad	Solomon Islands
-828a1732ca4d11e5b03a3c970e1933ad	Somalia
-828a19e4ca4d11e5b03a3c970e1933ad	South Africa
-828a1cb4ca4d11e5b03a3c970e1933ad	South Georgia and the South Sandwich Islands
-828a1f84ca4d11e5b03a3c970e1933ad	South Sudan
-828a2254ca4d11e5b03a3c970e1933ad	Spain
-828a2506ca4d11e5b03a3c970e1933ad	Sri Lanka
-828a27aeca4d11e5b03a3c970e1933ad	Sudan
-828a2a60ca4d11e5b03a3c970e1933ad	Suriname
-828a2d1cca4d11e5b03a3c970e1933ad	Svalbard and Jan Mayen
-828a2fceca4d11e5b03a3c970e1933ad	Swaziland
-828a3280ca4d11e5b03a3c970e1933ad	Sweden
-828a3532ca4d11e5b03a3c970e1933ad	Switzerland
-828a37f8ca4d11e5b03a3c970e1933ad	Syrian Arab Republic
-828a3adcca4d11e5b03a3c970e1933ad	Taiwan, Province of China
-828a3d8eca4d11e5b03a3c970e1933ad	Tajikistan
-828a42deca4d11e5b03a3c970e1933ad	Tanzania, United Republic of
-828a45d6ca4d11e5b03a3c970e1933ad	Thailand
-828a48b0ca4d11e5b03a3c970e1933ad	The Democratic Republic of the Congo
-828a4b76ca4d11e5b03a3c970e1933ad	The Former Yugoslav Republic of Macedonia
-828a4e32ca4d11e5b03a3c970e1933ad	Timor-leste
-828a50eeca4d11e5b03a3c970e1933ad	Togo
-828a53b4ca4d11e5b03a3c970e1933ad	Tokelau
-828a568eca4d11e5b03a3c970e1933ad	Tonga
-828a5940ca4d11e5b03a3c970e1933ad	Trinidad and Tobago
-828a5bfcca4d11e5b03a3c970e1933ad	Tunisia
-828a5eccca4d11e5b03a3c970e1933ad	Turkey
-828a61b0ca4d11e5b03a3c970e1933ad	Turkmenistan
-828a646cca4d11e5b03a3c970e1933ad	Turks and Caicos Islands
-828a673cca4d11e5b03a3c970e1933ad	Tuvalu
-828a69f8ca4d11e5b03a3c970e1933ad	U.S. Virgin Islands
-828a6caaca4d11e5b03a3c970e1933ad	Uganda
-828a6f66ca4d11e5b03a3c970e1933ad	Ukraine
-828a720eca4d11e5b03a3c970e1933ad	United Arab Emirates
-828a74caca4d11e5b03a3c970e1933ad	United Kingdom
-828a7786ca4d11e5b03a3c970e1933ad	United Republic of Tanzania
-828a7a60ca4d11e5b03a3c970e1933ad	United States
-828a7d30ca4d11e5b03a3c970e1933ad	United States Minor Outlying Islands
-828a7fecca4d11e5b03a3c970e1933ad	Uruguay
-828a829eca4d11e5b03a3c970e1933ad	Uzbekistan
-828a856eca4d11e5b03a3c970e1933ad	Vanuatu
-828a8988ca4d11e5b03a3c970e1933ad	Venezuela, Bolivarian Republic of
-828a8c44ca4d11e5b03a3c970e1933ad	Viet Nam
-828a8f00ca4d11e5b03a3c970e1933ad	Virgin Islands, British
-828a91bcca4d11e5b03a3c970e1933ad	Virgin Islands, U.S.
-828a948cca4d11e5b03a3c970e1933ad	Wallis and Futuna
-828a973eca4d11e5b03a3c970e1933ad	Western Sahara
-828a99f0ca4d11e5b03a3c970e1933ad	Yemen
-828a9cc0ca4d11e5b03a3c970e1933ad	Zambia
-828a9f86ca4d11e5b03a3c970e1933ad	Zimbabwe
-828aa242ca4d11e5b03a3c970e1933ad	Åland Islands
+0	Afghanistan
+1	Albania
+2	Algeria
+3	American Samoa
+4	Andorra
+5	Angola
+6	Anguilla
+7	Antarctica
+8	Antigua and Barbuda
+9	Argentina
+10	Armenia
+11	Aruba
+12	Ascension and Tristan Da Cunha Saint Helena
+13	Australia
+14	Austria
+15	Azerbaijan
+16	Bahamas
+17	Bahrain
+18	Bangladesh
+19	Barbados
+20	Belarus
+21	Belgium
+22	Belize
+23	Benin
+24	Bermuda
+25	Bhutan
+26	Bolivarian Republic of Venezuela
+27	Bolivia, Plurinational State of
+28	Bonaire, Sint Eustatius and Saba
+29	Bosnia and Herzegovina
+30	Botswana
+31	Bouvet Island
+32	Brazil
+33	British Indian Ocean Territory
+34	British Virgin Islands
+35	Brunei Darussalam
+36	Bulgaria
+37	Burkina Faso
+38	Burundi
+39	Cambodia
+40	Cameroon
+41	Canada
+42	Cape Verde
+43	Cayman Islands
+44	Central African Republic
+45	Chad
+46	Chile
+47	China
+48	Christmas Island
+49	Cocos (Keeling) Islands
+50	Colombia
+51	Comoros
+52	Congo
+53	Congo, The Democratic Republic of the
+54	Cook Islands
+55	Costa Rica
+56	Croatia
+57	Cuba
+58	Curaçao
+59	Cyprus
+60	Czech Republic
+61	Côte D'ivoire
+62	Democratic People's Republic of Korea
+63	Denmark
+64	Djibouti
+65	Dominica
+66	Dominican Republic
+67	Ecuador
+68	Egypt
+69	El Salvador
+70	Equatorial Guinea
+71	Eritrea
+72	Estonia
+73	Ethiopia
+74	Falkland Islands (Malvinas)
+75	Faroe Islands
+76	Federated States of Micronesia
+77	Fiji
+78	Finland
+79	France
+80	French Guiana
+81	French Polynesia
+82	French Southern Territories
+83	Gabon
+84	Gambia
+85	Georgia
+86	Germany
+87	Ghana
+88	Gibraltar
+89	Greece
+90	Greenland
+91	Grenada
+92	Guadeloupe
+93	Guam
+94	Guatemala
+95	Guernsey
+96	Guinea
+97	Guinea-bissau
+98	Guyana
+99	Haiti
+100	Heard Island and McDonald Islands
+101	Holy See (Vatican City State)
+102	Honduras
+103	Hong Kong
+104	Hungary
+105	Iceland
+106	India
+107	Indonesia
+108	Iran, Islamic Republic of
+109	Iraq
+110	Ireland
+111	Islamic Republic of Iran
+112	Isle of Man
+113	Israel
+114	Italy
+115	Jamaica
+116	Japan
+117	Jersey
+118	Jordan
+119	Kazakhstan
+120	Kenya
+121	Kiribati
+122	Korea, Democratic People's Republic of
+123	Korea, Republic of
+124	Kuwait
+125	Kyrgyzstan
+126	Lao People's Democratic Republic
+127	Latvia
+128	Lebanon
+129	Lesotho
+130	Liberia
+131	Libya
+132	Liechtenstein
+133	Lithuania
+134	Luxembourg
+135	Macao
+136	Macedonia, The Former Yugoslav Republic of
+137	Madagascar
+138	Malawi
+139	Malaysia
+140	Maldives
+141	Mali
+142	Malta
+143	Marshall Islands
+144	Martinique
+145	Mauritania
+146	Mauritius
+147	Mayotte
+148	Mexico
+149	Micronesia, Federated States of
+150	Moldova, Republic of
+151	Monaco
+152	Mongolia
+153	Montenegro
+154	Montserrat
+155	Morocco
+156	Mozambique
+157	Myanmar
+158	Namibia
+159	Nauru
+160	Nepal
+161	Netherlands
+162	New Caledonia
+163	New Zealand
+164	Nicaragua
+165	Niger
+166	Nigeria
+167	Niue
+168	Norfolk Island
+169	Northern Mariana Islands
+170	Norway
+171	Occupied Palestinian Territory
+172	Oman
+173	Pakistan
+174	Palau
+175	Palestinian Territory, Occupied
+176	Panama
+177	Papua New Guinea
+178	Paraguay
+179	Peru
+180	Philippines
+181	Pitcairn
+182	Plurinational State of Bolivia
+183	Poland
+184	Portugal
+185	Province of China Taiwan
+186	Puerto Rico
+187	Qatar
+188	Republic of Korea
+189	Republic of Moldova
+190	Romania
+191	Russian Federation
+192	Rwanda
+193	Réunion
+194	Saint Barthélemy
+195	Saint Helena, Ascension and Tristan Da Cunha
+196	Saint Kitts and Nevis
+197	Saint Lucia
+198	Saint Martin (French Part)
+199	Saint Pierre and Miquelon
+200	Saint Vincent and the Grenadines
+201	Samoa
+202	San Marino
+203	Sao Tome and Principe
+204	Saudi Arabia
+205	Senegal
+206	Serbia
+207	Seychelles
+208	Sierra Leone
+209	Singapore
+210	Sint Eustatius and Saba Bonaire
+211	Sint Maarten (Dutch Part)
+212	Slovakia
+213	Slovenia
+214	Solomon Islands
+215	Somalia
+216	South Africa
+217	South Georgia and the South Sandwich Islands
+218	South Sudan
+219	Spain
+220	Sri Lanka
+221	Sudan
+222	Suriname
+223	Svalbard and Jan Mayen
+224	Swaziland
+225	Sweden
+226	Switzerland
+227	Syrian Arab Republic
+228	Taiwan, Province of China
+229	Tajikistan
+230	Tanzania, United Republic of
+231	Thailand
+232	The Democratic Republic of the Congo
+233	The Former Yugoslav Republic of Macedonia
+234	Timor-leste
+235	Togo
+236	Tokelau
+237	Tonga
+238	Trinidad and Tobago
+239	Tunisia
+240	Turkey
+241	Turkmenistan
+242	Turks and Caicos Islands
+243	Tuvalu
+244	U.S. Virgin Islands
+245	Uganda
+246	Ukraine
+247	United Arab Emirates
+248	United Kingdom
+249	United Republic of Tanzania
+250	United States
+251	United States Minor Outlying Islands
+252	Uruguay
+253	Uzbekistan
+254	Vanuatu
+255	Venezuela, Bolivarian Republic of
+256	Viet Nam
+257	Virgin Islands, British
+258	Virgin Islands, U.S.
+259	Wallis and Futuna
+260	Western Sahara
+261	Yemen
+262	Zambia
+263	Zimbabwe
+264	Åland Islands
 \.
 
 
 --
--- Data for Name: country_dvellers; Type: TABLE DATA; Schema: public; Owner: JAmesB0nd
+-- Data for Name: country_dvellers; Type: TABLE DATA; Schema: public; Owner: jamesb0nd
 --
 
 COPY country_dvellers (country_id, person_id) FROM stdin;
-8289d3f8ca4d11e5b03a3c970e1933ad	c404a4f6ca5d11e5a2db3c970e1933ad
-8289d3f8ca4d11e5b03a3c970e1933ad	362b9462cb3111e5bd753c970e1933ad
-8289d3f8ca4d11e5b03a3c970e1933ad	1f719182d5b711e59dc6247703a3195c
-8289d3f8ca4d11e5b03a3c970e1933ad	3a0fdbaed5bf11e59dc6247703a3195c
-8289d3f8ca4d11e5b03a3c970e1933ad	18f4a0d2d5c211e59dc6247703a3195c
-8289d3f8ca4d11e5b03a3c970e1933ad	cce77972d81811e5aae9247703a3195c
-8289d3f8ca4d11e5b03a3c970e1933ad	2b68bd12d81911e5b8db247703a3195c
-8289d3f8ca4d11e5b03a3c970e1933ad	2b35a6a4d89411e5bd123c970e1933ad
+191	59794800f91d11e580960242ac110003
+191	3326e014f92111e5be8b0242ac110003
+191	b4454d70f92111e5be8b0242ac110003
+191	d085ed2ef92a11e582a60242ac110003
+191	0dd32fa2f92b11e582a60242ac110003
+60	06672b8cf92c11e593dc0242ac110003
+191	4b8c0d8cf9df11e5b5040242ac110003
+191	e4c100e0fc3011e595830242ac110003
+191	da9a8a9afc3111e595830242ac110003
+191	55a741f6fc3211e595830242ac110003
+20	ee3a3c54fc3511e58c380242ac110003
+191	ee3a3c54fc3511e58c380242ac110003
+20	371b159cfc3611e58c380242ac110003
+191	371b159cfc3611e58c380242ac110003
+191	a9345314fcc211e5a78c0242ac11001c
+191	46101992fcc411e5a78c0242ac11001c
+191	b29ab826fdc611e5a4220242ac11001c
+191	a8595444ff2911e58b940242ac11001c
+191	387bc30eff2a11e58b940242ac11001c
+191	93587948ff2a11e58b940242ac11001c
+191	b9a30aecff2e11e58b940242ac11001c
 \.
 
 
 --
--- Data for Name: family; Type: TABLE DATA; Schema: public; Owner: JAmesB0nd
+-- Data for Name: family; Type: TABLE DATA; Schema: public; Owner: jamesb0nd
 --
 
 COPY family (id, creator_id) FROM stdin;
-cc442452ca5d11e5a2db3c970e1933ad	b6d4309eca5d11e5a2db3c970e1933ad
-2b98f716d81911e5b8db247703a3195c	196f78e6d81711e5aae9247703a3195c
+59a5cc9af91d11e580960242ac110003	f68133caf91c11e580960242ac110003
+a88bac8cff2911e58b940242ac11001c	ff69898aff2811e58b940242ac11001c
 \.
 
 
 --
--- Data for Name: family_members; Type: TABLE DATA; Schema: public; Owner: JAmesB0nd
+-- Data for Name: family_members; Type: TABLE DATA; Schema: public; Owner: jamesb0nd
 --
 
 COPY family_members (family_id, person_id) FROM stdin;
-cc442452ca5d11e5a2db3c970e1933ad	c404a4f6ca5d11e5a2db3c970e1933ad
-cc442452ca5d11e5a2db3c970e1933ad	362b9462cb3111e5bd753c970e1933ad
-cc442452ca5d11e5a2db3c970e1933ad	1f719182d5b711e59dc6247703a3195c
-cc442452ca5d11e5a2db3c970e1933ad	3a0fdbaed5bf11e59dc6247703a3195c
-cc442452ca5d11e5a2db3c970e1933ad	18f4a0d2d5c211e59dc6247703a3195c
-2b98f716d81911e5b8db247703a3195c	2b68bd12d81911e5b8db247703a3195c
-cc442452ca5d11e5a2db3c970e1933ad	2b35a6a4d89411e5bd123c970e1933ad
+59a5cc9af91d11e580960242ac110003	59794800f91d11e580960242ac110003
+59a5cc9af91d11e580960242ac110003	3326e014f92111e5be8b0242ac110003
+59a5cc9af91d11e580960242ac110003	b4454d70f92111e5be8b0242ac110003
+59a5cc9af91d11e580960242ac110003	d085ed2ef92a11e582a60242ac110003
+59a5cc9af91d11e580960242ac110003	0dd32fa2f92b11e582a60242ac110003
+59a5cc9af91d11e580960242ac110003	06672b8cf92c11e593dc0242ac110003
+59a5cc9af91d11e580960242ac110003	4b8c0d8cf9df11e5b5040242ac110003
+59a5cc9af91d11e580960242ac110003	e4c100e0fc3011e595830242ac110003
+59a5cc9af91d11e580960242ac110003	da9a8a9afc3111e595830242ac110003
+59a5cc9af91d11e580960242ac110003	55a741f6fc3211e595830242ac110003
+59a5cc9af91d11e580960242ac110003	ee3a3c54fc3511e58c380242ac110003
+59a5cc9af91d11e580960242ac110003	371b159cfc3611e58c380242ac110003
+59a5cc9af91d11e580960242ac110003	a9345314fcc211e5a78c0242ac11001c
+59a5cc9af91d11e580960242ac110003	46101992fcc411e5a78c0242ac11001c
+59a5cc9af91d11e580960242ac110003	b29ab826fdc611e5a4220242ac11001c
+a88bac8cff2911e58b940242ac11001c	a8595444ff2911e58b940242ac11001c
+a88bac8cff2911e58b940242ac11001c	387bc30eff2a11e58b940242ac11001c
+a88bac8cff2911e58b940242ac11001c	93587948ff2a11e58b940242ac11001c
+59a5cc9af91d11e580960242ac110003	b9a30aecff2e11e58b940242ac11001c
 \.
 
 
 --
--- Data for Name: legend; Type: TABLE DATA; Schema: public; Owner: JAmesB0nd
+-- Data for Name: family_possible_members; Type: TABLE DATA; Schema: public; Owner: jamesb0nd
+--
+
+COPY family_possible_members (family_id, possible_member_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: legend; Type: TABLE DATA; Schema: public; Owner: jamesb0nd
 --
 
 COPY legend (id, text) FROM stdin;
-3bbadbcacce111e5b2b2525400e25cae	ewrvwervw
-782bcd30cce111e59a34525400e25cae	ewrvwervw
-30e168a4cea311e5ae10525400e25cae	Ulalala
 \.
 
 
 --
--- Data for Name: legendparticipant; Type: TABLE DATA; Schema: public; Owner: JAmesB0nd
+-- Data for Name: legendparticipant; Type: TABLE DATA; Schema: public; Owner: jamesb0nd
 --
 
 COPY legendparticipant (person_id, legend_id) FROM stdin;
-362b9462cb3111e5bd753c970e1933ad	3bbadbcacce111e5b2b2525400e25cae
-c404a4f6ca5d11e5a2db3c970e1933ad	3bbadbcacce111e5b2b2525400e25cae
-362b9462cb3111e5bd753c970e1933ad	782bcd30cce111e59a34525400e25cae
-c404a4f6ca5d11e5a2db3c970e1933ad	782bcd30cce111e59a34525400e25cae
-c404a4f6ca5d11e5a2db3c970e1933ad	30e168a4cea311e5ae10525400e25cae
 \.
 
 
 --
--- Data for Name: person; Type: TABLE DATA; Schema: public; Owner: JAmesB0nd
+-- Data for Name: message; Type: TABLE DATA; Schema: public; Owner: jamesb0nd
+--
+
+COPY message (id, subject, text, acknowledged) FROM stdin;
+\.
+
+
+--
+-- Data for Name: person; Type: TABLE DATA; Schema: public; Owner: jamesb0nd
 --
 
 COPY person (id, name, second_name, surname, sex, alive, b_date, d_date, ava_id, father_id, mother_id, description, maiden_surname) FROM stdin;
-1f719182d5b711e59dc6247703a3195c	Олег	Григорьевич	Фаянс	male	f	1927-08-29	2002-10-07	1f6c87dcd5b711e59dc6247703a3195c	\N	\N	\N	\N
-c404a4f6ca5d11e5a2db3c970e1933ad	Oleg Fayans	Fayans	Fayans	male	t	1979-05-17	\N	c3ff4042ca5d11e5a2db3c970e1933ad	1f719182d5b711e59dc6247703a3195c	362b9462cb3111e5bd753c970e1933ad	\N	\N
-3a0fdbaed5bf11e59dc6247703a3195c	Юрий	Олегович	Фаянс	male	t	1956-02-05	\N	\N	1f719182d5b711e59dc6247703a3195c	\N	\N	\N
-18f4a0d2d5c211e59dc6247703a3195c	Лариса	Алексеевна	Фаянс	female	t	1957-02-16	\N	\N	\N	\N	\N	\N
-cce77972d81811e5aae9247703a3195c	Vasily		Pupkin	male	t	1981-04-01	\N	\N	\N	\N	\N	\N
-2b68bd12d81911e5b8db247703a3195c	Vasily		Pupkin	male	t	1981-04-01	\N	\N	\N	\N	\N	\N
-2b35a6a4d89411e5bd123c970e1933ad	Илья	Моисеевич	Явиц	male	f	1919-01-01	1941-08-01	\N	\N	\N	\N	
-362b9462cb3111e5bd753c970e1933ad	Ludmila	Iljinichna	Fayans	female	f	1941-08-12	2015-06-07	35d48226cb3111e5bd753c970e1933ad	2b35a6a4d89411e5bd123c970e1933ad	\N	\N	\N
+da9a8a9afc3111e595830242ac110003	Галина	Александровна	Березюк	female	f	1920-01-01	2010-01-01	da98947efc3111e595830242ac110003.jpeg	\N	\N	\N	\N
+55a741f6fc3211e595830242ac110003	Илья	Моисеевич	Явиц	male	f	1919-01-01	1941-09-01	55a6e300fc3211e595830242ac110003.jpeg	\N	\N	\N	\N
+e4c100e0fc3011e595830242ac110003	Людмила	Ильинична	Фаянс	female	f	1941-08-12	2015-06-07	e4c02b84fc3011e595830242ac110003.jpeg	55a741f6fc3211e595830242ac110003	da9a8a9afc3111e595830242ac110003	\N	Явиц
+ee3a3c54fc3511e58c380242ac110003	Григорий	Кивович	Фаянс	male	f	1905-01-01	1965-01-01	ee39afa0fc3511e58c380242ac110003.jpeg	\N	\N	\N	\N
+371b159cfc3611e58c380242ac110003	Виктория	Антоновна	Фаянс	female	f	1905-01-01	1959-01-01	371a4996fc3611e58c380242ac110003.jpeg	\N	\N	\N	\N
+4b8c0d8cf9df11e5b5040242ac110003	Олег	Григорьевич	Фаянс	male	f	1927-08-30	2002-10-07	4b8bf1e4f9df11e5b5040242ac110003.jpg	ee3a3c54fc3511e58c380242ac110003	371b159cfc3611e58c380242ac110003	\N	\N
+06672b8cf92c11e593dc0242ac110003	Евгений	Олегович	Фаянс	male	t	2013-04-20	\N	2cbb2de2f92c11e593dc0242ac110003.jpg	59794800f91d11e580960242ac110003	\N	\N	\N
+3326e014f92111e5be8b0242ac110003	Юрий	Олегович	Фаянс	male	t	1956-02-05	\N	3326c6baf92111e5be8b0242ac110003.jpg	4b8c0d8cf9df11e5b5040242ac110003	\N	\N	\N
+b4454d70f92111e5be8b0242ac110003	Инна	Олеговна	Юрганова	female	t	1967-03-31	\N	b4453952f92111e5be8b0242ac110003.jpg	4b8c0d8cf9df11e5b5040242ac110003	\N	\N	Фаянс
+59794800f91d11e580960242ac110003	Олег	Олегович	Фаянс	male	t	1979-05-17	\N	5978d38ef91d11e580960242ac110003.JPG	4b8c0d8cf9df11e5b5040242ac110003	e4c100e0fc3011e595830242ac110003	\N	\N
+a9345314fcc211e5a78c0242ac11001c	Владимир	Григорьевич	Фаянс	male	t	1937-11-10	\N	a9343d7afcc211e5a78c0242ac11001c.jpeg	ee3a3c54fc3511e58c380242ac110003	371b159cfc3611e58c380242ac110003	\N	\N
+46101992fcc411e5a78c0242ac11001c	Елена	Григорьевна	Юшина	female	t	1930-10-05	\N	460ffb88fcc411e5a78c0242ac11001c.jpeg	ee3a3c54fc3511e58c380242ac110003	371b159cfc3611e58c380242ac110003	\N	Фаянс
+b29ab826fdc611e5a4220242ac11001c	Лариса	Алексеевна	Фаянс	female	t	1957-02-26	\N	b29aa6e2fdc611e5a4220242ac11001c.jpg	\N	\N	\N	Цветкова
+d085ed2ef92a11e582a60242ac110003	Алексей	Юрьевич	Фаянс	male	t	1982-04-10	\N	d085d992f92a11e582a60242ac110003.jpg	3326e014f92111e5be8b0242ac110003	b29ab826fdc611e5a4220242ac11001c	\N	\N
+0dd32fa2f92b11e582a60242ac110003	Сергей	Юрьевич	Фаянс	male	t	1986-06-23	\N	0dd3158af92b11e582a60242ac110003.jpg	3326e014f92111e5be8b0242ac110003	b29ab826fdc611e5a4220242ac11001c	\N	\N
+387bc30eff2a11e58b940242ac11001c	Тамара	Гертрудовна	Злобина	female	t	1950-10-18	\N	387bae96ff2a11e58b940242ac11001c.jpg	\N	\N	\N	Созинова
+a8595444ff2911e58b940242ac11001c	Мария	Владимировна	Злобина	female	t	1981-07-21	\N	a859424cff2911e58b940242ac11001c.jpg	93587948ff2a11e58b940242ac11001c	387bc30eff2a11e58b940242ac11001c	\N	\N
+93587948ff2a11e58b940242ac11001c	Владимир	Александрович	Злобин	male	t	1951-06-12	\N	\N	\N	\N	\N	\N
+b9a30aecff2e11e58b940242ac11001c	Григорий	Владимирович	Фаянс	male	t	1976-01-01	\N	\N	\N	\N	\N	\N
 \.
 
 
 --
--- Data for Name: photo; Type: TABLE DATA; Schema: public; Owner: JAmesB0nd
+-- Data for Name: photo; Type: TABLE DATA; Schema: public; Owner: jamesb0nd
 --
 
-COPY photo (id, description, path) FROM stdin;
-154394b6ca5011e599d73c970e1933ad	\N	/home/ofayans/tmp/familyalbum/154394b6ca5011e599d73c970e1933ad
-83351b00ca5c11e5a5f53c970e1933ad	\N	/home/ofayans/tmp/familyalbum/83351b00ca5c11e5a5f53c970e1933ad
-c3ff4042ca5d11e5a2db3c970e1933ad	\N	/home/ofayans/tmp/familyalbum/c3ff4042ca5d11e5a2db3c970e1933ad
-41932a1acb2a11e586bb3c970e1933ad	\N	/home/ofayans/tmp/familyalbum/41932a1acb2a11e586bb3c970e1933ad
-35d48226cb3111e5bd753c970e1933ad	\N	/home/ofayans/tmp/familyalbum/35d48226cb3111e5bd753c970e1933ad
-1f6c87dcd5b711e59dc6247703a3195c	\N	/home/ofayans/tmp/familyalbum/photos/1f6c87dcd5b711e59dc6247703a3195c
+COPY photo (id, description, path, large_thumbnail_path, small_thumbnail_path) FROM stdin;
+5978d38ef91d11e580960242ac110003.JPG	\N	/data/photos/5978d38ef91d11e580960242ac110003.JPG	/data/thumbnails/photos/5978d38ef91d11e580960242ac110003_400x400_85.JPG	/data/thumbnails/photos/5978d38ef91d11e580960242ac110003_200x200_85.JPG
+3326c6baf92111e5be8b0242ac110003.jpg	\N	/data/photos/3326c6baf92111e5be8b0242ac110003.jpg	/data/thumbnails/photos/3326c6baf92111e5be8b0242ac110003_400x400_85.jpg	/data/thumbnails/photos/3326c6baf92111e5be8b0242ac110003_200x200_85.jpg
+6a6e4d6ef92111e5be8b0242ac110003.jpg	\N	/data/photos/6a6e4d6ef92111e5be8b0242ac110003.jpg	/data/thumbnails/photos/6a6e4d6ef92111e5be8b0242ac110003_400x400_85.jpg	/data/thumbnails/photos/6a6e4d6ef92111e5be8b0242ac110003_200x200_85.jpg
+b4453952f92111e5be8b0242ac110003.jpg	\N	/data/photos/b4453952f92111e5be8b0242ac110003.jpg	/data/thumbnails/photos/b4453952f92111e5be8b0242ac110003_400x400_85.jpg	/data/thumbnails/photos/b4453952f92111e5be8b0242ac110003_200x200_85.jpg
+8c420c8ef92411e5ba070242ac110003.jpg	\N	/data/photos/8c420c8ef92411e5ba070242ac110003.jpg	/data/thumbnails/photos/8c420c8ef92411e5ba070242ac110003_400x400_85.jpg	/data/thumbnails/photos/8c420c8ef92411e5ba070242ac110003_200x200_85.jpg
+32d835a0f92511e5a08b0242ac110003.jpg	\N	/data/photos/32d835a0f92511e5a08b0242ac110003.jpg	/data/thumbnails/photos/32d835a0f92511e5a08b0242ac110003_400x400_85.jpg	/data/thumbnails/photos/32d835a0f92511e5a08b0242ac110003_200x200_85.jpg
+a3ce8704f92611e59b0e0242ac110003.jpg	\N	/data/photos/a3ce8704f92611e59b0e0242ac110003.jpg	/data/thumbnails/photos/a3ce8704f92611e59b0e0242ac110003_400x400_85.jpg	/data/thumbnails/photos/a3ce8704f92611e59b0e0242ac110003_200x200_85.jpg
+d085d992f92a11e582a60242ac110003.jpg	\N	/data/photos/d085d992f92a11e582a60242ac110003.jpg	/data/thumbnails/photos/d085d992f92a11e582a60242ac110003_400x400_85.jpg	/data/thumbnails/photos/d085d992f92a11e582a60242ac110003_200x200_85.jpg
+0dd3158af92b11e582a60242ac110003.jpg	\N	/data/photos/0dd3158af92b11e582a60242ac110003.jpg	/data/thumbnails/photos/0dd3158af92b11e582a60242ac110003_400x400_85.jpg	/data/thumbnails/photos/0dd3158af92b11e582a60242ac110003_200x200_85.jpg
+2cbb2de2f92c11e593dc0242ac110003.jpg	\N	/data/photos/2cbb2de2f92c11e593dc0242ac110003.jpg	/data/thumbnails/photos/2cbb2de2f92c11e593dc0242ac110003_400x400_85.jpg	/data/thumbnails/photos/2cbb2de2f92c11e593dc0242ac110003_200x200_85.jpg
+4b8bf1e4f9df11e5b5040242ac110003.jpg	\N	/data/photos/4b8bf1e4f9df11e5b5040242ac110003.jpg	/data/thumbnails/photos/4b8bf1e4f9df11e5b5040242ac110003_400x400_85.jpg	/data/thumbnails/photos/4b8bf1e4f9df11e5b5040242ac110003_200x200_85.jpg
+e4c02b84fc3011e595830242ac110003.jpeg	\N	/data/photos/e4c02b84fc3011e595830242ac110003.jpeg	/data/thumbnails/photos/e4c02b84fc3011e595830242ac110003_400x400_85.jpeg	/data/thumbnails/photos/e4c02b84fc3011e595830242ac110003_200x200_85.jpeg
+da98947efc3111e595830242ac110003.jpeg	\N	/data/photos/da98947efc3111e595830242ac110003.jpeg	/data/thumbnails/photos/da98947efc3111e595830242ac110003_400x400_85.jpeg	/data/thumbnails/photos/da98947efc3111e595830242ac110003_200x200_85.jpeg
+55a6e300fc3211e595830242ac110003.jpeg	\N	/data/photos/55a6e300fc3211e595830242ac110003.jpeg	/data/thumbnails/photos/55a6e300fc3211e595830242ac110003_400x400_85.jpeg	/data/thumbnails/photos/55a6e300fc3211e595830242ac110003_200x200_85.jpeg
+ee39afa0fc3511e58c380242ac110003.jpeg	\N	/data/photos/ee39afa0fc3511e58c380242ac110003.jpeg	/data/thumbnails/photos/ee39afa0fc3511e58c380242ac110003_400x400_85.jpeg	/data/thumbnails/photos/ee39afa0fc3511e58c380242ac110003_200x200_85.jpeg
+371a4996fc3611e58c380242ac110003.jpeg	\N	/data/photos/371a4996fc3611e58c380242ac110003.jpeg	/data/thumbnails/photos/371a4996fc3611e58c380242ac110003_400x400_85.jpeg	/data/thumbnails/photos/371a4996fc3611e58c380242ac110003_200x200_85.jpeg
+a9343d7afcc211e5a78c0242ac11001c.jpeg	\N	/data/photos/a9343d7afcc211e5a78c0242ac11001c.jpeg	/data/thumbnails/photos/a9343d7afcc211e5a78c0242ac11001c_400x400_85.jpeg	/data/thumbnails/photos/a9343d7afcc211e5a78c0242ac11001c_200x200_85.jpeg
+460ffb88fcc411e5a78c0242ac11001c.jpeg	\N	/data/photos/460ffb88fcc411e5a78c0242ac11001c.jpeg	/data/thumbnails/photos/460ffb88fcc411e5a78c0242ac11001c_400x400_85.jpeg	/data/thumbnails/photos/460ffb88fcc411e5a78c0242ac11001c_200x200_85.jpeg
+0b9f01acfd7c11e59d410242ac11001c.jpeg	День рождения Олега Григорьевича Фаянса 2001 год 29 августа. Семейные посиделки	/data/photos/0b9f01acfd7c11e59d410242ac11001c.jpeg	/data/thumbnails/photos/0b9f01acfd7c11e59d410242ac11001c_400x400_85.jpeg	/data/thumbnails/photos/0b9f01acfd7c11e59d410242ac11001c_200x200_85.jpeg
+10b2b35efd7d11e59d410242ac11001c.jpeg	2001 год,	/data/photos/10b2b35efd7d11e59d410242ac11001c.jpeg	/data/thumbnails/photos/10b2b35efd7d11e59d410242ac11001c_400x400_85.jpeg	/data/thumbnails/photos/10b2b35efd7d11e59d410242ac11001c_200x200_85.jpeg
+e63b3276fd7d11e5bb300242ac11001c.jpeg		/data/photos/e63b3276fd7d11e5bb300242ac11001c.jpeg	/data/thumbnails/photos/e63b3276fd7d11e5bb300242ac11001c_400x400_85.jpeg	/data/thumbnails/photos/e63b3276fd7d11e5bb300242ac11001c_200x200_85.jpeg
+6b0f95d4fd9011e5bfba0242ac11001c.jpeg		/data/photos/6b0f95d4fd9011e5bfba0242ac11001c.jpeg	/data/thumbnails/photos/6b0f95d4fd9011e5bfba0242ac11001c_400x400_85.jpeg	/data/thumbnails/photos/6b0f95d4fd9011e5bfba0242ac11001c_200x200_85.jpeg
+b29aa6e2fdc611e5a4220242ac11001c.jpg	\N	/data/photos/b29aa6e2fdc611e5a4220242ac11001c.jpg	/data/thumbnails/photos/b29aa6e2fdc611e5a4220242ac11001c_400x400_85.jpg	/data/thumbnails/photos/b29aa6e2fdc611e5a4220242ac11001c_200x200_85.jpg
+a859424cff2911e58b940242ac11001c.jpg	\N	/data/photos/a859424cff2911e58b940242ac11001c.jpg	/data/thumbnails/photos/a859424cff2911e58b940242ac11001c_400x400_85.jpg	/data/thumbnails/photos/a859424cff2911e58b940242ac11001c_200x200_85.jpg
+387bae96ff2a11e58b940242ac11001c.jpg	\N	/data/photos/387bae96ff2a11e58b940242ac11001c.jpg	/data/thumbnails/photos/387bae96ff2a11e58b940242ac11001c_400x400_85.jpg	/data/thumbnails/photos/387bae96ff2a11e58b940242ac11001c_200x200_85.jpg
 \.
 
 
 --
--- Data for Name: photoparticipant; Type: TABLE DATA; Schema: public; Owner: JAmesB0nd
+-- Data for Name: photoparticipant; Type: TABLE DATA; Schema: public; Owner: jamesb0nd
 --
 
 COPY photoparticipant (person_id, photo_id) FROM stdin;
-c404a4f6ca5d11e5a2db3c970e1933ad	c3ff4042ca5d11e5a2db3c970e1933ad
-362b9462cb3111e5bd753c970e1933ad	35d48226cb3111e5bd753c970e1933ad
-1f719182d5b711e59dc6247703a3195c	1f6c87dcd5b711e59dc6247703a3195c
+59794800f91d11e580960242ac110003	5978d38ef91d11e580960242ac110003.JPG
+3326e014f92111e5be8b0242ac110003	3326c6baf92111e5be8b0242ac110003.jpg
+b4454d70f92111e5be8b0242ac110003	b4453952f92111e5be8b0242ac110003.jpg
+d085ed2ef92a11e582a60242ac110003	d085d992f92a11e582a60242ac110003.jpg
+0dd32fa2f92b11e582a60242ac110003	0dd3158af92b11e582a60242ac110003.jpg
+06672b8cf92c11e593dc0242ac110003	2cbb2de2f92c11e593dc0242ac110003.jpg
+4b8c0d8cf9df11e5b5040242ac110003	4b8bf1e4f9df11e5b5040242ac110003.jpg
+e4c100e0fc3011e595830242ac110003	e4c02b84fc3011e595830242ac110003.jpeg
+da9a8a9afc3111e595830242ac110003	da98947efc3111e595830242ac110003.jpeg
+55a741f6fc3211e595830242ac110003	55a6e300fc3211e595830242ac110003.jpeg
+ee3a3c54fc3511e58c380242ac110003	ee39afa0fc3511e58c380242ac110003.jpeg
+371b159cfc3611e58c380242ac110003	371a4996fc3611e58c380242ac110003.jpeg
+a9345314fcc211e5a78c0242ac11001c	a9343d7afcc211e5a78c0242ac11001c.jpeg
+46101992fcc411e5a78c0242ac11001c	460ffb88fcc411e5a78c0242ac11001c.jpeg
+3326e014f92111e5be8b0242ac110003	0b9f01acfd7c11e59d410242ac11001c.jpeg
+b4454d70f92111e5be8b0242ac110003	0b9f01acfd7c11e59d410242ac11001c.jpeg
+4b8c0d8cf9df11e5b5040242ac110003	0b9f01acfd7c11e59d410242ac11001c.jpeg
+e4c100e0fc3011e595830242ac110003	0b9f01acfd7c11e59d410242ac11001c.jpeg
+a9345314fcc211e5a78c0242ac11001c	0b9f01acfd7c11e59d410242ac11001c.jpeg
+46101992fcc411e5a78c0242ac11001c	0b9f01acfd7c11e59d410242ac11001c.jpeg
+4b8c0d8cf9df11e5b5040242ac110003	10b2b35efd7d11e59d410242ac11001c.jpeg
+e4c100e0fc3011e595830242ac110003	10b2b35efd7d11e59d410242ac11001c.jpeg
+b4454d70f92111e5be8b0242ac110003	e63b3276fd7d11e5bb300242ac11001c.jpeg
+3326e014f92111e5be8b0242ac110003	6b0f95d4fd9011e5bfba0242ac11001c.jpeg
+d085ed2ef92a11e582a60242ac110003	6b0f95d4fd9011e5bfba0242ac11001c.jpeg
+0dd32fa2f92b11e582a60242ac110003	6b0f95d4fd9011e5bfba0242ac11001c.jpeg
+b29ab826fdc611e5a4220242ac11001c	b29aa6e2fdc611e5a4220242ac11001c.jpg
+a8595444ff2911e58b940242ac11001c	a859424cff2911e58b940242ac11001c.jpg
+387bc30eff2a11e58b940242ac11001c	387bae96ff2a11e58b940242ac11001c.jpg
 \.
 
 
 --
--- Data for Name: spouses; Type: TABLE DATA; Schema: public; Owner: JAmesB0nd
+-- Data for Name: spouses; Type: TABLE DATA; Schema: public; Owner: jamesb0nd
 --
 
 COPY spouses (leftspouse_id, rightspouse_id) FROM stdin;
-1f719182d5b711e59dc6247703a3195c	362b9462cb3111e5bd753c970e1933ad
-362b9462cb3111e5bd753c970e1933ad	1f719182d5b711e59dc6247703a3195c
-18f4a0d2d5c211e59dc6247703a3195c	3a0fdbaed5bf11e59dc6247703a3195c
-3a0fdbaed5bf11e59dc6247703a3195c	18f4a0d2d5c211e59dc6247703a3195c
+e4c100e0fc3011e595830242ac110003	4b8c0d8cf9df11e5b5040242ac110003
+4b8c0d8cf9df11e5b5040242ac110003	e4c100e0fc3011e595830242ac110003
+55a741f6fc3211e595830242ac110003	da9a8a9afc3111e595830242ac110003
+da9a8a9afc3111e595830242ac110003	55a741f6fc3211e595830242ac110003
+371b159cfc3611e58c380242ac110003	ee3a3c54fc3511e58c380242ac110003
+ee3a3c54fc3511e58c380242ac110003	371b159cfc3611e58c380242ac110003
+b29ab826fdc611e5a4220242ac11001c	3326e014f92111e5be8b0242ac110003
+3326e014f92111e5be8b0242ac110003	b29ab826fdc611e5a4220242ac11001c
+93587948ff2a11e58b940242ac11001c	387bc30eff2a11e58b940242ac11001c
+387bc30eff2a11e58b940242ac11001c	93587948ff2a11e58b940242ac11001c
 \.
 
 
 --
--- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: JAmesB0nd
+-- Data for Name: usermessages; Type: TABLE DATA; Schema: public; Owner: jamesb0nd
+--
+
+COPY usermessages (user_id, message_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: jamesb0nd
 --
 
 COPY users (id, email, password_hash, name, second_name, surname, sex, country_id, b_date, person_id, is_new, confirmed) FROM stdin;
-b6d4309eca5d11e5a2db3c970e1933ad	ofajans@gmail.com	pbkdf2:sha1:1000$JW9gwscL$1fcd2530b2190634259b7c60b0d8d2cd5cb3db0b	Oleg Fayans	Fayans	Fayans	male	8289d3f8ca4d11e5b03a3c970e1933ad	1979-05-17	c404a4f6ca5d11e5a2db3c970e1933ad	f	t
-196f78e6d81711e5aae9247703a3195c	shadow@gmail.com	pbkdf2:sha1:1000$iHgqEiPG$271960c3157c934ef5e8ca3eecd33eee69ec528b	Vasily		Pupkin	male	8289d3f8ca4d11e5b03a3c970e1933ad	1981-04-01	2b68bd12d81911e5b8db247703a3195c	f	t
+f68133caf91c11e580960242ac110003	ofajans@gmail.com	pbkdf2:sha1:1000$zl2WMsmY$55e27fe800affbce79878cc1f46cd4806020437f	Олег	Олегович	Фаянс	male	191	1979-05-17	59794800f91d11e580960242ac110003	f	t
+ff69898aff2811e58b940242ac11001c	aquimaria@gmail.com	pbkdf2:sha1:1000$y6lr8lgD$5ea6d1abef35d7ffe68c67cf743e5204e203df62	Мария	Владимировна	Злобина	female	191	1981-07-21	a8595444ff2911e58b940242ac11001c	f	t
+a021ea48ff2e11e58b940242ac11001c	ololo@alala.com	pbkdf2:sha1:1000$fDpEC6Lz$5a5046b2c0e79e5097209494e54d834c7fef85fb	Григорий	Владимирович	Фаянс	male	191	1976-01-01	b9a30aecff2e11e58b940242ac11001c	f	t
 \.
 
 
 --
--- Name: country_pkey; Type: CONSTRAINT; Schema: public; Owner: JAmesB0nd; Tablespace: 
+-- Name: country_pkey; Type: CONSTRAINT; Schema: public; Owner: jamesb0nd; Tablespace: 
 --
 
 ALTER TABLE ONLY country
@@ -613,7 +775,7 @@ ALTER TABLE ONLY country
 
 
 --
--- Name: family_pkey; Type: CONSTRAINT; Schema: public; Owner: JAmesB0nd; Tablespace: 
+-- Name: family_pkey; Type: CONSTRAINT; Schema: public; Owner: jamesb0nd; Tablespace: 
 --
 
 ALTER TABLE ONLY family
@@ -621,7 +783,7 @@ ALTER TABLE ONLY family
 
 
 --
--- Name: legend_pkey; Type: CONSTRAINT; Schema: public; Owner: JAmesB0nd; Tablespace: 
+-- Name: legend_pkey; Type: CONSTRAINT; Schema: public; Owner: jamesb0nd; Tablespace: 
 --
 
 ALTER TABLE ONLY legend
@@ -629,7 +791,15 @@ ALTER TABLE ONLY legend
 
 
 --
--- Name: person_pkey; Type: CONSTRAINT; Schema: public; Owner: JAmesB0nd; Tablespace: 
+-- Name: message_pkey; Type: CONSTRAINT; Schema: public; Owner: jamesb0nd; Tablespace: 
+--
+
+ALTER TABLE ONLY message
+    ADD CONSTRAINT message_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: person_pkey; Type: CONSTRAINT; Schema: public; Owner: jamesb0nd; Tablespace: 
 --
 
 ALTER TABLE ONLY person
@@ -637,7 +807,7 @@ ALTER TABLE ONLY person
 
 
 --
--- Name: photo_pkey; Type: CONSTRAINT; Schema: public; Owner: JAmesB0nd; Tablespace: 
+-- Name: photo_pkey; Type: CONSTRAINT; Schema: public; Owner: jamesb0nd; Tablespace: 
 --
 
 ALTER TABLE ONLY photo
@@ -645,7 +815,7 @@ ALTER TABLE ONLY photo
 
 
 --
--- Name: users_pkey; Type: CONSTRAINT; Schema: public; Owner: JAmesB0nd; Tablespace: 
+-- Name: users_pkey; Type: CONSTRAINT; Schema: public; Owner: jamesb0nd; Tablespace: 
 --
 
 ALTER TABLE ONLY users
@@ -653,63 +823,70 @@ ALTER TABLE ONLY users
 
 
 --
--- Name: ix_country_id; Type: INDEX; Schema: public; Owner: JAmesB0nd; Tablespace: 
+-- Name: ix_country_id; Type: INDEX; Schema: public; Owner: jamesb0nd; Tablespace: 
 --
 
 CREATE INDEX ix_country_id ON country USING btree (id);
 
 
 --
--- Name: ix_family_creator_id; Type: INDEX; Schema: public; Owner: JAmesB0nd; Tablespace: 
+-- Name: ix_family_creator_id; Type: INDEX; Schema: public; Owner: jamesb0nd; Tablespace: 
 --
 
 CREATE INDEX ix_family_creator_id ON family USING btree (creator_id);
 
 
 --
--- Name: ix_family_id; Type: INDEX; Schema: public; Owner: JAmesB0nd; Tablespace: 
+-- Name: ix_family_id; Type: INDEX; Schema: public; Owner: jamesb0nd; Tablespace: 
 --
 
 CREATE INDEX ix_family_id ON family USING btree (id);
 
 
 --
--- Name: ix_legend_id; Type: INDEX; Schema: public; Owner: JAmesB0nd; Tablespace: 
+-- Name: ix_legend_id; Type: INDEX; Schema: public; Owner: jamesb0nd; Tablespace: 
 --
 
 CREATE INDEX ix_legend_id ON legend USING btree (id);
 
 
 --
--- Name: ix_person_id; Type: INDEX; Schema: public; Owner: JAmesB0nd; Tablespace: 
+-- Name: ix_message_id; Type: INDEX; Schema: public; Owner: jamesb0nd; Tablespace: 
+--
+
+CREATE INDEX ix_message_id ON message USING btree (id);
+
+
+--
+-- Name: ix_person_id; Type: INDEX; Schema: public; Owner: jamesb0nd; Tablespace: 
 --
 
 CREATE INDEX ix_person_id ON person USING btree (id);
 
 
 --
--- Name: ix_photo_id; Type: INDEX; Schema: public; Owner: JAmesB0nd; Tablespace: 
+-- Name: ix_photo_id; Type: INDEX; Schema: public; Owner: jamesb0nd; Tablespace: 
 --
 
 CREATE INDEX ix_photo_id ON photo USING btree (id);
 
 
 --
--- Name: ix_users_email; Type: INDEX; Schema: public; Owner: JAmesB0nd; Tablespace: 
+-- Name: ix_users_email; Type: INDEX; Schema: public; Owner: jamesb0nd; Tablespace: 
 --
 
 CREATE INDEX ix_users_email ON users USING btree (email);
 
 
 --
--- Name: ix_users_id; Type: INDEX; Schema: public; Owner: JAmesB0nd; Tablespace: 
+-- Name: ix_users_id; Type: INDEX; Schema: public; Owner: jamesb0nd; Tablespace: 
 --
 
 CREATE INDEX ix_users_id ON users USING btree (id);
 
 
 --
--- Name: country_dvellers_country_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: JAmesB0nd
+-- Name: country_dvellers_country_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: jamesb0nd
 --
 
 ALTER TABLE ONLY country_dvellers
@@ -717,7 +894,7 @@ ALTER TABLE ONLY country_dvellers
 
 
 --
--- Name: country_dvellers_person_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: JAmesB0nd
+-- Name: country_dvellers_person_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: jamesb0nd
 --
 
 ALTER TABLE ONLY country_dvellers
@@ -725,7 +902,7 @@ ALTER TABLE ONLY country_dvellers
 
 
 --
--- Name: family_creator_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: JAmesB0nd
+-- Name: family_creator_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: jamesb0nd
 --
 
 ALTER TABLE ONLY family
@@ -733,7 +910,7 @@ ALTER TABLE ONLY family
 
 
 --
--- Name: family_members_family_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: JAmesB0nd
+-- Name: family_members_family_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: jamesb0nd
 --
 
 ALTER TABLE ONLY family_members
@@ -741,7 +918,7 @@ ALTER TABLE ONLY family_members
 
 
 --
--- Name: family_members_person_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: JAmesB0nd
+-- Name: family_members_person_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: jamesb0nd
 --
 
 ALTER TABLE ONLY family_members
@@ -749,7 +926,15 @@ ALTER TABLE ONLY family_members
 
 
 --
--- Name: legendparticipant_legend_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: JAmesB0nd
+-- Name: family_possible_members_family_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: jamesb0nd
+--
+
+ALTER TABLE ONLY family_possible_members
+    ADD CONSTRAINT family_possible_members_family_id_fkey FOREIGN KEY (family_id) REFERENCES family(id);
+
+
+--
+-- Name: legendparticipant_legend_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: jamesb0nd
 --
 
 ALTER TABLE ONLY legendparticipant
@@ -757,7 +942,7 @@ ALTER TABLE ONLY legendparticipant
 
 
 --
--- Name: legendparticipant_person_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: JAmesB0nd
+-- Name: legendparticipant_person_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: jamesb0nd
 --
 
 ALTER TABLE ONLY legendparticipant
@@ -765,7 +950,7 @@ ALTER TABLE ONLY legendparticipant
 
 
 --
--- Name: person_ava_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: JAmesB0nd
+-- Name: person_ava_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: jamesb0nd
 --
 
 ALTER TABLE ONLY person
@@ -773,7 +958,7 @@ ALTER TABLE ONLY person
 
 
 --
--- Name: person_father_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: JAmesB0nd
+-- Name: person_father_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: jamesb0nd
 --
 
 ALTER TABLE ONLY person
@@ -781,7 +966,7 @@ ALTER TABLE ONLY person
 
 
 --
--- Name: person_mother_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: JAmesB0nd
+-- Name: person_mother_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: jamesb0nd
 --
 
 ALTER TABLE ONLY person
@@ -789,7 +974,7 @@ ALTER TABLE ONLY person
 
 
 --
--- Name: photoparticipant_person_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: JAmesB0nd
+-- Name: photoparticipant_person_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: jamesb0nd
 --
 
 ALTER TABLE ONLY photoparticipant
@@ -797,7 +982,7 @@ ALTER TABLE ONLY photoparticipant
 
 
 --
--- Name: photoparticipant_photo_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: JAmesB0nd
+-- Name: photoparticipant_photo_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: jamesb0nd
 --
 
 ALTER TABLE ONLY photoparticipant
@@ -805,23 +990,39 @@ ALTER TABLE ONLY photoparticipant
 
 
 --
--- Name: spouses_leftspouse_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: JAmesB0nd
+-- Name: spouses_leftspouse_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: jamesb0nd
 --
 
 ALTER TABLE ONLY spouses
-    ADD CONSTRAINT spouses_leftspouse_id_fkey FOREIGN KEY (leftspouse_id) REFERENCES person(id);
+    ADD CONSTRAINT spouses_leftspouse_id_fkey FOREIGN KEY (leftspouse_id) REFERENCES person(id) ON DELETE CASCADE;
 
 
 --
--- Name: spouses_rightspouse_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: JAmesB0nd
+-- Name: spouses_rightspouse_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: jamesb0nd
 --
 
 ALTER TABLE ONLY spouses
-    ADD CONSTRAINT spouses_rightspouse_id_fkey FOREIGN KEY (rightspouse_id) REFERENCES person(id);
+    ADD CONSTRAINT spouses_rightspouse_id_fkey FOREIGN KEY (rightspouse_id) REFERENCES person(id) ON DELETE CASCADE;
 
 
 --
--- Name: users_country_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: JAmesB0nd
+-- Name: usermessages_message_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: jamesb0nd
+--
+
+ALTER TABLE ONLY usermessages
+    ADD CONSTRAINT usermessages_message_id_fkey FOREIGN KEY (message_id) REFERENCES message(id);
+
+
+--
+-- Name: usermessages_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: jamesb0nd
+--
+
+ALTER TABLE ONLY usermessages
+    ADD CONSTRAINT usermessages_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id);
+
+
+--
+-- Name: users_country_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: jamesb0nd
 --
 
 ALTER TABLE ONLY users
@@ -829,7 +1030,7 @@ ALTER TABLE ONLY users
 
 
 --
--- Name: users_person_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: JAmesB0nd
+-- Name: users_person_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: jamesb0nd
 --
 
 ALTER TABLE ONLY users

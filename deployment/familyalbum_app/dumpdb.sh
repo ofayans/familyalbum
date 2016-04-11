@@ -1,3 +1,3 @@
 #!/bin/bash
 . /root/sourceme
-pg_dump -f /data/$1 -F t -d familyalbum_dev -h familyalbum_db -U jamesb0nd
+pg_dump -C -f /data/$1 -F p -d familyalbum_dev -h familyalbum_db -U jamesb0nd
