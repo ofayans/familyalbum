@@ -9,15 +9,17 @@ from flask import g
 from flask import Flask
 from flask import request
 from flask import send_from_directory
+from flask import flash
 from flask.ext.login import login_required, current_user
 from . import main
 from .forms import PersonForm, AboutMeForm, LegendForm, PhotoForm
-from .forms import PersonSearchForm
+from .forms import PersonSearchForm, MyrelativeForm
 from .misc import populate_dropdowns, make_person, new_family
 from .misc import populate_relatives, ancestor_tree, descendants_tree
-from .misc import allowed_file
+from .misc import allowed_file, populate_relations, relation_dict
 from .. import db
 from ..models import Legend, Photo, Person, User, Family, Country
+from ..models import PossibleRelative
 import uuid
 from sqlalchemy import and_
 import os
@@ -323,7 +325,36 @@ def photo_upload(person_id):
     return render_template('photo_upload.html', form=form, person=person)
 
 
-@main.route('/myrelative/<person_id>', methods=['POST', 'GET'])
+@main.route('/myrelative/<my_id>/<target_id>', methods=['POST', 'GET'])
 @login_required
-def possible_relative(person_id):
-    pass
+def possible_relative(my_id, target_id):
+    target = Person.query.filter_by(id=target_id).first()
+    form = MyrelativeForm()
+    form.relation.choices = populate_relations(target)
+    header = "Tell us, who is this person for you"
+    if form.validate_on_submit():
+        relation = relation_dict[form.data["relation"]]
+        possible = PossibleRelative(
+            id=uuid.uuid1().hex,
+            person_id=my_id,
+            target_id=target_id,
+            relation=relation
+        )
+        db.session.add(possible)
+
+        for family in target.families:
+            family.possible_members.append(possible)
+            db.session.add(family)
+        db.session.commit()
+        if target.sex == "male":
+            flash_message = "%s and his family will be notified that you \
+            consider him your %s. They need to confirm it. Be patient :)" % \
+            (target.name, relation)
+        else:
+            flash_message = "%s and her family will be notified that you \
+            consider her your %s. They need to confirm it. Be patient :)" % \
+            (target.name, relation)
+        # TODO: implement a javascript-base notification of the user with the flash_message
+        return redirect(url_for('main.index'))
+    return render_template('myrelative.html', header=header, form=form,
+                           person=target)

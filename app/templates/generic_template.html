@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<H2>Hi, {{ g.user.username }}! {{ header }}<H2>
+<H2>Hi, {{ current_user.username }}! {{ header }}<H2>
 
 {% import "bootstrap/wtf.html" as wtf %}
 {{ wtf.quick_form(form) }} 

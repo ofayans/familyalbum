@@ -46,12 +46,27 @@ family_members = db.Table(
     db.Column("person_id", db.Unicode, db.ForeignKey('person.id'))
     )
 
+family_possible_members = db.Table(
+    "family_possible_members", db.metadata,
+    db.Column("family_id", db.Unicode, db.ForeignKey('family.id')),
+    db.Column("possible_member_id", db.Unicode, 
+              db.ForeignKey('possiblerelative.id'))
+    )
+
 country_dvellers = db.Table(
     "country_dvellers", db.metadata,
     db.Column("country_id", db.Unicode,
               db.ForeignKey('country.id')),
     db.Column("person_id", db.Unicode, db.ForeignKey('person.id'))
     )
+
+class PossibleRelative(db.Model):
+    __tablename__ = 'possiblerelative'
+    id = db.Column(db.Unicode, primary_key=True, index=True)
+    person_id = db.Column(db.Unicode, db.ForeignKey('person.id'), nullable=False)
+    target_id = db.Column(db.Unicode, db.ForeignKey('person.id'), nullable=False)
+    relation = db.Column(db.Unicode)
+
 
 # city_dvellers = db.Table(
 #     "city_dvellers", db.metadata,
@@ -305,7 +320,12 @@ class Family(db.Model):
         "Person",
         secondary=family_members,
         backref='clans'
-        )
+    )
+    possible_members = db.relationship(
+        "PossibleRelative",
+        secondary=family_possible_members,
+        backref='possible_clans'
+    )
 
 
 @login_manager.user_loader

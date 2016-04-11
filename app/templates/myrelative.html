@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+<H2>Hi, {{ current_user.username }}! {{ header }}<H2>
+
+{% block content %}
+  <div class="person">
+     <img src="{{ url_for('main.show_photo',
+     photo_id=person.ava_id)|thumbnail('200x200') }}">
+     <p>{{ person.name }} {{ person.surname }} {{
+     person.years_of_life() }}</p>
+  </div>
+
+{% import "bootstrap/wtf.html" as wtf %}
+{{ wtf.quick_form(form) }} 
+{% endblock %}

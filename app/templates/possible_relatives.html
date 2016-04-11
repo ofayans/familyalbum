@@ -3,17 +3,13 @@
 {% block content %}
 
 {% for person in people %}
-        <div class="person">
-            <a href="{{ url_for('main.possible_relative', person_id=person.id) }}">
-               <img src="{{ url_for('main.show_photo',
-               photo_id=person.ava_id)|thumbnail('200x200') }}"></a>
-               <p>{{ person.name }} {{ person.surname }} {{
-               person.years_of_life() }}</p>
-        </div>
-
-
-
-
+    <div class="person">
+        <a href="{{ url_for('main.possible_relative', my_id=g.person.id, target_id=person.id) }}">
+           <img src="{{ url_for('main.show_photo',
+           photo_id=person.ava_id)|thumbnail('200x200') }}"></a>
+           <p>{{ person.name }} {{ person.surname }} {{
+           person.years_of_life() }}</p>
+    </div>
 {% endfor %}
 {% endblock %}
 
