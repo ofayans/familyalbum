@@ -126,7 +126,10 @@ def search_for_relatives(person_id):
 
 @main.route('/')
 def index():
-    return render_template('index.html')
+    hyperfamily = []
+    for family in g.families:
+        hyperfamily.extend(family.members)
+    return render_template('index.html', hyperfamily=set(hyperfamily))
 
 
 @main.route('/ancestors/display/<person_id>')
@@ -282,8 +285,8 @@ def find_person():
         if form.data['b_date']:
             runme += "Person.b_date == form.data['b_date']"
         runme += ")).all()"
-        supposed_relatives = eval(runme)
-        return render_template("possible_relatives.html", people=supposed_relatives)
+        people = eval(runme)
+        return render_template("found_people.html", people=people)
     return render_template("generic_template.html",
                            form=form,
                            header=header)
@@ -333,7 +336,7 @@ def possible_relative(my_id, target_id):
     form.relation.choices = populate_relations(target)
     header = "Tell us, who is this person for you"
     if form.validate_on_submit():
-        relation = relation_dict[form.data["relation"]]
+        relation = relation_dict(form.data["relation"])
         possible = PossibleRelative(
             id=uuid.uuid1().hex,
             person_id=my_id,
@@ -358,3 +361,57 @@ def possible_relative(my_id, target_id):
         return redirect(url_for('main.index'))
     return render_template('myrelative.html', header=header, form=form,
                            person=target)
+
+@main.route('/myrelatives/<family_id>', methods=['GET'])
+@login_required
+def possible_relatives(family_id):
+    family = Family.query.filter_by(id=family_id).first()
+    possibles = []
+    for possible_relative in family.possible_members:
+        result = {
+            "dude": Person.query.filter_by(id=possible_relative.person_id).first(),
+            "target": Person.query.filter_by(id=possible_relative.target_id).first(),
+            "relation": possible_relative.relation,
+            "possible_relative_id": possible_relative.id
+            }
+        possibles.append(result)
+    return render_template("possible_relatives.html", possibles=possibles)
+
+@main.route('/myrelative/confirm/<family_id>/<possible_member_id>', methods=['GET'])
+@login_required
+def confirm_relation(family_id, possible_member_id):
+    family = Family.query.filter_by(id=family_id).first()
+    possible = PossibleRelative.query.filter_by(id=possible_member_id).first()
+    person = Person.query.filter_by(id=possible.person_id).first()
+    target = Person.query.filter_by(id=possible.target_id).first()
+    family.members.append(person)
+    target.families.append(person.families[0])
+#    person.families[0].members.append(target)
+    if possible.relation == "spouse":
+        target.spouses.append(person)
+
+    elif possible.relation == "father":
+        person.father_id = target.id
+    elif possible.relation == "mother":
+        person.mother_id = target.id
+    elif possible.relation in ['son', 'daughter']:
+        if person.sex == 'male':
+            target.father_id = person.id
+        else:
+            target.mother_id = person.id
+    db.session.add(family)
+    db.session.add(person)
+    db.session.add(target)
+    db.session.add(person.families[0])
+    db.session.delete(possible)
+    db.session.commit()
+    return redirect(url_for('main.index'))
+
+
+@main.route('/myrelative/discard/<possible_relative_id>')
+@login_required
+def discard_possible_relative(possible_relative_id):
+    possible = PossibleRelative.query.filter_by(id=possible_relative_id).first()
+    db.session.delete(possible)
+    db.session.commit()
+    return redirect(url_for('main.index'))

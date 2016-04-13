@@ -1,15 +1,31 @@
 {% extends "base.html" %}
-
 {% block content %}
+<h3>The following people claim to be you relatives:</h3>
 
-{% for person in people %}
-    <div class="person">
-        <a href="{{ url_for('main.possible_relative', my_id=g.person.id, target_id=person.id) }}">
-           <img src="{{ url_for('main.show_photo',
-           photo_id=person.ava_id)|thumbnail('200x200') }}"></a>
-           <p>{{ person.name }} {{ person.surname }} {{
-           person.years_of_life() }}</p>
-    </div>
+{% for possible in possibles %}
+
+  <div class="person">
+      {% if possible['dude'].ava_id %}
+        <a href="{{ url_for('main.mypage', person_id=possible['dude'].id) }}">
+        <img class="avatar" src="{{ url_for('main.show_photo',
+        photo_id=possible['dude'].ava_id)|thumbnail('200x200') }}"/></a>
+      <p class="personname">{{ possible['dude'].fullname() }} thinks that {{
+      possible['target'].fullname() }} is his/her {{ possible['relation'] }} </p>
+      {% else %}
+        <p class="personname">
+        <a href="{{ url_for('main.mypage', person_id=possible['dude'].id) }}">
+            {{ possible['dude'].fullname() }}</a> thinks that {{ possible['target'].fullname() }} is his/her {{ possible['relation'] }} 
+        </p>
+      {% endif %}
+  </div>
+  <p> You can either <a href="{{ url_for('main.confirm_relation',
+      family_id=g.families[0].id,
+      possible_member_id=possible['possible_relative_id']) }}">confirm</a>, <a
+      href="{{ url_for('main.index') }}">ignore</a>, or <a href="{{
+      url_for('main.discard_possible_relative',
+      possible_relative_id=possible['possible_relative_id']) }}">discard</a>,
+      if you are 100% sure that he/she is a perfect stranger
+
 {% endfor %}
-{% endblock %}
 
+{% endblock %}

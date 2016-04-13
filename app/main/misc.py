@@ -88,7 +88,10 @@ def make_person(form, user, request, person=None):
 
 def populate_relatives(person=None, sex=None):
     relatives = []
-    for dude in g.families[0].members:
+    members = []
+    for family in g.families:
+        members.extend(family.members)
+    for dude in set(members):
         if person and dude.id == person.id:
             continue
         if not sex:
@@ -219,11 +222,7 @@ def _descendants_tree(person_id, ancestor=False):
             result["children"].append(_descendants_tree(person.mother_id,
                                                         ancestor=True))
     else:
-        if person.sex == "female":
-            children = person.mothers_children
-        else:
-            children = person.fathers_children
-        for child in children:
+        for child in person.children():
             result["children"].append(_descendants_tree(child.id))
     return result
 

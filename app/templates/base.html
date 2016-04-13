@@ -19,6 +19,16 @@
                   person_id=g.person.id) }}">Edit my details</a>
               <a class="navbar-brand" href="{{ url_for('main.newperson',
                   person_id=g.person.id) }}">New relative</a>
+              {% for family in g.families %}
+                {% if family.possible_members %}
+                  <span title="These people claim, they are your relative">
+                  <a class="navbar-brand notification" href="{{
+                url_for('main.possible_relatives', family_id=family.id) }}">
+                  Possible relatives: {{ family.possible_members.__len__() }}
+                  </a>
+                  </span>
+                {% endif %}
+              {% endfor %}
               <a class="navbar-brand" href="{{ url_for('auth.logout') }}">Log out</a>
             {% else %}
               <a class="navbar-brand" href="{{ url_for('auth.login') }}">Log in</a>

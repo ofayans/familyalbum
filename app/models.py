@@ -156,6 +156,14 @@ class Person(db.Model):
         result.append(lastname)
         return " ".join(result)
 
+    def children(self):
+        if self.fathers_children:
+            return self.fathers_children
+        elif self.mothers_children:
+            return self.mothers_children
+        else:
+            return []
+
     def years_of_life(self):
         if self.alive:
             return "%s-%s-%s" % (str(self.b_date.year),
