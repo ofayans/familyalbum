@@ -71,6 +71,8 @@ def mypage(person_id):
 @login_required
 def show_photo(photo_id):
     photo = Photo.query.filter_by(id=photo_id).first()
+    if not photo:
+        return abort(404)
     if os.path.exists(photo.path):
         folder = '/'.join(photo.path.split('/')[0: -1])
         filename = photo.path.split('/')[-1]
@@ -127,8 +129,9 @@ def search_for_relatives(person_id):
 @main.route('/')
 def index():
     hyperfamily = []
-    for family in g.families:
-        hyperfamily.extend(family.members)
+    if hasattr(g, "families"):
+        for family in g.families:
+            hyperfamily.extend(family.members)
     return render_template('index.html', hyperfamily=set(hyperfamily))
 
 
@@ -198,12 +201,15 @@ def thatsme(person_id):
 @login_required
 def edit_person(person_id):
     person = Person.query.filter_by(id=person_id).first()
+    photo = Photo.query.filter_by(id=person.ava_id).first()
     form = PersonForm(obj=person)
     form = populate_dropdowns(form, person)
+    header = "Please use the form below to update information about you"
     if form.validate_on_submit():
         make_person(form, current_user, request, person)
         return redirect(url_for('main.index'))
-    return render_template('new_person.html', form=form)
+    return render_template('new_person.html', form=form,
+                           photo=photo, header=header)
 
 
 @main.route('/legend/new', methods=['GET', 'POST'])
@@ -265,8 +271,9 @@ def newperson():
         return render_template('generic_template.html', form=form,
                                header=header)
     else:
-        return render_template('new_person.html', form=form, user=user,
-                               action=url_for('main.newperson'))
+        header = "A new relative? Or an old one, but suddenly raised \
+  from oblivion? Save all you know about this person, so that not to forget!"
+        return render_template('new_person.html', form=form, header=header)
 
 
 @main.route('/person/find', methods=['GET', 'POST'])

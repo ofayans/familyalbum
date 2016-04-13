@@ -2,9 +2,12 @@
 
 {% block content %}
 
-<H2>Hi, {{current_user.name}}! A new relative? Or an old one, but suddenly raised
-  from oblivion? Save all you know about this person, so that not to forget!<H2>
+<H2>Hi, {{current_user.name}}! {{ header }} <H2>
 
+{% if photo %}
+  <img src="{{ url_for('main.show_photo',
+  photo_id=photo.id)|thumbnail('200x200')}}">
+{% endif %}
 {% import "bootstrap/wtf.html" as wtf %}
 {{ wtf.quick_form(form) }} 
 <!--

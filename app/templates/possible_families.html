@@ -6,19 +6,16 @@
 
     <div class="personlist">
     {% for person in family['family_members'] %}
-        <div class="person">
-            <picture class="avatar">
-               <source src="{{ person.ava_path }}">
-               <p>{{ person.name }} {{ person.surname }} {{ person.b_date.year }}-{{
-               person.b_date.month}}-{{ person.b_date.day }}</p>
-            </picture>
-        </div>
-
+      <div class="person">
+         <img class="avatar" src="{{ url_for('main.show_photo',
+         photo_id=person.ava_id)|thumbnail('200x200') }}">
+         <p>{{ person.fullname() }} {{ person.years_of_life() }}</p>
+      </div>
     {% endfor %}
     </div>
     <a class="clickable_family" href={{ url_for('main.thatsmyfamily',
-        family_id=family['family_id'])
-        }}>That's my family</a>
+      family_id=family['family_id'])
+      }}>That's my family</a>
 
 {% endfor %}
 

@@ -142,43 +142,6 @@ def populate_dropdowns(form, person=None):
     form.father.choices = father_choices
     form.spouse.choices = spouse_choices
     form.children.choices = children_choices
-#     if person:
-#          # Description
-#          form.description.data = person.description
-#          # Name
-#          form.name.data = person.name
-#          # Second_name
-#          form.second_name.data = person.second_name
-#          # Surname
-#          form.surname.data = person.surname
-#          # sex
-#          for key, value in form.sex.choices:
-#              if value == person.sex:
-#                  form.sex.data = key
-#          # Country
-#          country_ids = []
-#          for country in person.countries:
-#              country_ids.append(country.id)
-#          form.country.data = country_ids
-#          # Mother
-#          form.mother.data = person.mother_id
-#          # Father
-#          form.father.data = person.father_id
-#          # Spouse
-#          if person.spouses:
-#              form.spouse.data = person.spouses[-1].id
-#          # Children
-#          children_ids = []
-#          if person.sex == 'male':
-#              children = person.fathers_children
-#          else:
-#              children = person.mothers_children
-#          for child in children:
-#              children_ids.append(child.id)
-#          form.children.data = children_ids
-#          # Birthday
-#          form.b_date.data = person.b_date
-#          form.process()
     return form
 
 def new_family(person):

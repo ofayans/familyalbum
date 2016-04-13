@@ -19,6 +19,11 @@
                   person_id=g.person.id) }}">Edit my details</a>
               <a class="navbar-brand" href="{{ url_for('main.newperson',
                   person_id=g.person.id) }}">New relative</a>
+              <span title="Find your possible relative in our database">
+              <a class="navbar-brand" href="{{ url_for('main.find_person')
+              }}">Find a relative</a>
+              </span>
+
               {% for family in g.families %}
                 {% if family.possible_members %}
                   <span title="These people claim, they are your relative">

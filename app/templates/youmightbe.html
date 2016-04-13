@@ -6,15 +6,14 @@
 
 {% for person in persons %}
 <div class="person">
-    <picture class="avatar">
-       <source src="{{ person.ava_path }}">
-       <p>{{ person.name }} {{ person.surname }} {{ person.b_date.year }}-{{
-       person.b_date.month}}-{{ person.b_date.day }}</p>
-    </picture>
-</div>
-
-<a class="clickable_person" href="{{ url_for('main.thatsme',
+   <img class="avatar" src="{{ url_for('main.show_photo',
+        photo_id=person.ava_id)|thumbnail('200x200') }}">
+   <p>{{ person.name }} {{ person.surname }} {{ person.b_date.year }}-{{
+   person.b_date.month}}-{{ person.b_date.day }}</p>
+   <a class="clickable_person" href="{{ url_for('main.thatsme',
     person_id=person.id) }}">That's me!</a>
+</div>
+<p>-----------------------------------------------------</p>
 
 {% endfor %}
 
