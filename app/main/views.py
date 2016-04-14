@@ -17,7 +17,7 @@ from .forms import PersonSearchForm, MyrelativeForm
 from .misc import populate_dropdowns, make_person, new_family
 from .misc import populate_relatives, ancestor_tree, descendants_tree
 from .misc import allowed_file, populate_relations, relation_dict
-from .. import db
+from .. import db, cache
 from ..models import Legend, Photo, Person, User, Family, Country
 from ..models import PossibleRelative
 import uuid
@@ -26,8 +26,6 @@ import os
 import json
 import re
 from werkzeug import secure_filename
-
-
 
 
 @main.context_processor
@@ -82,6 +80,7 @@ def show_photo(photo_id):
 
 
 @main.route('/photos/display/<photo_id>')
+@cache.cached(timeout=50)
 @login_required
 def show_photo_details(photo_id):
     photo = Photo.query.filter_by(id=photo_id).first()
@@ -127,6 +126,7 @@ def search_for_relatives(person_id):
 
 
 @main.route('/')
+@cache.cached(timeout=50)
 def index():
     hyperfamily = []
     if hasattr(g, "families"):
@@ -137,24 +137,28 @@ def index():
 
 @main.route('/ancestors/display/<person_id>')
 @login_required
+@cache.cached(timeout=300)
 def ancestordisplay(person_id):
     return render_template('ancestor_show.html', person_id=person_id)
 
 
 @main.route('/descendants/display/<person_id>')
 @login_required
+@cache.cached(timeout=300)
 def descendantdisplay(person_id):
     return render_template('descendant_show.html', person_id=person_id)
 
 
 @main.route('/ancestortree/<person_id>.js')
 @login_required
+@cache.cached(timeout=300)
 def ancestortree(person_id):
     result = json.dumps(ancestor_tree(person_id), ensure_ascii=False)
     return "var chart_config = %s" % result
 
 @main.route('/descendanttree/<person_id>.js')
 @login_required
+@cache.cached(timeout=300)
 def descendanttree(person_id):
     result = json.dumps(descendants_tree(person_id), ensure_ascii=False)
     return "var chart_config = %s ;" % result
@@ -198,6 +202,7 @@ def thatsme(person_id):
 
 
 @main.route('/person/edit/<person_id>', methods=['GET', 'POST'])
+@cache.cached(timeout=50)
 @login_required
 def edit_person(person_id):
     person = Person.query.filter_by(id=person_id).first()

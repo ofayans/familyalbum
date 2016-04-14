@@ -12,6 +12,8 @@ class Config(object):
     MEDIA_THUMBNAIL_URL = '/cache/'
     SESSION_PROTECTION = 'basic'
     ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif', 'tiff'])
+    CACHE_DEFAULT_TIMEOUT = 100
+    CACHE_MEMCACHED_SERVERS = ['localhost']
 
 #     UPLOADED_FILES_DEST = os.environ['MEDIA_FOLDER']
 #     UPLOADS_DEFAULT_DEST = os.environ['MEDIA_FOLDER']

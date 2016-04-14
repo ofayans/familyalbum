@@ -12,6 +12,8 @@ from flask.ext.thumbnails import Thumbnail
 from .middleware import HTTPMethodOverrideMiddleware
 from flask.views import MethodView
 from flask_wtf.csrf import CsrfProtect
+from flask.ext.cache import Cache
+
 # from flask_uploads import UploadSet, configure_uploads, patch_request_class
 
 bootstrap = Bootstrap()
@@ -19,6 +21,7 @@ mail = Mail()
 moment = Moment()
 db = SQLAlchemy()
 pagedown = PageDown()
+cache = Cache(config={'CACHE_TYPE': 'memcached'})
 
 login_manager = LoginManager()
 login_manager.session_protection = 'strong'
@@ -72,6 +75,8 @@ def create_app(config_name):
     thumb = Thumbnail(app)
     app.base_path = os.path.join(app.config['MEDIA_FOLDER'], 'photos')
     app.thumbnail_path = os.path.join(app.config['MEDIA_THUMBNAIL_FOLDER'], 'photos')
+    cache.init_app(app)
+
 
 #     photos = UploadSet()
 #     media = UploadSet('media', default_dest=lambda app:
