@@ -1,7 +1,7 @@
 FROM fedora:latest
 RUN dnf install -y python3 python3-devel postgresql-devel git openssh-server \ 
 tar vim python3-pip gcc python3-pillow redhat-rpm-config iproute telnet \
-postgresql iputils nginx libjpeg-turbo-devel zlib-devel
+postgresql iputils nginx libjpeg-turbo-devel zlib-devel memcached
 RUN ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key
 RUN sed -ir 's/.*ssh_host_ecdsa_key//' /etc/ssh/sshd_config
 ADD .ssh /root/.ssh
