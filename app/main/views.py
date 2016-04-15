@@ -195,31 +195,39 @@ def thatsmyfamily(family_id):
 @main.route('/thatsme/<person_id>')
 @login_required
 def thatsme(person_id):
-    user_id = current_user.get_id()
-    user = User.query.filter_by(id=user_id).first()
     person = Person.query.filter_by(id=person_id).first()
-    person.user_id = user_id
-    user.person_id = person_id
-#    user.city = person.city
-    user.is_new = False
-    db.session.add(user)
+    person.user_id = g.user.id
+    g.user.person_id = person_id
+#   g.user.city = person.city
+    g.user.is_new = False
+    db.session.add(g.user)
     db.session.add(person)
     db.session.commit()
     return redirect(url_for('main.index'))
 
 
 @main.route('/person/edit/<person_id>', methods=['GET', 'POST'])
-@cache.cached(timeout=50)
+# @cache.cached(timeout=50)
 @login_required
 def edit_person(person_id):
     person = Person.query.filter_by(id=person_id).first()
     photo = Photo.query.filter_by(id=person.ava_id).first()
     form = PersonForm(obj=person)
     form = populate_dropdowns(form, person)
-    header = "Please use the form below to update information about you"
+    if person == g.person:
+        dude = "you"
+    else:
+        dude = person.fullname()
+    header = "Please use the form below to update information about %s" % dude
     if form.validate_on_submit():
-        make_person(form, current_user, request, person)
-        return redirect(url_for('main.index'))
+        tarif = g.user.tarif.upper()
+        maxfiles = current_app.config["%s_USERS_FILE_LIMIT" % tarif]
+        person, ava_saved = make_person(form, current_user, request, person)
+        if ava_saved is False:
+            return render_template("errors/upgrade_plan.html", maxfiles=maxfiles,
+                                   tarif=tarif), 403
+        else:
+            return redirect(url_for('main.index'))
     return render_template('new_person.html', form=form,
                            photo=photo, header=header)
 
@@ -315,9 +323,7 @@ def find_person():
 @main.route('/photos/upload/<person_id>', methods=['POST', 'GET'])
 @login_required
 def photo_upload(person_id):
-    user_id = current_user.get_id()
-    user = User.query.filter_by(id=user_id).first()
-    tarif = user.tarif.upper()
+    tarif = g.user.tarif.upper()
     maxfiles = current_app.config["%s_USERS_FILE_LIMIT" % tarif]
     if user.photos_uploaded == maxfiles:
         return render_template("errors/upgrade_plan.html", maxfiles=maxfiles,

@@ -9,23 +9,30 @@ from flask import url_for
 
 def make_person(form, user, request, person=None):
     ava = None
+    ava_saved = None
     countries = set()
+    tarif = g.user.tarif.upper()
+    maxfiles = current_app.config["%s_USERS_FILE_LIMIT" % tarif]
     if form.data['avatar']:
-        ava_id = uuid.uuid1().hex
-        extention = "." + form.data['avatar'].filename.split('.')[-1]
-        new_filename = ava_id + extention
-        ava_path = os.path.join(current_app.base_path, new_filename)
-        large_thumbnail_path = os.path.join(current_app.thumbnail_path,
-                                            "%s_400x400_85%s" % (ava_id, extention))
-        small_thumbnail_path = os.path.join(current_app.thumbnail_path,
-                                            "%s_200x200_85%s" % (ava_id, extention))
+        if user.photos_uploaded < maxfiles:
+            ava_id = uuid.uuid1().hex
+            extention = "." + form.data['avatar'].filename.split('.')[-1]
+            new_filename = ava_id + extention
+            ava_path = os.path.join(current_app.base_path, new_filename)
+            large_thumbnail_path = os.path.join(current_app.thumbnail_path,
+                                                "%s_400x400_85%s" % (ava_id, extention))
+            small_thumbnail_path = os.path.join(current_app.thumbnail_path,
+                                                "%s_200x200_85%s" % (ava_id, extention))
 
-        form.data['avatar'].save(ava_path)
-        ava = Photo(id=new_filename,
-                    path=ava_path,
-                    large_thumbnail_path=large_thumbnail_path,
-                    small_thumbnail_path=small_thumbnail_path)
-        db.session.add(ava)
+            form.data['avatar'].save(ava_path)
+            ava = Photo(id=new_filename,
+                        path=ava_path,
+                        large_thumbnail_path=large_thumbnail_path,
+                        small_thumbnail_path=small_thumbnail_path)
+            db.session.add(ava)
+            ava_saved = True
+        else:
+            ava_saved = False
     if user.is_new:
         person = Person(
             id=uuid.uuid1().hex,
@@ -82,8 +89,7 @@ def make_person(form, user, request, person=None):
     # Now let's save person
     db.session.add(person)
     db.session.commit()
-
-    return person
+    return person, ava_saved
 
 
 def populate_relatives(person=None, sex=None):
