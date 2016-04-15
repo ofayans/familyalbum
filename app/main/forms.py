@@ -7,6 +7,14 @@ from .. import country_choices, sex_choices
 
 country_choices.pop(0)
 
+class CKTextAreaWidget(wtforms.widgets.TextArea):
+    def __call__(self, field, **kwargs):
+#        kwargs.pop('class_', '')
+#        kwargs['class'] = 'ckeditor'
+        return super(CKTextAreaWidget, self).__call__(field, **kwargs)
+
+class CKTextAreaField(wtforms.TextAreaField):
+    widget = CKTextAreaWidget()
 
 class GenericPersonForm(Form):
     avatar = wtforms.FileField('Avatar')
@@ -49,7 +57,8 @@ class AboutMeForm(GenericPersonForm):
 
 
 class LegendForm(Form):
-    text = wtforms.TextAreaField('Legend text', validators=[Required()])
+    title = wtforms.StringField('Legend title', validators=[Required()])
+    text = CKTextAreaField('Legend text', validators=[Required()])
     people = wtforms.SelectMultipleField('People involved',
                                          validators=[Required()])
     submit = wtforms.SubmitField('Save')

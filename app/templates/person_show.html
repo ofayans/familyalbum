@@ -37,6 +37,11 @@
     </a>
 </div>
 
+<div class="addlegend">
+    <a href="{{ url_for('main.add_legend', person_id=person.id) }}">
+        Write a story about {{ person.name }}
+    </a>
+</div>
 
 {% for legend in person.legends %}
 <div class="legend_header">

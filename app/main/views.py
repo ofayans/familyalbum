@@ -207,7 +207,7 @@ def thatsme(person_id):
 
 
 @main.route('/person/edit/<person_id>', methods=['GET', 'POST'])
-# @cache.cached(timeout=50)
+@cache.cached(timeout=50)
 @login_required
 def edit_person(person_id):
     person = Person.query.filter_by(id=person_id).first()
@@ -232,21 +232,24 @@ def edit_person(person_id):
                            photo=photo, header=header)
 
 
-@main.route('/legend/new', methods=['GET', 'POST'])
+@main.route('/legend/new/<person_id>', methods=['GET', 'POST'])
 @login_required
-def add_legend():
+def add_legend(person_id):
     form = LegendForm()
-    person_choices = [('', 'Please select all people involved')]
+    person_choices = [('', 'Please select all other people involved')]
     person_choices.extend(populate_relatives())
     form.people.choices = person_choices
     if form.validate_on_submit():
+        person = Person.query.filter_by(id=person_id).first()
+        participants = set([person])
         legend = Legend(
             id=uuid.uuid1().hex,
             text=form.data['text']
             )
         for person_id in form.data['people']:
-            person = Person.query.filter_by(id=person_id).first()
-            legend.participants.append(person)
+            dude = Person.query.filter_by(id=person_id).first()
+            participants.add(dude)
+        legend.participants = list(participants)
         db.session.add(legend)
         db.session.commit()
         return redirect(url_for('main.index'))
