@@ -230,6 +230,8 @@ class User(UserMixin, db.Model):
     person_id = db.Column(db.Unicode, db.ForeignKey('person.id'))
     is_new = db.Column(db.Boolean, default=True)
     confirmed = db.Column(db.Boolean, default=False)
+    tarif = db.Column(db.Unicode, default="Free")
+    photos_uploaded = db.Column(db.Integer, default=0)
 
     @property
     def password(self):

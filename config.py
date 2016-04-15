@@ -14,6 +14,8 @@ class Config(object):
     ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif', 'tiff'])
     CACHE_DEFAULT_TIMEOUT = 100
     CACHE_MEMCACHED_SERVERS = ['localhost']
+    FREE_USERS_FILE_LIMIT = 30
+    GOLD_USERS_FILE_LIMIT = 100
 
 #     UPLOADED_FILES_DEST = os.environ['MEDIA_FOLDER']
 #     UPLOADS_DEFAULT_DEST = os.environ['MEDIA_FOLDER']

@@ -40,6 +40,13 @@ def familize():
 @login_required
 def person_delete(person_id):
     person = Person.query.filter_by(id=person_id).first()
+    if person.user and person.alive:
+        if person.sex == "male":
+            him = "him"
+        else:
+            him = "her"
+        return render_template("errors/user_deletion_prohibited.html",
+                               him=him), 403
     person.countries.clear()
     person.families.clear()
     person.legends.clear()
@@ -308,6 +315,13 @@ def find_person():
 @main.route('/photos/upload/<person_id>', methods=['POST', 'GET'])
 @login_required
 def photo_upload(person_id):
+    user_id = current_user.get_id()
+    user = User.query.filter_by(id=user_id).first()
+    tarif = user.tarif.upper()
+    maxfiles = current_app.config["%s_USERS_FILE_LIMIT" % tarif]
+    if user.photos_uploaded == maxfiles:
+        return render_template("errors/upgrade_plan.html", maxfiles=maxfiles,
+                               tarif=tarif), 403
     person = Person.query.filter_by(id=person_id).first()
     form = PhotoForm()
     relative_choices = [('', 'Select all who present on this photo')]
@@ -332,9 +346,11 @@ def photo_upload(person_id):
         for person_id in form.data['people']:
             relative = Person.query.filter_by(id=person_id).first()
             photo.people.append(relative)
-        db.session.add(photo)
-        db.session.commit()
         form.data['photo'].save(photo_path)
+        user.photos_uploaded += 1
+        db.session.add(photo)
+        db.session.add(user)
+        db.session.commit()
         return redirect(url_for('main.mypage', person_id=person.id))
 
     return render_template('photo_upload.html', form=form, person=person)
