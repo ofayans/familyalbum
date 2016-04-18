@@ -242,8 +242,11 @@ def add_legend(person_id):
     if form.validate_on_submit():
         person = Person.query.filter_by(id=person_id).first()
         participants = set([person])
+        import pdb
+        pdb.set_trace()
         legend = Legend(
             id=uuid.uuid1().hex,
+            title=form.data['title'],
             text=form.data['text']
             )
         for person_id in form.data['people']:
@@ -259,6 +262,16 @@ def add_legend(person_id):
         return render_template('generic_template.html', form=form,
                                header=header)
 
+@main.route('/legend/delete/<legend_id>')
+@login_required
+def delete_legend(legend_id):
+    legend = Legend.query.filter_by(id=legend_id).first()
+    legend.participants.clear()
+    db.session.commit()
+    db.session.delete(legend)
+    db.session.commit()
+    return redirect(url_for('main.index'))
+    
 
 @main.route('/person/new', methods=['GET', 'POST'])
 @login_required
@@ -452,3 +465,10 @@ def discard_possible_relative(possible_relative_id):
     db.session.delete(possible)
     db.session.commit()
     return redirect(url_for('main.index'))
+
+@main.route('/legend/display/<legend_id>')
+#@cache.cached(timeout=50)
+@login_required
+def legend_display(legend_id):
+    legend = Legend.query.filter_by(id=legend_id).first()
+    return render_template('legend_display.html', legend=legend)

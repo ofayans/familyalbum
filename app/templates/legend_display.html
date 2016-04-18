@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block content %}
+<p class="legend-title">{{ legend.title }}</p>
+<div class="legend-text">{{ legend.text }}</div>
+
+<a href="{{ url_for('main.delete_legend', legend_id=legend.id) }}">Wipe this
+    story from the memory of the mankind</a>
+{% endblock %}

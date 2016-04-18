@@ -45,6 +45,9 @@
 
 {% for legend in person.legends %}
 <div class="legend_header">
+    <a href="{{ url_for('main.legend_display', legend_id=legend.id) }}">
+        {{ legend.title }}
+    </a>
 </div>
 {% endfor %}
 

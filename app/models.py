@@ -193,6 +193,7 @@ class Message(db.Model):
 class Legend(db.Model):
     __tablename__ = 'legend'
     id = db.Column(db.Unicode, primary_key=True, index=True)
+    title = db.Column(db.Unicode)
     text = db.Column(db.UnicodeText)
     participants = db.relationship("Person",
                                    secondary=legend_participants,
