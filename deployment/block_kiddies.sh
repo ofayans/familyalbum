@@ -1,12 +1,27 @@
 #!/bin/bash
 #
-# Now just add this script in your crontab:
+# Now just add this script in your root crontab:
 # */5 * * * * <path_to_this_script>
 #
 
 RULENAME=scriptkiddies
 AUDITLOG=/var/log/audit/audit.log
 KIDDIES=`awk '/ssh res=failed/ {print $12}' $AUDITLOG | awk -F "=" '{print $2}' | sort`
+
+which firewall-cmd
+if [[ $? -ne 0 ]]
+then
+    echo "You don't seem to have firewalld installed."
+    exit 1
+fi
+
+which ipset
+if [[ $? -ne 0 ]]
+then
+    echo "You don't seem to have ipset installed. Please install it"
+    exit 1
+fi
+
 
 ipset list $RULENAME
 
@@ -48,8 +63,6 @@ do
     fi
     j=$i
 done
-
-echo $banthem
 
 for i in $banthem
 do
