@@ -17,6 +17,8 @@ from .forms import PersonSearchForm, MyrelativeForm
 from .misc import populate_dropdowns, make_person, new_family
 from .misc import populate_relatives, ancestor_tree, descendants_tree
 from .misc import allowed_file, populate_relations, relation_dict
+from .misc import is_image_small
+from .constants import NUM_UPLOADS_EXCEEDED
 from .. import db, cache
 from ..models import Legend, Photo, Person, User, Family, Country
 from ..models import PossibleRelative
@@ -26,6 +28,7 @@ import os
 import json
 import re
 from werkzeug import secure_filename
+from PIL import Image
 
 
 @main.context_processor
@@ -336,41 +339,46 @@ def find_person():
 @main.route('/photos/upload/<person_id>', methods=['POST', 'GET'])
 @login_required
 def photo_upload(person_id):
-    tarif = g.user.tarif.upper()
+    tarif = current_user.tarif.upper()
     maxfiles = current_app.config["%s_USERS_FILE_LIMIT" % tarif]
-    if user.photos_uploaded == maxfiles:
-        return render_template("errors/upgrade_plan.html", maxfiles=maxfiles,
-                               tarif=tarif), 403
+    if current_user.photos_uploaded == maxfiles:
+        reason = NUM_UPLOADS_EXCEEDED % current_app.config["%s_USERS_FILE_LIMIT" % tarif]
+        return render_template("errors/upgrade_plan.html", reason=reason), 403
     person = Person.query.filter_by(id=person_id).first()
     form = PhotoForm()
     relative_choices = [('', 'Select all who present on this photo')]
     relative_choices.extend(populate_relatives())
     form.people.choices = relative_choices
     if form.validate_on_submit():
-        photo_id = uuid.uuid1().hex
-        extention = "." + form.data['photo'].filename.split('.')[-1]
-        new_filename = photo_id + extention
-        photo_path = os.path.join(current_app.base_path, new_filename)
-        large_thumbnail_path = os.path.join(current_app.thumbnail_path,
-                                            "%s_400x400_85%s" % (photo_id, extention))
-        small_thumbnail_path = os.path.join(current_app.thumbnail_path,
-                                            "%s_200x200_85%s" % (photo_id, extention))
-        photo = Photo(id=new_filename,
-                      path=photo_path,
-                      large_thumbnail_path=large_thumbnail_path,
-                      small_thumbnail_path=small_thumbnail_path,
-                      description=form.data['description']
-                      )
-        photo.people = []
-        for person_id in form.data['people']:
-            relative = Person.query.filter_by(id=person_id).first()
-            photo.people.append(relative)
-        form.data['photo'].save(photo_path)
-        user.photos_uploaded += 1
-        db.session.add(photo)
-        db.session.add(user)
-        db.session.commit()
-        return redirect(url_for('main.mypage', person_id=person.id))
+        img = Image.open(form.data['photo'])
+        image_saved, reason = is_image_small(img)
+        if image_saved:
+            photo_id = uuid.uuid1().hex
+            extention = "." + form.data['photo'].filename.split('.')[-1]
+            new_filename = photo_id + extention
+            photo_path = os.path.join(current_app.base_path, new_filename)
+            large_thumbnail_path = os.path.join(current_app.thumbnail_path,
+                                                "%s_400x400_85%s" % (photo_id, extention))
+            small_thumbnail_path = os.path.join(current_app.thumbnail_path,
+                                                "%s_200x200_85%s" % (photo_id, extention))
+            photo = Photo(id=new_filename,
+                          path=photo_path,
+                          large_thumbnail_path=large_thumbnail_path,
+                          small_thumbnail_path=small_thumbnail_path,
+                          description=form.data['description']
+                          )
+            photo.people = []
+            for person_id in form.data['people']:
+                relative = Person.query.filter_by(id=person_id).first()
+                photo.people.append(relative)
+            form.data['photo'].save(photo_path)
+            current_user.photos_uploaded += 1
+            db.session.add(photo)
+            db.session.add(current_user)
+            db.session.commit()
+            return redirect(url_for('main.mypage', person_id=person.id))
+        else:
+            return render_template('errors/upgrade_plan.html', reason=reason), 403
 
     return render_template('photo_upload.html', form=form, person=person)
 

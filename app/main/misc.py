@@ -6,6 +6,15 @@ from ..models import Legend, Photo, Person, User, Family, Country
 from .. import db
 from flask import url_for
 from PIL import Image
+from .constants import IMAGE_TOO_BIG, NUM_UPLOADS_EXCEEDED
+
+def is_image_small(img):
+    if max(img.size) > current_app.config['MAX_PHOTO_PIXELS']:
+        ava_saved = False
+        reason = IMAGE_TOO_BIG % current_app.config['MAX_PHOTO_PIXELS']
+        return False, reason
+    else:
+        return True, ""
 
 
 def make_person(form, user, request, person=None):
@@ -17,34 +26,27 @@ def make_person(form, user, request, person=None):
     maxfiles = current_app.config["%s_USERS_FILE_LIMIT" % tarif]
     if form.data['avatar']:
         if user.photos_uploaded < maxfiles:
-            ava_id = uuid.uuid1().hex
-            extention = "." + form.data['avatar'].filename.split('.')[-1]
-            new_filename = ava_id + extention
-            ava_path = os.path.join(current_app.base_path, new_filename)
-            large_thumbnail_path = os.path.join(current_app.thumbnail_path,
-                                                "%s_400x400_85%s" % (ava_id, extention))
-            small_thumbnail_path = os.path.join(current_app.thumbnail_path,
-                                                "%s_200x200_85%s" % (ava_id, extention))
             with Image.open(form.data['avatar']) as img:
-                if max(img.size) > current_app.config['MAX_PHOTO_PIXELS']:
-                    ava_saved = False
-                    reason = "We are terribly sorry, but your image is too big.\
-                              Maximum allowed image size is %i (longer picture \
-                              side). Please consider resizing it down a bit \
-                              :)" % current_app.config['MAX_PHOTO_PIXELS']
-                else:
+                ava_saved, reason = is_image_small(img)
+                if ava_saved:
+                    ava_id = uuid.uuid1().hex
+                    extention = "." + form.data['avatar'].filename.split('.')[-1]
+                    new_filename = ava_id + extention
+                    ava_path = os.path.join(current_app.base_path, new_filename)
+                    large_thumbnail_path = os.path.join(current_app.thumbnail_path,
+                                                        "%s_400x400_85%s" % (ava_id, extention))
+                    small_thumbnail_path = os.path.join(current_app.thumbnail_path,
+                                                        "%s_200x200_85%s" % (ava_id, extention))
+
                     form.data['avatar'].save(ava_path)
                     ava = Photo(id=new_filename,
                                 path=ava_path,
                                 large_thumbnail_path=large_thumbnail_path,
                                 small_thumbnail_path=small_thumbnail_path)
                     db.session.add(ava)
-                    ava_saved = True
         else:
             ava_saved = False
-            reason = "Unfortunately we can not afford allowing users to upload \
-            inifinite number of photos. Uploads are limited to %i. Consider \
-            deleting some of the older photos" % current_app.config["%s_USERS_FILE_LIMIT" % tarif]
+            reason = NUM_UPLOADS_EXCEEDED % current_app.config["%s_USERS_FILE_LIMIT" % tarif]
     if user.is_new:
         person = Person(
             id=uuid.uuid1().hex,
