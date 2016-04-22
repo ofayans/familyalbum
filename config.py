@@ -16,6 +16,7 @@ class Config(object):
     CACHE_MEMCACHED_SERVERS = ['localhost']
     FREE_USERS_FILE_LIMIT = 30
     GOLD_USERS_FILE_LIMIT = 100
+    MAX_PHOTO_PIXELS = 1440
 
 #     UPLOADED_FILES_DEST = os.environ['MEDIA_FOLDER']
 #     UPLOADS_DEFAULT_DEST = os.environ['MEDIA_FOLDER']

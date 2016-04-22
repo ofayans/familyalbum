@@ -5,6 +5,7 @@ import uuid
 from ..models import Legend, Photo, Person, User, Family, Country
 from .. import db
 from flask import url_for
+from PIL import Image
 
 
 def make_person(form, user, request, person=None):
@@ -12,6 +13,7 @@ def make_person(form, user, request, person=None):
     ava_saved = None
     countries = set()
     tarif = g.user.tarif.upper()
+    reason = ""
     maxfiles = current_app.config["%s_USERS_FILE_LIMIT" % tarif]
     if form.data['avatar']:
         if user.photos_uploaded < maxfiles:
@@ -23,16 +25,26 @@ def make_person(form, user, request, person=None):
                                                 "%s_400x400_85%s" % (ava_id, extention))
             small_thumbnail_path = os.path.join(current_app.thumbnail_path,
                                                 "%s_200x200_85%s" % (ava_id, extention))
-
-            form.data['avatar'].save(ava_path)
-            ava = Photo(id=new_filename,
-                        path=ava_path,
-                        large_thumbnail_path=large_thumbnail_path,
-                        small_thumbnail_path=small_thumbnail_path)
-            db.session.add(ava)
-            ava_saved = True
+            with Image.open(form.data['avatar']) as img:
+                if max(img.size) > current_app.config['MAX_PHOTO_PIXELS']:
+                    ava_saved = False
+                    reason = "We are terribly sorry, but your image is too big.\
+                              Maximum allowed image size is %i (longer picture \
+                              side). Please consider resizing it down a bit \
+                              :)" % current_app.config['MAX_PHOTO_PIXELS']
+                else:
+                    form.data['avatar'].save(ava_path)
+                    ava = Photo(id=new_filename,
+                                path=ava_path,
+                                large_thumbnail_path=large_thumbnail_path,
+                                small_thumbnail_path=small_thumbnail_path)
+                    db.session.add(ava)
+                    ava_saved = True
         else:
             ava_saved = False
+            reason = "Unfortunately we can not afford allowing users to upload \
+            inifinite number of photos. Uploads are limited to %i. Consider \
+            deleting some of the older photos" % current_app.config["%s_USERS_FILE_LIMIT" % tarif]
     if user.is_new:
         person = Person(
             id=uuid.uuid1().hex,
@@ -89,7 +101,9 @@ def make_person(form, user, request, person=None):
     # Now let's save person
     db.session.add(person)
     db.session.commit()
-    return person, ava_saved
+    return {'person': person,
+            'ava_saved': ava_saved,
+            'reason': reason}
 
 
 def populate_relatives(person=None, sex=None):

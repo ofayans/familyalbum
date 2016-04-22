@@ -133,7 +133,6 @@ def search_for_relatives(person_id):
 
 
 @main.route('/')
-@cache.cached(timeout=50)
 def index():
     hyperfamily = []
     if hasattr(g, "families"):
@@ -207,7 +206,7 @@ def thatsme(person_id):
 
 
 @main.route('/person/edit/<person_id>', methods=['GET', 'POST'])
-@cache.cached(timeout=50)
+# @cache.cached(timeout=50)
 @login_required
 def edit_person(person_id):
     person = Person.query.filter_by(id=person_id).first()
@@ -222,10 +221,10 @@ def edit_person(person_id):
     if form.validate_on_submit():
         tarif = g.user.tarif.upper()
         maxfiles = current_app.config["%s_USERS_FILE_LIMIT" % tarif]
-        person, ava_saved = make_person(form, current_user, request, person)
-        if ava_saved is False:
-            return render_template("errors/upgrade_plan.html", maxfiles=maxfiles,
-                                   tarif=tarif), 403
+        result = make_person(form, current_user, request, person)
+        if result['ava_saved'] is False:
+            return render_template("errors/upgrade_plan.html",
+                                   reason=result['reason']), 403
         else:
             return redirect(url_for('main.index'))
     return render_template('new_person.html', form=form,
@@ -242,8 +241,6 @@ def add_legend(person_id):
     if form.validate_on_submit():
         person = Person.query.filter_by(id=person_id).first()
         participants = set([person])
-        import pdb
-        pdb.set_trace()
         legend = Legend(
             id=uuid.uuid1().hex,
             title=form.data['title'],
