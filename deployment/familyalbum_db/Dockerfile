@@ -1,4 +1,5 @@
 FROM fedora:latest
+RUN dnf remove -y vim-minimal
 RUN dnf install -y postgresql-server vim openssh-server less
 RUN ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key
 RUN sed -ir 's/.*ssh_host_ecdsa_key//' /etc/ssh/sshd_config
