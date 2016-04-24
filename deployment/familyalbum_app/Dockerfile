@@ -3,12 +3,10 @@ RUN dnf remove vim-minimal -y
 RUN dnf install -y python3 python3-devel postgresql-devel git openssh-server \ 
 tar vim python3-pip gcc python3-pillow redhat-rpm-config iproute telnet \
 postgresql iputils nginx libjpeg-turbo-devel zlib-devel memcached \
-libmemcached-devel screen
+libmemcached-devel
 RUN ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key
 RUN sed -ir 's/.*ssh_host_ecdsa_key//' /etc/ssh/sshd_config
 ADD .ssh /root/.ssh
-ADD step2.sh /root/step2.sh
-RUN chmod 755 /root/step2.sh
 RUN chmod 600 /root/.ssh/ -R
 ADD .vim /root/.vim
 ADD .vimrc /root/.vimrc
@@ -30,5 +28,7 @@ ADD dbconnect.sh /root/dbconnect.sh
 RUN chmod 755 /root/dbconnect.sh
 ADD dumpdb.sh /root/dumpdb.sh
 RUN chmod 755 /root/dumpdb.sh
+ADD step2.sh /root/step2.sh
+RUN chmod 755 /root/step2.sh
 EXPOSE 22 80
 CMD /root/step2.sh
