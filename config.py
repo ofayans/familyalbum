@@ -5,6 +5,7 @@ class Config(object):
     DEBUG = False
     TESTING = False
     CSRF_ENABLED = True
+    SERVER_NAME = 'familyalbum.biz'
     SECRET_KEY = os.environ['FAMILYALBUM_SECRET_KEY']
     MEDIA_FOLDER = os.environ['MEDIA_FOLDER']
     MEDIA_THUMBNAIL_FOLDER = os.environ['MEDIA_THUMBNAIL_FOLDER']
@@ -18,7 +19,7 @@ class Config(object):
     GOLD_USERS_FILE_LIMIT = 100
     MAX_PHOTO_PIXELS = 1440
     MAIL_SERVER = 'smtp.googlemail.com'
-    PAIL_PORT = 587
+    MAIL_PORT = 465
     MAIL_USE_TLS = True
     MAIL_USERNAME = os.environ['MAIL_USERNAME']
     MAIL_PASSWORD = os.environ['MAIL_PASSWORD']
