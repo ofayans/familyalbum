@@ -1,3 +1,15 @@
 1. If thumbnailing library throws permission denied error, do the following: In
 lib/python3.4/site-packages/flask_thumbnails/__init__.py import re and insert the following in line 45:
 img_url = re.sub('^/', '', img_url)
+
+If docker fails to start the container and refers to an iptables issue:
+
+# ./deploy.sh 
+familyalbum_db
+Error response from daemon: Cannot start container familyalbum_app: failed to create endpoint familyalbum_app on network bridge: COMMAND_FAILED: '/usr/sbin/iptables -w -t nat -A DOCKER -p tcp -d 0/0 --dport 80 -j DNAT --to-destination 172.17.0.3:80 ! -i docker0' failed: iptables: No chain/target/match by that name.
+Error: failed to start containers: [familyalbum_app]
+[root@familyalbum deployment]# iptables -t nat -N DOCKER
+[root@familyalbum deployment]# ./deploy.sh 
+familyalbum_db
+familyalbum_app
+
