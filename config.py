@@ -19,7 +19,7 @@ class Config(object):
     GOLD_USERS_FILE_LIMIT = 100
     MAX_PHOTO_PIXELS = 1440
     MAIL_SERVER = 'smtp.googlemail.com'
-    MAIL_PORT = 465
+    MAIL_PORT = 587
     MAIL_USE_TLS = True
     MAIL_USERNAME = os.environ['MAIL_USERNAME']
     MAIL_PASSWORD = os.environ['MAIL_PASSWORD']

@@ -99,12 +99,15 @@ def register():
 
 
 @auth.route('/confirm/<token>')
-@login_required
 def confirm(token):
-    if current_user.confirmed:
-        return redirect(url_for('main.index'))
-    if current_user.confirm(token):
-        flash('You have confirmed your account. Thanks!')
+    unconfirmed_users = User.query.filter_by(confirmed=False).all()
+    for user in unconfirmed_users:
+        if user.confirm(token):
+            user.confirmed = True
+            flash('You have confirmed your account. Thanks!')
+            db.session.add(user)
+            db.session.commit()
+            return redirect(url_for('main.index'))
     else:
         flash('The confirmation link is invalid or has expired.')
     return redirect(url_for('main.index'))
