@@ -5,7 +5,6 @@ from wtforms.validators import Required, Length, Email, Regexp, EqualTo
 from wtforms import ValidationError
 from ..models import User, Country
 from wtforms.fields.html5 import DateField
-from .. import country_choices, sex_choices
 
 
 class LoginForm(Form):
@@ -20,15 +19,8 @@ class RegistrationForm(Form):
     email = StringField('Email', validators=[Required(), Length(1, 64),
                         Email()])
     name = StringField('Name?', validators=[Required()])
-    second_name = StringField('Second name?')
     surname = StringField('Surname?', validators=[Required()])
-    sex = SelectField('Sex',
-                      choices=sex_choices,
-                      validators=[Required()])
     b_date = DateField('Date of birth', validators=[Required()])
-    country = SelectField('Country of Birth',
-                          choices=country_choices,
-                          validators=[Required()])
     password = PasswordField('Password', validators=[
         Required(), EqualTo('password2', message='Passwords must match.')])
     password2 = PasswordField('Confirm password', validators=[Required()])

@@ -82,11 +82,8 @@ def register():
                     email=form.email.data,
                     password=form.password.data,
                     name=form.name.data,
-                    second_name=form.second_name.data,
                     surname=form.surname.data,
-                    sex=dict(form.sex.choices)[form.data['sex']],
                     b_date=form.b_date.data,
-                    country_id=form.country.data
                     )
         db.session.add(user)
         db.session.commit()

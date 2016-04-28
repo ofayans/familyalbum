@@ -31,13 +31,6 @@ from werkzeug import secure_filename
 from PIL import Image
 
 
-@main.context_processor
-def familize():
-    def userfamilies(user):
-        person = Person.query.filter_by(id=user.id).first()
-        return person.families
-    return dict(userfamilies=userfamilies)
-
 
 @main.route('/person/delete/<person_id>')
 @login_required
