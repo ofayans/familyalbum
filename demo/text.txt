@@ -1,0 +1,25 @@
+Hi!
+Today I want to introduce to you a new social network with the emphasis on
+geneology. Have you ever got bored by explaining to your kids (over and over
+again) who is, let's say aunt Agatha to them? What's her relations with their
+uncle Tom, etc? Drawing family genealogy trees by hand could be quite
+cumbersome, not talking about maintaing family legends. Well, our app aims at
+easing these things down a bit. You just register and put together the info
+about your relatives here, and the app will keep track of their relations for
+you. For each relative the app automatically draws their ancestor tree and
+their descendants tree, based on the info you provided when describing this
+relative, and per each person all you have to do is correctly point out his-her
+parents. It might be ponderous enough to describe all your relatives by
+yourself. Let them help you! Once they are registered and you confirm that they
+are your relatives, the whole tree becomes available to them and they can start
+adding more details to it. 
+Let's see how it works.
+I've created a sample family in this app with made-up names and photos just so
+that you could see how it works. Here I am logging in and the first thing I am
+getting is a list of all my relatives. Each one is clickable so that I can get
+to his page and see/add photos with this person, read or add legends, and
+what's even more cool - can see the trees of his ancestors and descendants.
+Let's have a look at one. the tree nodes represent in this case all ancestors
+of this dude and each ancestor is clickable. From the page of this particular
+grandfather we can see his own descendants just as easy. Let's try and add a
+new relative. 
