@@ -96,8 +96,10 @@ class Person(db.Model):
     user = db.relationship('User', backref='user_person')
     ava_id = db.Column(db.Unicode, db.ForeignKey('photo.id'),
                        nullable=True,)
-    father_id = db.Column(db.Unicode, db.ForeignKey('person.id'), nullable=True)
-    mother_id = db.Column(db.Unicode, db.ForeignKey('person.id'), nullable=True)
+    father_id = db.Column(db.Unicode, db.ForeignKey('person.id'),
+                          nullable=True, ondelete='SET NULL')
+    mother_id = db.Column(db.Unicode, db.ForeignKey('person.id'),
+                          nullable=True, ondelete='SET NULL')
     father = db.relationship('Person', remote_side=id, lazy='joined',
                              join_depth=3, foreign_keys=[father_id],
                              backref='fathers_children')
