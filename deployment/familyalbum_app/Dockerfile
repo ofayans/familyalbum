@@ -25,7 +25,9 @@ RUN sed -ri "s/width, height =/img_url = re.sub('^\/', '', img_url)\n        wid
 RUN sed -ri "s/import errno/import errno\nimport re/" $INIFILE
 ADD sourceme /root/sourceme
 ADD dbconnect.sh /root/dbconnect.sh
+ADD deleteperson.sh /root/deleteperson.sh
 RUN chmod 755 /root/dbconnect.sh
+RUN chmod 755 /root/deleteperson.sh
 ADD dumpdb.sh /root/dumpdb.sh
 RUN chmod 755 /root/dumpdb.sh
 ADD step2.sh /root/step2.sh
