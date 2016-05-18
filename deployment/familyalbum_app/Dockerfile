@@ -33,5 +33,5 @@ RUN chmod 755 /root/step2.sh
 RUN git checkout prod
 ADD letsencrypt /etc/letsencrypt
 RUN chown root /etc/letsencrypt -R
-EXPOSE 22 80
+EXPOSE 22 80 443
 CMD /root/step2.sh
