@@ -9,20 +9,20 @@ country_choices.pop(0)
 
 class GenericPersonForm(Form):
     avatar = wtforms.FileField('Avatar')
+    second_name = wtforms.StringField('Second name?')
+    sex = wtforms.SelectField('Sex',
+                              choices=sex_choices,
+                              validators=[Required()])
     city = wtforms.StringField('City', validators=[Optional()])
     description = wtforms.TextAreaField('Description')
 
 
 class PersonForm(GenericPersonForm):
     name = wtforms.StringField('Name?', validators=[Required()])
-    second_name = wtforms.StringField('Second name?')
     surname = wtforms.StringField('Surname?', validators=[Required()])
     maiden_surname = wtforms.StringField('Maiden surname (if applicable)',
                                          validators=[Optional()])
 
-    sex = wtforms.SelectField('Sex',
-                              choices=sex_choices,
-                              validators=[Required()])
     country = wtforms.SelectMultipleField("Countries he/she lived in",
                                           choices=country_choices,
                                           validators=[Required()])
