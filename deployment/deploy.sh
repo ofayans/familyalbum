@@ -23,7 +23,7 @@ APP_CONT_NAME=`docker ps -a | grep $FRONTEND_IMAGE_NAME | awk '{print $NF}'| tai
 if [[ -z "$APP_CONT_NAME" ]]
 # The container has not yet been initialized
 then
-docker run -p 80:80 -p 2222:22 --name=$FRONTEND_CONT_NAME --link=$DB_CONTAINER_NAME:$DB_CONTAINER_NAME \
+docker run -p 80:80 -p 2222:22 -p 443:443 --name=$FRONTEND_CONT_NAME --link=$DB_CONTAINER_NAME:$DB_CONTAINER_NAME \
      -v $LOCAL_DATA:/data:Z $FRONTEND_IMAGE_NAME &
 else
   docker start $FRONTEND_CONT_NAME
