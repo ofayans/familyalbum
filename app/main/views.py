@@ -277,18 +277,18 @@ def newperson():
         form = PersonForm()
         form = populate_dropdowns(form)
     if form.validate_on_submit():
-        person = make_person(form, user, request)
+        result = make_person(form, user, request)
+        person = result['person']
 
         if new_user:
             user.person_id = person.id
 #            user.city = form.data['city']
             user.is_new = False
-            user_country = Country.query.filter_by(id=user.country_id).first()
-            person.countries = [user_country]
         # We need to first commit a person and then add a user,
         # otherwise sqlalchemy will scream that a person with the given id
         # does not exist
         db.session.add(user)
+        db.session.add(person)
         db.session.commit()
         if new_user:
             return redirect(url_for('main.search_for_relatives',
