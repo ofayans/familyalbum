@@ -26,24 +26,25 @@ def make_person(form, user, request, person=None):
     maxfiles = current_app.config["%s_USERS_FILE_LIMIT" % tarif]
     if form.data['avatar']:
         if user.photos_uploaded < maxfiles:
-            with Image.open(form.data['avatar']) as img:
-                ava_saved, reason = is_image_small(img)
-                if ava_saved:
-                    ava_id = uuid.uuid1().hex
-                    extention = "." + form.data['avatar'].filename.split('.')[-1]
-                    new_filename = ava_id + extention
-                    ava_path = os.path.join(current_app.base_path, new_filename)
-                    large_thumbnail_path = os.path.join(current_app.thumbnail_path,
-                                                        "%s_400x400_85%s" % (ava_id, extention))
-                    small_thumbnail_path = os.path.join(current_app.thumbnail_path,
-                                                        "%s_200x200_85%s" % (ava_id, extention))
+# The following lines are disabled because Image library corrupts jpeg file
+# once it opens it. It then gets saved as an empty rectangle
+#             with Image.open(form.data['avatar']) as img:
+#                 ava_saved, reason = is_image_small(img)
+            ava_id = uuid.uuid1().hex
+            extention = "." + form.data['avatar'].filename.split('.')[-1]
+            new_filename = ava_id + extention
+            ava_path = os.path.join(current_app.base_path, new_filename)
+            large_thumbnail_path = os.path.join(current_app.thumbnail_path,
+                                                "%s_400x400_85%s" % (ava_id, extention))
+            small_thumbnail_path = os.path.join(current_app.thumbnail_path,
+                                                "%s_200x200_85%s" % (ava_id, extention))
 
-                    form.data['avatar'].save(ava_path)
-                    ava = Photo(id=new_filename,
-                                path=ava_path,
-                                large_thumbnail_path=large_thumbnail_path,
-                                small_thumbnail_path=small_thumbnail_path)
-                    db.session.add(ava)
+            form.data['avatar'].save(ava_path)
+            ava = Photo(id=new_filename,
+                        path=ava_path,
+                        large_thumbnail_path=large_thumbnail_path,
+                        small_thumbnail_path=small_thumbnail_path)
+            db.session.add(ava)
         else:
             ava_saved = False
             reason = NUM_UPLOADS_EXCEEDED % current_app.config["%s_USERS_FILE_LIMIT" % tarif]
