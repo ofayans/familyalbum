@@ -32,12 +32,5 @@ ADD dumpdb.sh /root/dumpdb.sh
 RUN chmod 755 /root/dumpdb.sh
 ADD step2.sh /root/step2.sh
 RUN chmod 755 /root/step2.sh
-<<<<<<< HEAD
 EXPOSE 22 80
-=======
-RUN git checkout prod
-ADD letsencrypt /etc/letsencrypt
-RUN chown root /etc/letsencrypt -R
-EXPOSE 22 80 443
->>>>>>> prod
 CMD /root/step2.sh
