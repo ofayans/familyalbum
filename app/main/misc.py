@@ -7,6 +7,8 @@ from .. import db
 from flask import url_for
 from PIL import Image
 from .constants import IMAGE_TOO_BIG, NUM_UPLOADS_EXCEEDED
+from functools import wraps
+
 
 def is_image_small(img):
     if max(img.size) > current_app.config['MAX_PHOTO_PIXELS']:
@@ -15,6 +17,15 @@ def is_image_small(img):
         return False, reason
     else:
         return True, ""
+
+def demo_forbidden(func):
+    @wraps(func)
+    def decorated_view(*args, **kwargs):
+        if g.demo:
+            return render_template('errors/demo_disabled.html'), 403
+        else:
+            return func(*args, **kwargs)
+    return decorated_view
 
 
 def make_person(form, user, request, person=None):
