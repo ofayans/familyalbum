@@ -66,7 +66,7 @@ def make_person(form, user, request, person=None):
             name=user.name,
             b_date=user.b_date,
 #            city = form.data['city'],
-            sex = form.data['sex']
+            sex = dict(form.sex.choices)[form.data['sex']]
             )
         if form.data['second_name']:
             person.second_name = form.data['second_name']
