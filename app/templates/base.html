@@ -14,7 +14,7 @@
             {% if g.person %}
               <a class="navbar-brand" href="{{ url_for('main.index') }}">Main page</a>
             {% endif %}
-            {% if current_user.is_authenticated and g.person %}
+            {% if (current_user.is_authenticated and g.person) or g.demo %}
               <a class="navbar-brand" href="{{ url_for('main.mypage',
                   person_id=g.person.id) }}">My page</a>
               <a class="navbar-brand" href="{{ url_for('main.edit_person',
@@ -36,11 +36,20 @@
                   </span>
                 {% endif %}
               {% endfor %}
+              {% if g.demo %}
+              <a class="navbar-brand" href="{{ url_for('main.stop_demo()')
+              }}">Exit demo mode</a>
+              {% endif %}
               <a class="navbar-brand" href="{{ url_for('auth.logout') }}">Log out</a>
             {% else %}
                 {% if not current_user.is_authenticated %}
                   <a class="navbar-brand" href="{{ url_for('auth.login') }}">Log in</a>
                   <a class="navbar-brand" href="{{ url_for('auth.register') }}">Register</a>
+                  <span title="In demo mode you are granted a read-only access
+                  to a ">
+                  <a class="navbar-brand" href="{{ url_for('start_demo')
+                      }}">Enter demo mode</a>
+                  </span>
                 {% endif %}
             {% endif %}
         </div>
