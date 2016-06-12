@@ -17,7 +17,7 @@ from .forms import PersonSearchForm, MyrelativeForm
 from .misc import populate_dropdowns, make_person, new_family
 from .misc import populate_relatives, ancestor_tree, descendants_tree
 from .misc import allowed_file, populate_relations, relation_dict
-from .misc import is_image_small
+from .misc import is_image_small, demo_forbidden
 from .constants import NUM_UPLOADS_EXCEEDED
 from .. import db, cache
 from ..models import Legend, Photo, Person, User, Family, Country
