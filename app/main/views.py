@@ -17,7 +17,7 @@ from .forms import PersonSearchForm, MyrelativeForm
 from .misc import populate_dropdowns, make_person, new_family
 from .misc import populate_relatives, ancestor_tree, descendants_tree
 from .misc import allowed_file, populate_relations, relation_dict
-from .misc import is_image_small, demo_forbidden
+from .misc import is_image_small
 from .constants import NUM_UPLOADS_EXCEEDED
 from .. import db, cache
 from ..models import Legend, Photo, Person, User, Family, Country
@@ -33,7 +33,6 @@ from PIL import Image
 
 
 @main.route('/person/delete/<person_id>')
-@demo_forbidden
 @login_required
 def person_delete(person_id):
     person = Person.query.filter_by(id=person_id).first()
@@ -177,7 +176,6 @@ def youmightbe(user_id):
     return render_template('youmightbe.html', persons=supposed_persons)
 
 @main.route('/thatsmyfamily/<family_id>')
-@demo_forbidden
 @login_required
 def thatsmyfamily(family_id):
     user_id = current_user.get_id()
@@ -205,7 +203,6 @@ def thatsme(person_id):
 
 @main.route('/person/edit/<person_id>', methods=['GET', 'POST'])
 # @cache.cached(timeout=50)
-@demo_forbidden
 @login_required
 def edit_person(person_id):
     person = Person.query.filter_by(id=person_id).first()
@@ -231,7 +228,6 @@ def edit_person(person_id):
 
 
 @main.route('/legend/new/<person_id>', methods=['GET', 'POST'])
-@demo_forbidden
 @login_required
 def add_legend(person_id):
     form = LegendForm()
@@ -260,7 +256,6 @@ def add_legend(person_id):
                                header=header)
 
 @main.route('/legend/delete/<legend_id>')
-@demo_forbidden
 @login_required
 def delete_legend(legend_id):
     legend = Legend.query.filter_by(id=legend_id).first()
@@ -272,7 +267,6 @@ def delete_legend(legend_id):
     
 
 @main.route('/person/new', methods=['GET', 'POST'])
-@demo_forbidden
 @login_required
 def newperson():
     user = User.query.filter_by(id=current_user.get_id()).first()
@@ -336,7 +330,6 @@ def find_person():
 
 
 @main.route('/photos/upload/<person_id>', methods=['POST', 'GET'])
-@demo_forbidden
 @login_required
 def photo_upload(person_id):
     tarif = current_user.tarif.upper()
@@ -384,7 +377,6 @@ def photo_upload(person_id):
 
 
 @main.route('/myrelative/<my_id>/<target_id>', methods=['POST', 'GET'])
-@demo_forbidden
 @login_required
 def possible_relative(my_id, target_id):
     target = Person.query.filter_by(id=target_id).first()
@@ -419,7 +411,6 @@ def possible_relative(my_id, target_id):
                            person=target)
 
 @main.route('/myrelatives/<family_id>', methods=['GET'])
-@demo_forbidden
 @login_required
 def possible_relatives(family_id):
     family = Family.query.filter_by(id=family_id).first()
@@ -435,7 +426,6 @@ def possible_relatives(family_id):
     return render_template("possible_relatives.html", possibles=possibles)
 
 @main.route('/myrelative/confirm/<family_id>/<possible_member_id>', methods=['GET'])
-@demo_forbidden
 @login_required
 def confirm_relation(family_id, possible_member_id):
     family = Family.query.filter_by(id=family_id).first()
@@ -467,7 +457,6 @@ def confirm_relation(family_id, possible_member_id):
 
 
 @main.route('/myrelative/discard/<possible_relative_id>')
-@demo_forbidden
 @login_required
 def discard_possible_relative(possible_relative_id):
     possible = PossibleRelative.query.filter_by(id=possible_relative_id).first()
@@ -481,16 +470,3 @@ def discard_possible_relative(possible_relative_id):
 def legend_display(legend_id):
     legend = Legend.query.filter_by(id=legend_id).first()
     return render_template('legend_display.html', legend=legend)
-
-
-@main.route('/demo/start')
-def start_demo():
-    g.demo = True
-    g.person = Person.query.get(config.DEMO_PERSON_ID)
-    return redirect(url_for('main.index'))
-
-@main.route('/demo/stop')
-def stop_demo():
-    g.demo = False
-    del g.person
-    return redirect(url_for('main.index'))

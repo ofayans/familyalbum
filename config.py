@@ -25,7 +25,6 @@ class Config(object):
     MAIL_PASSWORD = os.environ['MAIL_PASSWORD']
     MAIL_SUBJECT_PREFIX = 'Familyalbum'
     MAIL_SENDER = "Familyalbum team <%s>" % MAIL_USERNAME
-    DEMO_PERSON_ID = 'd211ee72307f11e6bd0b0242ac110003'
 
 #     UPLOADED_FILES_DEST = os.environ['MEDIA_FOLDER']
 #     UPLOADS_DEFAULT_DEST = os.environ['MEDIA_FOLDER']
