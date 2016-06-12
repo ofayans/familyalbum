@@ -35,8 +35,11 @@ def before_request():
 
 @auth.route('/unconfirmed')
 def unconfirmed():
-    if current_user.is_anonymous or current_user.confirmed:
+    if current_user.is_anonymous:
         return redirect(url_for('main.index'))
+    elif current_user.confirmed:
+        person = Person.query.get(current_user.person_id)
+        return redirect(url_for('main.index', person=person))
     return render_template('auth/unconfirmed.html')
 
 
@@ -61,7 +64,8 @@ def login():
                     return redirect(url_for('main.newperson'))
 
             else:
-                return redirect(request.args.get('next') or url_for('main.index'))
+                person = Person.query.get(current_user.person_id)
+                return redirect(request.args.get('next') or url_for('main.index', person=person))
         flash('Invalid username or password.')
     return render_template('auth/login.html', form=form)
 
@@ -128,6 +132,7 @@ def change_password():
         if current_user.verify_password(form.old_password.data):
             current_user.password = form.password.data
             db.session.add(current_user)
+            person = Person.query.get(current_user.person_id)
             flash('Your password has been updated.')
             return redirect(url_for('main.index'))
         else:
@@ -138,7 +143,8 @@ def change_password():
 @auth.route('/reset', methods=['GET', 'POST'])
 def password_reset_request():
     if not current_user.is_anonymous:
-        return redirect(url_for('main.index'))
+        person = Person.query.get(current_user.person_id)
+        return redirect(url_for('main.index', person=person))
     form = PasswordResetRequestForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
@@ -156,8 +162,10 @@ def password_reset_request():
 
 @auth.route('/reset/<token>', methods=['GET', 'POST'])
 def password_reset(token):
+    if current_user.person_id:
+        person = Person.query.get(current_user.person_id)
     if not current_user.is_anonymous:
-        return redirect(url_for('main.index'))
+        return redirect(url_for('main.index', person=person))
     form = PasswordResetForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
@@ -167,7 +175,7 @@ def password_reset(token):
             flash('Your password has been updated.')
             return redirect(url_for('auth.login'))
         else:
-            return redirect(url_for('main.index'))
+            return redirect(url_for('main.index', person=person))
     return render_template('auth/reset_password.html', form=form)
 
 
@@ -177,6 +185,7 @@ def change_email_request():
     form = ChangeEmailForm()
     if form.validate_on_submit():
         if current_user.verify_password(form.password.data):
+            person = Person.query.get(current_user.person_id)
             new_email = form.email.data
             token = current_user.generate_email_change_token(new_email)
             send_email(new_email, 'Confirm your email address',
@@ -184,7 +193,7 @@ def change_email_request():
                        user=current_user, token=token)
             flash('An email with instructions to confirm your new email '
                   'address has been sent to you.')
-            return redirect(url_for('main.index'))
+            return redirect(url_for('main.index', person=person))
         else:
             flash('Invalid email or password.')
     return render_template("auth/change_email.html", form=form)
@@ -194,7 +203,8 @@ def change_email_request():
 @login_required
 def change_email(token):
     if current_user.change_email(token):
+        person = Person.query.get(current_user.person_id)
         flash('Your email address has been updated.')
     else:
         flash('Invalid request.')
-    return redirect(url_for('main.index'))
+    return redirect(url_for('main.index', person=person))

@@ -11,22 +11,22 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            {% if g.person %}
+            {% if person %}
               <a class="navbar-brand" href="{{ url_for('main.index') }}">Main page</a>
             {% endif %}
-            {% if current_user.is_authenticated and g.person %}
+            {% if current_user.is_authenticated and person %}
               <a class="navbar-brand" href="{{ url_for('main.mypage',
-                  person_id=g.person.id) }}">My page</a>
+                  person_id=person.id) }}">My page</a>
               <a class="navbar-brand" href="{{ url_for('main.edit_person',
-                  person_id=g.person.id) }}">Edit my details</a>
+                  person_id=person.id) }}">Edit my details</a>
               <a class="navbar-brand" href="{{ url_for('main.newperson',
-                  person_id=g.person.id) }}">New relative</a>
+                  person_id=person.id) }}">New relative</a>
               <span title="Find your possible relative in our database">
               <a class="navbar-brand" href="{{ url_for('main.find_person')
               }}">Find a relative</a>
               </span>
 
-              {% for family in g.families %}
+              {% for family in person.families %}
                 {% if family.possible_members %}
                   <span title="These people claim, they are your relative">
                   <a class="navbar-brand notification" href="{{

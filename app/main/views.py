@@ -57,7 +57,7 @@ def person_delete(person_id):
     db.session.commit()
     db.session.delete(person)
     db.session.commit()
-    return redirect(url_for('main.index'))
+    return redirect(url_for('main.index', person=person))
 
 
 
@@ -125,14 +125,16 @@ def search_for_relatives(person_id):
         return render_template("possible_families.html", families=result)
     else:
         new_family(person)
-        return redirect(url_for('main.index'))
+        return redirect(url_for('main.index', person=person))
 
 
 @main.route('/')
 def index():
+    if current_user.person_id:
+        person = Person.query.get(current_user.person_id)
     hyperfamily = []
-    if hasattr(g, "families"):
-        for family in g.families:
+    if person:
+        for family in person.families:
             hyperfamily.extend(family.members)
     return render_template('index.html', hyperfamily=set(hyperfamily))
 
@@ -185,7 +187,7 @@ def thatsmyfamily(family_id):
     person.families.append(family)
     db.session.add(person)
     db.session.commit()
-    return redirect(url_for('main.index'))
+    return redirect(url_for('main.index', person=person))
 
 @main.route('/thatsme/<person_id>')
 @login_required
@@ -198,7 +200,7 @@ def thatsme(person_id):
     db.session.add(g.user)
     db.session.add(person)
     db.session.commit()
-    return redirect(url_for('main.index'))
+    return redirect(url_for('main.index', person=person))
 
 
 @main.route('/person/edit/<person_id>', methods=['GET', 'POST'])
@@ -222,7 +224,7 @@ def edit_person(person_id):
             return render_template("errors/upgrade_plan.html",
                                    reason=result['reason']), 403
         else:
-            return redirect(url_for('main.index'))
+            return redirect(url_for('main.index', person=person))
     return render_template('new_person.html', form=form,
                            photo=photo, header=header)
 
@@ -248,7 +250,7 @@ def add_legend(person_id):
         legend.participants = list(participants)
         db.session.add(legend)
         db.session.commit()
-        return redirect(url_for('main.index'))
+        return redirect(url_for('main.index', person=person))
     else:
         header = "Remembered a family legend? Write it down and \
     select all people that were a part of it!"
@@ -263,7 +265,7 @@ def delete_legend(legend_id):
     db.session.commit()
     db.session.delete(legend)
     db.session.commit()
-    return redirect(url_for('main.index'))
+    return redirect(url_for('main.index', person=person))
     
 
 @main.route('/person/new', methods=['GET', 'POST'])
@@ -294,7 +296,7 @@ def newperson():
             return redirect(url_for('main.search_for_relatives',
                                     person_id=person.id))
         else:
-            return redirect(url_for('main.index'))
+            return redirect(url_for('main.index', person=person))
     if new_user:
         header = "Tell us more about yourself, please!"
         return render_template('generic_template.html', form=form,
@@ -379,7 +381,8 @@ def photo_upload(person_id):
 @main.route('/myrelative/<my_id>/<target_id>', methods=['POST', 'GET'])
 @login_required
 def possible_relative(my_id, target_id):
-    target = Person.query.filter_by(id=target_id).first()
+    target = Person.query.get(target_id)
+    me = Person.query.get(my_id)
     form = MyrelativeForm()
     form.relation.choices = populate_relations(target)
     header = "Tell us, who is this person for you"
@@ -406,7 +409,7 @@ def possible_relative(my_id, target_id):
             consider her your %s. They need to confirm it. Be patient :)" % \
             (target.name, relation)
         # TODO: implement a javascript-base notification of the user with the flash_message
-        return redirect(url_for('main.index'))
+        return redirect(url_for('main.index', person=me))
     return render_template('myrelative.html', header=header, form=form,
                            person=target)
 
@@ -453,16 +456,17 @@ def confirm_relation(family_id, possible_member_id):
     db.session.add(person.families[0])
     db.session.delete(possible)
     db.session.commit()
-    return redirect(url_for('main.index'))
+    return redirect(url_for('main.index', person=person))
 
 
 @main.route('/myrelative/discard/<possible_relative_id>')
 @login_required
 def discard_possible_relative(possible_relative_id):
     possible = PossibleRelative.query.filter_by(id=possible_relative_id).first()
+    person = Person.query.filter_by(id=possible.person_id).first()
     db.session.delete(possible)
     db.session.commit()
-    return redirect(url_for('main.index'))
+    return redirect(url_for('main.index', person=person))
 
 @main.route('/legend/display/<legend_id>')
 #@cache.cached(timeout=50)
