@@ -37,7 +37,7 @@
                 {% endif %}
               {% endfor %}
               {% if g.demo %}
-              <a class="navbar-brand" href="{{ url_for('main.stop_demo()')
+              <a class="navbar-brand" href="{{ url_for('main.stop_demo')
               }}">Exit demo mode</a>
               {% endif %}
               <a class="navbar-brand" href="{{ url_for('auth.logout') }}">Log out</a>
@@ -47,7 +47,7 @@
                   <a class="navbar-brand" href="{{ url_for('auth.register') }}">Register</a>
                   <span title="In demo mode you are granted a read-only access
                   to a ">
-                  <a class="navbar-brand" href="{{ url_for('start_demo')
+                  <a class="navbar-brand" href="{{ url_for('main.start_demo')
                       }}">Enter demo mode</a>
                   </span>
                 {% endif %}
