@@ -18,16 +18,6 @@ def is_image_small(img):
     else:
         return True, ""
 
-def demo_forbidden(func):
-    @wraps(func)
-    def decorated_view(*args, **kwargs):
-        if g.demo:
-            return render_template('errors/demo_disabled.html'), 403
-        else:
-            return func(*args, **kwargs)
-    return decorated_view
-
-
 def make_person(form, user, request, person=None):
     ava = None
     ava_saved = None
