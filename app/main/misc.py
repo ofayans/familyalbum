@@ -24,6 +24,8 @@ def make_person(form, user, request, person=None):
     countries = set()
     tarif = g.user.tarif.upper()
     reason = ""
+    if user.person_id:
+        myself = Person.query.get(user.person_id)
     maxfiles = current_app.config["%s_USERS_FILE_LIMIT" % tarif]
     if form.data['avatar']:
         if user.photos_uploaded < maxfiles:
@@ -76,7 +78,7 @@ def make_person(form, user, request, person=None):
             person.mother_id = form.data['mother']
         if form.data['father']:
             person.father_id = form.data['father']
-        person.families.append(g.families[0])
+        person.families.append(myself.families[0])
     for country_id in form.data['country']:
         country = Country.query.filter_by(id=country_id).first()
         countries.add(country)
@@ -114,10 +116,10 @@ def make_person(form, user, request, person=None):
 def populate_relatives(person=None, sex=None):
     relatives = []
     members = []
-    for family in g.families:
+    for family in person.families:
         members.extend(family.members)
     for dude in set(members):
-        if person and dude.id == person.id:
+        if dude.id == person.id:
             continue
         if not sex:
             relatives.append((dude.id, dude.fullname()))

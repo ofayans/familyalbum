@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 {% if current_user.is_authenticated %}
-  {% if g.num_of_families > 1 %}
+  {% if len(person.families) > 1 %}
     <h3>My families</h3>
   {% else %}
 

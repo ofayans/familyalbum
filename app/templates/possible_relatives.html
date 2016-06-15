@@ -19,7 +19,7 @@
       {% endif %}
   </div>
   <p> You can either <a href="{{ url_for('main.confirm_relation',
-      family_id=g.families[0].id,
+      family_id=person.families[0].id,
       possible_member_id=possible['possible_relative_id']) }}">confirm</a>, <a
       href="{{ url_for('main.index') }}">ignore</a>, or <a href="{{
       url_for('main.discard_possible_relative',
