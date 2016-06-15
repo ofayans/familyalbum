@@ -22,11 +22,6 @@ def next_is_valid(url):
 def before_request():
     if current_user.is_authenticated:
         current_user.ping()
-        g.user = current_user
-        g.person = Person.query.filter_by(id=g.user.person_id).first()
-        if g.person:
-            g.families = g.person.families
-            g.num_of_families = len(g.families)
         if not current_user.confirmed \
                 and request.endpoint[:5] != 'auth.' \
                 and request.endpoint != 'static':

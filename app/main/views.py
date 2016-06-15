@@ -131,10 +131,12 @@ def search_for_relatives(person_id):
 @main.route('/')
 def index():
     hyperfamily = []
-    if hasattr(g, "families"):
-        for family in g.families:
+    person = None
+    if current_user.is_authenticated and current_user.person_id:
+        person = Person.query.get(current_user.person_id)
+        for family in person.families:
             hyperfamily.extend(family.members)
-    return render_template('index.html', hyperfamily=set(hyperfamily))
+    return render_template('index.html', person=person, hyperfamily=set(hyperfamily))
 
 
 @main.route('/ancestors/display/<person_id>')
@@ -191,11 +193,10 @@ def thatsmyfamily(family_id):
 @login_required
 def thatsme(person_id):
     person = Person.query.filter_by(id=person_id).first()
-    person.user_id = g.user.id
-    g.user.person_id = person_id
-#   g.user.city = person.city
-    g.user.is_new = False
-    db.session.add(g.user)
+    person.user_id = current_user.id
+    current_user.person_id = person_id
+    current_user.is_new = False
+    db.session.add(current_user)
     db.session.add(person)
     db.session.commit()
     return redirect(url_for('main.index'))
@@ -206,16 +207,17 @@ def thatsme(person_id):
 @login_required
 def edit_person(person_id):
     person = Person.query.filter_by(id=person_id).first()
+    myself = Person.query.get(current_user.person_id)
     photo = Photo.query.filter_by(id=person.ava_id).first()
     form = PersonForm(obj=person)
     form = populate_dropdowns(form, person)
-    if person == g.person:
+    if person == myself:
         dude = "you"
     else:
         dude = person.fullname()
     header = "Please use the form below to update information about %s" % dude
     if form.validate_on_submit():
-        tarif = g.user.tarif.upper()
+        tarif = current_user.tarif.upper()
         maxfiles = current_app.config["%s_USERS_FILE_LIMIT" % tarif]
         result = make_person(form, current_user, request, person)
         if result['ava_saved'] is False:
