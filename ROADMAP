@@ -1,0 +1,5 @@
+* Jun 17 2016
+ 1. Fix registration under Firefox (datepicker is not shown)
+ 2. Implement demo mode with a dedicated demo user account
+ 3. Create a user-friendly anonymous index page with usage instructions and a
+ hint about a demo mode
