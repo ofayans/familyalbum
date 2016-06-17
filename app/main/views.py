@@ -311,6 +311,7 @@ def newperson():
 @login_required
 def find_person():
     form = PersonSearchForm()
+    person = Person.query.get(current_user.person_id)
     header = "Search for your relative in our database"
     if form.validate_on_submit():
         runme = "Person.query.filter(and_("
@@ -324,7 +325,8 @@ def find_person():
             runme += "Person.b_date == form.data['b_date']"
         runme += ")).all()"
         people = eval(runme)
-        return render_template("found_people.html", people=people)
+        return render_template("found_people.html", people=people,
+                               person=person)
     return render_template("generic_template.html",
                            form=form,
                            header=header)
