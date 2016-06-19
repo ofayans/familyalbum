@@ -2,13 +2,14 @@
 
 {% block content %}
 
-{% for person in people %}
+{% for dude in people %}
     <div class="person">
-        <a href="{{ url_for('main.possible_relative', my_id=g.person.id, target_id=person.id) }}">
+        <a href="{{ url_for('main.possible_relative', my_id=person.id,
+            target_id=dude.id) }}">
            <img src="{{ url_for('main.show_photo',
-           photo_id=person.ava_id)|thumbnail('200x200') }}"></a>
-           <p>{{ person.name }} {{ person.surname }} {{
-           person.years_of_life() }}</p>
+           photo_id=dude.ava_id)|thumbnail('200x200') }}"></a>
+           <p>{{ dude.name }} {{ dude.surname }} {{
+           dude.years_of_life() }}</p>
     </div>
 {% endfor %}
 {% endblock %}

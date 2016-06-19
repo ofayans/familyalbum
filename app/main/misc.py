@@ -22,7 +22,7 @@ def make_person(form, user, request, person=None):
     ava = None
     ava_saved = None
     countries = set()
-    tarif = g.user.tarif.upper()
+    tarif = user.tarif.upper()
     reason = ""
     if user.person_id:
         myself = Person.query.get(user.person_id)

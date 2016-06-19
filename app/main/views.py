@@ -275,12 +275,13 @@ def delete_legend(legend_id):
 @login_required
 def newperson():
     user = User.query.filter_by(id=current_user.get_id()).first()
+    current_person = Person.query.get(current_user.person_id)
     new_user = user.is_new
     if new_user:
         form = AboutMeForm()
     else:
         form = PersonForm()
-        form = populate_dropdowns(form)
+        form = populate_dropdowns(form, current_person)
     if form.validate_on_submit():
         result = make_person(form, user, request)
         person = result['person']
@@ -314,6 +315,7 @@ def newperson():
 @login_required
 def find_person():
     form = PersonSearchForm()
+    person = Person.query.get(current_user.person_id)
     header = "Search for your relative in our database"
     if form.validate_on_submit():
         runme = "Person.query.filter(and_("
@@ -327,7 +329,8 @@ def find_person():
             runme += "Person.b_date == form.data['b_date']"
         runme += ")).all()"
         people = eval(runme)
-        return render_template("found_people.html", people=people)
+        return render_template("found_people.html", people=people,
+                               person=person)
     return render_template("generic_template.html",
                            form=form,
                            header=header)
