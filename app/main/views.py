@@ -130,11 +130,10 @@ def search_for_relatives(person_id):
 
 @main.route('/')
 def index():
+    person = None
     if current_user.person_id:
         person = Person.query.get(current_user.person_id)
     hyperfamily = []
-    if person:
-    person = None
     if current_user.is_authenticated and current_user.person_id:
         person = Person.query.get(current_user.person_id)
         for family in person.families:
