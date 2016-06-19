@@ -272,12 +272,13 @@ def delete_legend(legend_id):
 @login_required
 def newperson():
     user = User.query.filter_by(id=current_user.get_id()).first()
+    current_person = Person.query.get(current_user.person_id)
     new_user = user.is_new
     if new_user:
         form = AboutMeForm()
     else:
         form = PersonForm()
-        form = populate_dropdowns(form)
+        form = populate_dropdowns(form, current_person)
     if form.validate_on_submit():
         result = make_person(form, user, request)
         person = result['person']
