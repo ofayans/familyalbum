@@ -32,5 +32,5 @@ ADD dumpdb.sh /root/dumpdb.sh
 RUN chmod 755 /root/dumpdb.sh
 ADD step2.sh /root/step2.sh
 RUN chmod 755 /root/step2.sh
-EXPOSE 22 80
+EXPOSE 22 5000
 CMD /root/step2.sh

@@ -5,3 +5,5 @@ export DATABASE_URL="postgresql://jamesb0nd:$PGPASSWORD@familyalbum_db/familyalb
 export MEDIA_FOLDER=/data
 export MEDIA_THUMBNAIL_FOLDER=/data/thumbnails
 export FAMILYALBUM_SECRET_KEY='U neveR gues$'
+export MAIL_USERNAME=confirm.familyalbum.biz@gmail.com
+export MAIL_PASSWORD='0lolO'
